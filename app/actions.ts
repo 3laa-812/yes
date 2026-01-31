@@ -17,34 +17,17 @@ const productSchema = z.object({
   colors: z.array(z.string()).min(1),
 });
 
+// ... imports ...
+
 export async function createProduct(formData: FormData) {
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
   const price = Number(formData.get("price"));
   const categoryId = formData.get("category") as string;
   
-  // Handle File Uploads
-  const files = formData.getAll("file") as File[];
-  const images: string[] = [];
-  
-  const uploadDir = path.join(process.cwd(), "public", "uploads");
-  try { await fs.access(uploadDir); } catch { await fs.mkdir(uploadDir, { recursive: true }); }
-
-  for (const file of files) {
-       if (file instanceof File && file.size > 0) {
-           const bytes = await file.arrayBuffer();
-           const buffer = Buffer.from(bytes);
-           const filename = `${Date.now()}-${file.name.replace(/\s/g, '-')}`;
-           const filepath = path.join(uploadDir, filename);
-           await fs.writeFile(filepath, buffer);
-           images.push(`/uploads/${filename}`);
-       }
-  }
-
-  // Fallback to empty if no images uploaded (or handle validation)
-  if (images.length === 0) {
-      // images.push("https://dummyimage.com/600x400/000/fff"); // Optional fallback
-  }
+  // New: Parse images from JSON string instead of file processing
+  const imageUrls = formData.get("imageUrls") as string;
+  const images = imageUrls ? JSON.parse(imageUrls) : [];
 
   const sizes = ["S", "M", "L"]; 
   const colors = ["#000000", "#ffffff"];
@@ -81,30 +64,9 @@ export async function updateProduct(formData: FormData) {
   const price = Number(formData.get("price"));
   const categoryId = formData.get("category") as string;
 
-  // Handle New File Uploads
-  const files = formData.getAll("file") as File[];
-  const newImages: string[] = [];
-
-  const uploadDir = path.join(process.cwd(), "public", "uploads");
-  try { await fs.access(uploadDir); } catch { await fs.mkdir(uploadDir, { recursive: true }); }
-
-  for (const file of files) {
-       if (file instanceof File && file.size > 0) {
-           const bytes = await file.arrayBuffer();
-           const buffer = Buffer.from(bytes);
-           const filename = `${Date.now()}-${file.name.replace(/\s/g, '-')}`;
-           const filepath = path.join(uploadDir, filename);
-           await fs.writeFile(filepath, buffer);
-           newImages.push(`/uploads/${filename}`);
-       }
-  }
-
-  // Fetch existing product to append images
-  const existingProduct = await db.product.findUnique({ where: { id: productId } });
-  let currentImages = existingProduct?.images ? JSON.parse(existingProduct.images as string) : [];
-
-  // Combine existing and new images
-  const updatedImages = [...currentImages, ...newImages];
+  // New: Parse images from JSON string
+  const imageUrls = formData.get("imageUrls") as string;
+  const images = imageUrls ? JSON.parse(imageUrls) : [];
 
   await db.product.update({
     where: { id: productId },
@@ -113,7 +75,7 @@ export async function updateProduct(formData: FormData) {
       description,
       price,
       categoryId,
-      images: JSON.stringify(updatedImages),
+      images: JSON.stringify(images),
     },
   });
 
