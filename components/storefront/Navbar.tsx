@@ -1,0 +1,109 @@
+"use client";
+
+import Link from "next/link";
+import { ShoppingBag, User, Search, Menu } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/lib/store";
+import { ShoppingCartModal } from "@/components/storefront/ShoppingCartModal";
+import { useState, useEffect } from "react";
+
+export function Navbar() {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const cartItems = useCartStore((state) => state.items);
+
+  // Handl hydration mismatch
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const totalItems = mounted
+    ? cartItems.reduce((acc, item) => acc + item.quantity, 0)
+    : 0;
+
+  return (
+    <>
+      <nav className="w-full border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="flex items-center justify-between mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16">
+          {/* Mobile Menu */}
+          <div className="flex lg:hidden">
+            <Button variant="ghost" size="icon">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </div>
+
+          {/* Logo */}
+          <div className="flex lg:flex-1">
+            <Link
+              href="/"
+              className="text-xl font-bold tracking-tight uppercase"
+            >
+              YES
+            </Link>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex lg:gap-x-12">
+            <Link
+              href="/collections/women"
+              className="text-sm font-medium text-gray-700 hover:text-black"
+            >
+              Women
+            </Link>
+            <Link
+              href="/collections/men"
+              className="text-sm font-medium text-gray-700 hover:text-black"
+            >
+              Men
+            </Link>
+            <Link
+              href="/collections/accessories"
+              className="text-sm font-medium text-gray-700 hover:text-black"
+            >
+              Accessories
+            </Link>
+            <Link
+              href="/products"
+              className="text-sm font-medium text-gray-700 hover:text-black"
+            >
+              All Products
+            </Link>
+          </div>
+
+          {/* Icons */}
+          <div className="flex flex-1 items-center justify-end gap-x-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-700 hover:text-black"
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-700 hover:text-black"
+            >
+              <User className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-700 hover:text-black relative"
+              onClick={() => setIsCartOpen(true)}
+            >
+              <ShoppingBag className="h-5 w-5" />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-black text-[10px] font-bold text-white flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
+            </Button>
+          </div>
+        </div>
+      </nav>
+      <ShoppingCartModal isOpen={isCartOpen} setIsOpen={setIsCartOpen} />
+    </>
+  );
+}
