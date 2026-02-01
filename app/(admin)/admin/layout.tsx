@@ -7,6 +7,7 @@ import {
   Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MobileSidebar } from "./_components/MobileSidebar";
 
 export default function AdminLayout({
   children,
@@ -64,6 +65,7 @@ export default function AdminLayout({
       {/* Main Content */}
       <div className="flex flex-1 flex-col">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6 lg:h-[60px]">
+          <MobileSidebar />
           <div className="flex-1">
             <h1 className="text-lg font-semibold md:text-2xl">Dashboard</h1>
           </div>

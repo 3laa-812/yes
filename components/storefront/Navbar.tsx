@@ -8,8 +8,16 @@ import { useCartStore } from "@/lib/store";
 import { ShoppingCartModal } from "@/components/storefront/ShoppingCartModal";
 import { useState, useEffect } from "react";
 
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
+
 export function Navbar() {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const cartItems = useCartStore((state) => state.items);
 
   // Handl hydration mismatch
@@ -22,15 +30,51 @@ export function Navbar() {
     ? cartItems.reduce((acc, item) => acc + item.quantity, 0)
     : 0;
 
+  const navLinks = [
+    { href: "/collections/women", label: "Women" },
+    { href: "/collections/men", label: "Men" },
+    { href: "/collections/accessories", label: "Accessories" },
+    { href: "/products", label: "All Products" },
+  ];
+
   return (
     <>
       <nav className="w-full border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center justify-between mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16">
           {/* Mobile Menu */}
           <div className="flex lg:hidden">
-            <Button variant="ghost" size="icon">
-              <Menu className="h-6 w-6" />
-            </Button>
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left">
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                <div className="flex flex-col gap-6 mt-6">
+                  <Link
+                    href="/"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="text-2xl font-bold tracking-tight uppercase"
+                  >
+                    YES
+                  </Link>
+                  <div className="flex flex-col gap-4">
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-lg font-medium text-gray-700 hover:text-black transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
 
           {/* Logo */}
@@ -45,30 +89,15 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex lg:gap-x-12">
-            <Link
-              href="/collections/women"
-              className="text-sm font-medium text-gray-700 hover:text-black"
-            >
-              Women
-            </Link>
-            <Link
-              href="/collections/men"
-              className="text-sm font-medium text-gray-700 hover:text-black"
-            >
-              Men
-            </Link>
-            <Link
-              href="/collections/accessories"
-              className="text-sm font-medium text-gray-700 hover:text-black"
-            >
-              Accessories
-            </Link>
-            <Link
-              href="/products"
-              className="text-sm font-medium text-gray-700 hover:text-black"
-            >
-              All Products
-            </Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-medium text-gray-700 hover:text-black transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
 
           {/* Icons */}
