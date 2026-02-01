@@ -41,7 +41,7 @@ export function ProductCard({
           <p className="mt-1 text-sm text-gray-500">{category}</p>
         </div>
         <p className="text-sm font-medium text-gray-900">
-          {formatPrice(price)}
+          {formatPrice(Number(price))}
         </p>
       </div>
     </ScaleHover>
