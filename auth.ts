@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { z } from "zod"
 import db from "@/lib/db"
+import { authConfig } from "./auth.config"
 
 async function getUser(email: string) {
   try {
@@ -16,6 +17,7 @@ async function getUser(email: string) {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+    ...authConfig,
     providers: [
         Credentials({
             credentials: {
@@ -37,21 +39,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
         }),
     ],
-    pages: {
-        signIn: '/auth/signin',
-    },
-    callbacks: {
-        async session({ session, token }) {
-            if (token.role && session.user) {
-                session.user.role = token.role as string;
-            }
-            return session;
-        },
-        async jwt({ token, user }) {
-            if (user) {
-                token.role = (user as any).role;
-            }
-            return token;
-        },
-    }
 })
