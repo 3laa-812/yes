@@ -7,6 +7,7 @@ import { createProduct, updateProduct } from "@/app/actions";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner"; // Import toast
 
 interface ProductFormProps {
   initialData?: any;
@@ -32,12 +33,15 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
     try {
       if (initialData) {
         await updateProduct(formData);
+        toast.success("Product updated successfully!");
       } else {
         await createProduct(formData);
+        toast.success("Product created successfully!");
       }
       // Actions now handle redirect, but we can do it here too if needed
     } catch (error) {
       console.error(error);
+      toast.error("Something went wrong.");
     } finally {
       setIsLoading(false);
     }
@@ -115,10 +119,13 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
             <label className="text-sm font-medium">Category</label>
             <select
               name="category"
-              defaultValue={initialData?.categoryId}
+              defaultValue={initialData?.categoryId || ""}
               required
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
+              <option value="" disabled>
+                Select a category
+              </option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}

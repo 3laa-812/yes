@@ -68,13 +68,26 @@ export default async function AdminProductsPage() {
                   className="border-b transition-colors hover:bg-muted/50"
                 >
                   <td className="p-4 align-middle">
-                    <Image
-                      src={JSON.parse(product.images as string)[0]}
-                      alt={product.name}
-                      width={64}
-                      height={64}
-                      className="aspect-square rounded-md object-cover"
-                    />
+                    {(() => {
+                      let imageUrl = "/placeholder.png";
+                      try {
+                        const images = JSON.parse(product.images as string);
+                        if (Array.isArray(images) && images.length > 0) {
+                          imageUrl = images[0];
+                        }
+                      } catch (e) {
+                        console.error("Failed to parse product images", e);
+                      }
+                      return (
+                        <Image
+                          src={imageUrl}
+                          alt={product.name}
+                          width={64}
+                          height={64}
+                          className="aspect-square rounded-md object-cover"
+                        />
+                      );
+                    })()}
                   </td>
                   <td className="p-4 align-middle font-medium">
                     {product.name}

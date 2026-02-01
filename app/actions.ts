@@ -20,17 +20,26 @@ const productSchema = z.object({
 // ... imports ...
 
 export async function createProduct(formData: FormData) {
-  const name = formData.get("name") as string;
-  const description = formData.get("description") as string;
-  const price = Number(formData.get("price"));
-  const categoryId = formData.get("category") as string;
-  
-  // New: Parse images from JSON string instead of file processing
-  const imageUrls = formData.get("imageUrls") as string;
-  const images = imageUrls ? JSON.parse(imageUrls) : [];
+  // Parse and validate using Zod
+  const rawData = {
+    name: formData.get("name"),
+    description: formData.get("description"),
+    price: Number(formData.get("price")),
+    categoryId: formData.get("category"),
+    images: formData.get("imageUrls") ? JSON.parse(formData.get("imageUrls") as string) : [],
+    // Sizes and colors are hardcoded for now, matching previous logic but could be dynamic later
+    sizes: ["S", "M", "L"], 
+    colors: ["#000000", "#ffffff"],
+  };
 
-  const sizes = ["S", "M", "L"]; 
-  const colors = ["#000000", "#ffffff"];
+  const validatedFields = productSchema.safeParse(rawData);
+
+  if (!validatedFields.success) {
+    console.error("Validation Error:", validatedFields.error.flatten().fieldErrors);
+    throw new Error("Invalid fields");
+  }
+
+  const { name, description, price, categoryId, images, sizes, colors } = validatedFields.data;
 
   await db.product.create({
     data: {
@@ -59,14 +68,46 @@ export async function deleteProduct(formData: FormData) {
 
 export async function updateProduct(formData: FormData) {
   const productId = formData.get("productId") as string;
-  const name = formData.get("name") as string;
-  const description = formData.get("description") as string;
-  const price = Number(formData.get("price"));
-  const categoryId = formData.get("category") as string;
+  
+  // Reuse the schema but make some fields optional if we wanted partial updates, 
+  // but for this form we basically resubmit everything.
+  // We need to parse images again.
+  const rawData = {
+      name: formData.get("name"),
+      description: formData.get("description"),
+      price: Number(formData.get("price")),
+      categoryId: formData.get("category"),
+      images: formData.get("imageUrls") ? JSON.parse(formData.get("imageUrls") as string) : [],
+      // Ensure specific fields required by the schema are present (sizes/colors not in update form yet, but schema requires them? 
+      // Wait, schema requires them. If we update, we might overwrite sizes/colors if we generated them from scratch.
+      // The schema above says: sizes: z.array(z.string()).min(1).
+      // But updateProduct didn't use to update sizes/colors.
+      // Let's omit sizes/colors from validation for update by using a partial schema or just picking fields.
+      // For now, let's just validate the fields we ARE updating.
+  };
 
-  // New: Parse images from JSON string
-  const imageUrls = formData.get("imageUrls") as string;
-  const images = imageUrls ? JSON.parse(imageUrls) : [];
+  // Create a partial schema for update or just validate fields manually?
+  // Let's match the create logic but be mindful that we aren't updating sizes/colors here.
+  // Actually, the schema requires sizes/colors. If we don't assume them, validation fails.
+  // Let's pass dummy values for validation purposes or refrain from validating strict schema on update for now?
+  // Better: Let's validate the fields we have.
+  
+  const updateSchema = productSchema.pick({
+      name: true,
+      description: true,
+      price: true,
+      categoryId: true,
+      images: true
+  });
+
+  const validatedFields = updateSchema.safeParse(rawData);
+
+  if (!validatedFields.success) {
+      console.error("Validation Error:", validatedFields.error.flatten().fieldErrors);
+      throw new Error("Invalid fields");
+  }
+
+  const { name, description, price, categoryId, images } = validatedFields.data;
 
   await db.product.update({
     where: { id: productId },
