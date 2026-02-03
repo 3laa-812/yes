@@ -9,6 +9,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { MobileSidebar } from "./_components/MobileSidebar";
 
+import Image from "next/image";
+
 export default function AdminLayout({
   children,
 }: {
@@ -19,8 +21,17 @@ export default function AdminLayout({
       {/* Sidebar */}
       <aside className="sticky top-0 hidden h-screen w-64 flex-col border-r bg-background px-4 py-8 lg:flex">
         <div className="flex h-12 items-center px-4 mb-8">
-          <Link href="/" className="text-xl font-bold tracking-tight uppercase">
-            YES ADMIN
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/branding/logo-icon.png"
+              alt="YES Logo"
+              width={32}
+              height={32}
+              className="h-8 w-8"
+            />
+            <span className="text-xl font-bold tracking-tight uppercase">
+              YES ADMIN
+            </span>
           </Link>
         </div>
         <nav className="flex flex-1 flex-col gap-2">

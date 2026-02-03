@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ShoppingBag, User, Search, Menu } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/store";
@@ -58,7 +59,13 @@ export function Navbar() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="text-2xl font-bold tracking-tight uppercase"
                   >
-                    YES
+                    <Image
+                      src="/branding/logo-primary.png"
+                      alt="YES Logo"
+                      width={10}
+                      height={50}
+                      className="h-12 w-auto"
+                    />
                   </Link>
                   <div className="flex flex-col gap-4">
                     {navLinks.map((link) => (
@@ -79,11 +86,14 @@ export function Navbar() {
 
           {/* Logo */}
           <div className="flex lg:flex-1">
-            <Link
-              href="/"
-              className="text-xl font-bold tracking-tight uppercase"
-            >
-              YES
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/branding/logo-primary.png"
+                alt="YES Logo"
+                width={160}
+                height={60}
+                className="h-14 w-auto"
+              />
             </Link>
           </div>
 
