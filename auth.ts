@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials"
 import { z } from "zod"
 import db from "@/lib/db"
 import { authConfig } from "./auth.config"
+import bcrypt from "bcryptjs"
 
 async function getUser(email: string) {
   try {
@@ -25,17 +26,39 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 password: {},
             },
             authorize: async (credentials) => {
-                // Mock auth for simplicity as requested - check if email is admin@example.com
-                // In production, use bcrypt to compare passwords
-                if (credentials.email === "admin@example.com" && credentials.password === "admin") {
-                     return {
-                        id: "1",
-                        name: "Admin",
-                        email: "admin@example.com",
-                        role: "ADMIN",
-                     }
+                const parsedCredentials = z
+                    .object({ email: z.string().email(), password: z.string().min(6) })
+                    .safeParse(credentials);
+
+                if (parsedCredentials.success) {
+                    const { email, password } = parsedCredentials.data;
+                    const user = await getUser(email);
+
+                    if (!user) return null;
+                    
+                    if (!user.isActive) {
+                         throw new Error("Account is disabled.");
+                    }
+
+                    const passwordsMatch = user.password 
+                        ? await bcrypt.compare(password, user.password)
+                        : false; 
+
+                    if (passwordsMatch) {
+                         return {
+                            id: user.id,
+                            name: user.name,
+                            email: user.email,
+                            role: user.role,
+                         };
+                    }
                 }
-                return null
+                
+                // Basic rate limiting / timing attack mitigation
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                console.log('Invalid credentials');
+                return null;
             },
         }),
     ],

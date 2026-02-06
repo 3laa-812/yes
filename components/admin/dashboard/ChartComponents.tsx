@@ -16,37 +16,25 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useLocale } from "next-intl";
 
-// Mock Data - In a real app, pass this as props
-const revenueData = [
-  { name: "Jan", total: 1200 },
-  { name: "Feb", total: 2100 },
-  { name: "Mar", total: 800 },
-  { name: "Apr", total: 1600 },
-  { name: "May", total: 900 },
-  { name: "Jun", total: 1700 },
-  { name: "Jul", total: 2400 },
-];
+// Props Interfaces
+interface RevenueChartProps {
+  data: { name: string; total: number }[];
+}
 
-const ordersData = [
-  { name: "Mon", orders: 12 },
-  { name: "Tue", orders: 18 },
-  { name: "Wed", orders: 15 },
-  { name: "Thu", orders: 24 },
-  { name: "Fri", orders: 32 },
-  { name: "Sat", orders: 45 },
-  { name: "Sun", orders: 28 },
-];
+interface OrdersChartProps {
+  data: { name: string; orders: number }[];
+}
 
-const statusData = [
-  { name: "Pending", value: 12, color: "#f59e0b" },
-  { name: "Processing", value: 18, color: "#3b82f6" },
-  { name: "Shipped", value: 45, color: "#10b981" },
-  { name: "Delivered", value: 160, color: "#6366f1" },
-  { name: "Cancelled", value: 5, color: "#ef4444" },
-];
+interface StatusChartProps {
+  data: { name: string; value: number; color: string }[];
+}
 
-export function RevenueChart() {
+export function RevenueChart({ data }: RevenueChartProps) {
+  const locale = useLocale();
+  const isRTL = locale === "ar";
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -60,7 +48,7 @@ export function RevenueChart() {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
-            <AreaChart data={revenueData}>
+            <AreaChart data={data} style={{ direction: "ltr" }}>
               <defs>
                 <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#1C1C1E" stopOpacity={0.1} />
@@ -73,6 +61,7 @@ export function RevenueChart() {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
+                reversed={isRTL}
               />
               <YAxis
                 stroke="#888888"
@@ -80,12 +69,14 @@ export function RevenueChart() {
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(value) => `$${value}`}
+                orientation={isRTL ? "right" : "left"}
               />
               <Tooltip
                 contentStyle={{
                   borderRadius: "8px",
                   border: "none",
                   boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  textAlign: isRTL ? "right" : "left",
                 }}
                 cursor={{ stroke: "#e2e8f0", strokeWidth: 1 }}
               />
@@ -105,7 +96,10 @@ export function RevenueChart() {
   );
 }
 
-export function OrdersChart() {
+export function OrdersChart({ data }: OrdersChartProps) {
+  const locale = useLocale();
+  const isRTL = locale === "ar";
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -119,19 +113,21 @@ export function OrdersChart() {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={ordersData}>
+            <BarChart data={data} style={{ direction: "ltr" }}>
               <XAxis
                 dataKey="name"
                 stroke="#888888"
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
+                reversed={isRTL}
               />
               <Tooltip
                 contentStyle={{
                   borderRadius: "8px",
                   border: "none",
                   boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  textAlign: isRTL ? "right" : "left",
                 }}
                 cursor={{ fill: "transparent" }}
               />
@@ -149,7 +145,11 @@ export function OrdersChart() {
   );
 }
 
-export function StatusChart() {
+export function StatusChart({ data }: StatusChartProps) {
+  // Pie charts don't usually need axis reversal, but tooltips might need text alignment
+  const locale = useLocale();
+  const isRTL = locale === "ar";
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -163,9 +163,9 @@ export function StatusChart() {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
-            <PieChart>
+            <PieChart style={{ direction: "ltr" }}>
               <Pie
-                data={statusData}
+                data={data}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
@@ -173,7 +173,7 @@ export function StatusChart() {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {statusData.map((entry, index) => (
+                {data.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={entry.color}
@@ -186,6 +186,7 @@ export function StatusChart() {
                   borderRadius: "8px",
                   border: "none",
                   boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  textAlign: isRTL ? "right" : "left",
                 }}
               />
               <Legend verticalAlign="bottom" height={36} />

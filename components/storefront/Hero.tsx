@@ -3,10 +3,12 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 
 export function Hero() {
+  const t = useTranslations("HomePage");
   const heroRef = useRef(null);
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 150]);
@@ -18,7 +20,7 @@ export function Hero() {
       className="relative min-h-[90vh] w-full overflow-hidden bg-background flex items-center"
     >
       {/* Abstract Background Element */}
-      <div className="absolute top-0 right-0 w-2/3 h-full bg-secondary/30 -skew-x-12 transform origin-top-right z-0" />
+      <div className="absolute top-0 end-0 w-2/3 h-full bg-secondary/30 -skew-x-12 transform origin-top-end z-0" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -53,7 +55,7 @@ export function Hero() {
                 }}
                 className="inline-block text-sm font-semibold tracking-widest text-accent-foreground uppercase border-b border-accent-foreground pb-1"
               >
-                New Collection 2026
+                {t("newCollection")}
               </motion.span>
             </div>
 
@@ -73,12 +75,12 @@ export function Hero() {
                     },
                   }}
                 >
-                  REDEFINE
+                  {t("redefine")}
                 </motion.span>
               </div>
               <div className="overflow-hidden">
                 <motion.span
-                  className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60"
+                  className="inline-block text-transparent bg-clip-text bg-gradient-to-r rtl:bg-gradient-to-l from-primary to-primary/60"
                   variants={{
                     hidden: { y: "100%", opacity: 0 },
                     visible: {
@@ -91,7 +93,7 @@ export function Hero() {
                     },
                   }}
                 >
-                  YOUR STYLE
+                  {t("yourStyle")}
                 </motion.span>
               </div>
             </h1>
@@ -103,8 +105,7 @@ export function Hero() {
               }}
               className="text-lg md:text-xl text-muted-foreground max-w-md leading-relaxed"
             >
-              Discover the essence of modern elegance. A collection designed for
-              those who speak through their style.
+              {t("description")}
             </motion.p>
 
             <motion.div
@@ -118,17 +119,17 @@ export function Hero() {
                 href="/products"
                 className="group relative px-8 py-4 bg-primary text-primary-foreground font-medium text-lg overflow-hidden"
               >
-                <span className="absolute inset-0 w-full h-full bg-accent-foreground/10 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
+                <span className="absolute inset-0 w-full h-full bg-accent-foreground/10 transform ltr:-translate-x-full rtl:translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
                 <span className="relative flex items-center gap-2">
-                  Shop Now{" "}
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  {t("shopNow")}{" "}
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180" />
                 </span>
               </Link>
               <Link
                 href="/collections"
                 className="group px-8 py-4 border border-input bg-background/50 backdrop-blur-sm text-foreground font-medium text-lg hover:bg-secondary transition-colors"
               >
-                Explore Lookbook
+                {t("exploreLookbook")}
               </Link>
             </motion.div>
           </motion.div>

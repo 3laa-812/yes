@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { ShoppingBag, User, Search, Menu } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/store";
 import { ShoppingCartModal } from "@/components/storefront/ShoppingCartModal";
 import { useState, useEffect } from "react";
+import LanguageSwitcher from "@/components/global/LanguageSwitcher";
+import { useTranslations } from "next-intl";
 
 import {
   Sheet,
@@ -17,6 +19,7 @@ import {
 } from "@/components/ui/sheet";
 
 export function Navbar() {
+  const t = useTranslations("Navbar");
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const cartItems = useCartStore((state) => state.items);
@@ -32,10 +35,10 @@ export function Navbar() {
     : 0;
 
   const navLinks = [
-    { href: "/collections/women", label: "Women" },
-    { href: "/collections/men", label: "Men" },
-    { href: "/collections/accessories", label: "Accessories" },
-    { href: "/products", label: "All Products" },
+    { href: "/collections/women", label: t("women") },
+    { href: "/collections/men", label: t("men") },
+    { href: "/collections/accessories", label: t("accessories") },
+    { href: "/products", label: t("allProducts") },
   ];
 
   return (
@@ -51,7 +54,7 @@ export function Navbar() {
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left">
+              <SheetContent side="left" className="flex flex-col gap-6 p-6">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <div className="flex flex-col gap-6 mt-6">
                   <Link
@@ -62,7 +65,7 @@ export function Navbar() {
                     <Image
                       src="/branding/logo-primary.png"
                       alt="YES Logo"
-                      width={10}
+                      width={140}
                       height={50}
                       className="h-12 w-auto"
                     />
@@ -112,6 +115,8 @@ export function Navbar() {
 
           {/* Icons */}
           <div className="flex flex-1 items-center justify-end gap-x-4">
+            <LanguageSwitcher />
+
             <Button
               variant="ghost"
               size="icon"

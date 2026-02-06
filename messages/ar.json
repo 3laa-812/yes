@@ -1,0 +1,158 @@
+{
+  "HomePage": {
+    "title": "مرحباً بكم في YES",
+    "about": "من نحن",
+    "newCollection": "تشكيلة جديدة 2026",
+    "redefine": "أعد تعريف",
+    "yourStyle": "أسلوبك",
+    "description": "اكتشف جوهر الأناقة العصرية. تشكيلة صممت لأولئك الذين تعبر أناقتهم عن شخصيتهم.",
+    "shopNow": "تسوق الآن",
+    "exploreLookbook": "استكشف المجموعة",
+    "featuredCollection": "مجموعة مختارة",
+    "viewAll": "عرض الكل",
+    "crafted": "صُنعت للجرأة",
+    "craftedDesc": "نؤمن بأن الأناقة لغة صامتة تتيح لك قول كل شيء دون أن تنطق حرفاً. مجموعاتنا مصممة لمن يواجهون العالم بعزم وأناقة."
+  },
+  "Navbar": {
+    "women": "نساء",
+    "men": "رجال",
+    "accessories": "إكسسوارات",
+    "allProducts": "جميع المنتجات",
+    "search": "بحث",
+    "user": "حسابي",
+    "cart": "عربة التسوق"
+  },
+  "Footer": {
+    "about": "عن المتجر",
+    "ourStory": "قصتنا",
+    "sustainability": "الاستدامة",
+    "careers": "وظائف",
+    "support": "الدعم",
+    "faq": "الأسئلة الشائعة",
+    "shipping": "الشحن",
+    "returns": "الاسترجاع",
+    "legal": "قانوني",
+    "terms": "الشروط",
+    "privacy": "الخصوصية",
+    "newsletter": "النشرة البريدية",
+    "subscribe": "اشترك للحصول على آخر الإصدارات.",
+    "rights": "© {year} ESSENCE. جميع الحقوق محفوظة."
+  },
+  "Cart": {
+    "title": "عربة التسوق",
+    "empty": "عربة التسوق فارغة.",
+    "subtotal": "المجموع الفرعي",
+    "shippingNote": "يتم حساب الشحن والضرائب عند الدفع.",
+    "checkout": "إتمام الشراء",
+    "continueShopping": "متابعة التسوق",
+    "remove": "إزالة"
+  },
+  "Checkout": {
+    "title": "إتمام الشراء",
+    "shippingDetails": "تفاصيل الشحن",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "city": "المدينة",
+    "paymentMethod": "طريقة الدفع",
+    "cod": "الدفع عند الاستلام",
+    "codDesc": "ادفع عند استلام الطلب",
+    "online": "بطاقة / محفظة",
+    "onlineDesc": "دفع آمن عبر الإنترنت",
+    "orderSummary": "ملخص الطلب",
+    "itemsInCart": "{count} منتجات في العربة",
+    "shipping": "الشحن",
+    "total": "الإجمالي",
+    "free": "مجاني",
+    "completeOrder": "تأكيد الطلب",
+    "processing": "جاري المعالجة...",
+    "empty": "عربة التسوق فارغة",
+    "addItems": "أضف منتجات إلى عربة التسوق للمتابعة."
+  },
+  "Storefront": {
+    "Orders": {
+      "title": "طلباتي",
+      "recentOrders": "الطلبات الأخيرة",
+      "description": "عرض وتتبع مشترياتك الأخيرة.",
+      "orderId": "رقم الطلب",
+      "date": "التاريخ",
+      "status": "الحالة",
+      "total": "الإجمالي",
+      "actions": "إجراءات",
+      "viewDetails": "عرض التفاصيل",
+      "noOrders": "لا توجد طلبات."
+    },
+    "ProductDetails": {
+      "productInfo": "معلومات المنتج",
+      "description": "الوصف"
+    }
+  },
+  "Admin": {
+    "dashboard": "لوحة التحكم",
+    "orders": "الطلبات",
+    "products": "المنتجات",
+    "customers": "العملاء",
+    "admins": "المشرفون",
+    "activity": "النشاط",
+    "settings": "الإعدادات",
+    "signOut": "تسجيل الخروج",
+    "title": "لوحة تحكم YES",
+    "Products": {
+      "title": "المنتجات",
+      "addProduct": "إضافة منتج",
+      "image": "صورة",
+      "name": "الاسم",
+      "status": "الحالة",
+      "price": "السعر",
+      "totalSales": "إجمالي المبيعات",
+      "createdAt": "تاريخ الإنشاء",
+      "actions": "إجراءات",
+      "active": "نشط",
+      "draft": "مسودة",
+      "edit": "تعديل",
+      "delete": "حذف"
+    },
+    "Orders": {
+      "title": "الطلبات",
+      "orderId": "رقم الطلب",
+      "customer": "العميل",
+      "status": "الحالة",
+      "method": "الطريقة",
+      "payment": "الدفع",
+      "total": "الإجمالي",
+      "date": "التاريخ",
+      "actions": "إجراءات",
+      "details": "التفاصيل",
+      "guest": "زائر",
+      "noOrders": "لا توجد طلبات"
+    },
+    "Customers": {
+      "title": "العملاء",
+      "description": "إدارة قاعدة العملاء وعرض نشاطهم.",
+      "export": "تصدير العملاء",
+      "allCustomers": "جميع العملاء",
+      "listDesc": "قائمة بجميع العملاء المسجلين تشمل الاسم والبريد الإلكتروني والحالة.",
+      "searchPlaceholder": "بحث عن عملاء...",
+      "avatar": "صورة",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "status": "الحالة",
+      "actions": "إجراءات",
+      "active": "نشط",
+      "noName": "بدون اسم",
+      "viewDetails": "عرض التفاصيل",
+      "viewOrders": "عرض الطلبات",
+      "delete": "حذف العميل"
+    }
+  },
+  "Auth": {
+    "signin": "تسجيل الدخول",
+    "signout": "تسجيل الخروج"
+  },
+  "Common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ ما"
+  }
+}

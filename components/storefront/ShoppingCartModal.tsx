@@ -7,6 +7,8 @@ import { useCartStore } from "@/lib/store";
 import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useRouter, Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 interface ShoppingCartModalProps {
   isOpen: boolean;
@@ -18,6 +20,8 @@ export function ShoppingCartModal({
   setIsOpen,
 }: ShoppingCartModalProps) {
   const { items, removeItem, updateQuantity, getTotal } = useCartStore();
+  const t = useTranslations("Cart");
+  const router = useRouter();
 
   // Hydration handling
   const [mounted, setMounted] = useState(false);
@@ -25,23 +29,9 @@ export function ShoppingCartModal({
     setMounted(true);
   }, []);
 
-  const onCheckout = async () => {
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ items, email: "test@example.com" }), // Hardcoded email for demo
-      });
-
-      if (!response.ok) throw new Error("Network response was not ok");
-
-      const data = await response.json();
-      window.location.href = data.url;
-    } catch (error) {
-      console.error("Checkout error:", error);
-    }
+  const onCheckout = () => {
+    setIsOpen(false);
+    router.push("/checkout");
   };
 
   if (!mounted) return null;
@@ -63,24 +53,24 @@ export function ShoppingCartModal({
 
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
-            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+            <div className="pointer-events-none fixed inset-y-0 right-0 rtl:left-0 rtl:right-auto flex max-w-full pl-10 rtl:pl-0 rtl:pr-10">
               <Transition.Child
                 as={Fragment}
                 enter="transform transition ease-in-out duration-500 sm:duration-700"
-                enterFrom="translate-x-full"
+                enterFrom="translate-x-full rtl:-translate-x-full"
                 enterTo="translate-x-0"
                 leave="transform transition ease-in-out duration-500 sm:duration-700"
                 leaveFrom="translate-x-0"
-                leaveTo="translate-x-full"
+                leaveTo="translate-x-full rtl:-translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
                   <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                     <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                       <div className="flex items-start justify-between">
                         <Dialog.Title className="text-lg font-medium text-gray-900">
-                          Shopping cart
+                          {t("title")}
                         </Dialog.Title>
-                        <div className="ml-3 flex h-7 items-center">
+                        <div className="ml-3 rtl:mr-3 rtl:ml-0 flex h-7 items-center">
                           <button
                             type="button"
                             className="relative -m-2 p-2 text-gray-400 hover:text-gray-500"
@@ -103,7 +93,7 @@ export function ShoppingCartModal({
                               <div className="flex flex-col items-center justify-center py-20">
                                 <ShoppingBag className="h-16 w-16 text-gray-300" />
                                 <p className="mt-4 text-center text-gray-500">
-                                  Your cart is empty.
+                                  {t("empty")}
                                 </p>
                               </div>
                             )}
@@ -120,15 +110,17 @@ export function ShoppingCartModal({
                                   />
                                 </div>
 
-                                <div className="ml-4 flex flex-1 flex-col">
+                                <div className="ml-4 rtl:mr-4 rtl:ml-0 flex flex-1 flex-col">
                                   <div>
                                     <div className="flex justify-between text-base font-medium text-gray-900">
                                       <h3>
-                                        <a href={`/products/${item.productId}`}>
+                                        <Link
+                                          href={`/products/${item.productId}`}
+                                        >
                                           {item.name}
-                                        </a>
+                                        </Link>
                                       </h3>
-                                      <p className="ml-4">
+                                      <p className="ml-4 rtl:mr-4 rtl:ml-0">
                                         {formatPrice(
                                           item.price * item.quantity,
                                         )}
@@ -180,7 +172,7 @@ export function ShoppingCartModal({
                                         className="font-medium text-indigo-600 hover:text-indigo-500 flex items-center gap-1"
                                       >
                                         <Trash2 className="h-4 w-4" />
-                                        Remove
+                                        {t("remove")}
                                       </button>
                                     </div>
                                   </div>
@@ -195,18 +187,18 @@ export function ShoppingCartModal({
                     {items.length > 0 && (
                       <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                         <div className="flex justify-between text-base font-medium text-gray-900">
-                          <p>Subtotal</p>
+                          <p>{t("subtotal")}</p>
                           <p>{formatPrice(getTotal())}</p>
                         </div>
                         <p className="mt-0.5 text-sm text-gray-500">
-                          Shipping and taxes calculated at checkout.
+                          {t("shippingNote")}
                         </p>
                         <div className="mt-6">
                           <Button
                             onClick={onCheckout}
                             className="w-full rounded-full py-6 text-base"
                           >
-                            Checkout
+                            {t("checkout")}
                           </Button>
                         </div>
                         <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
@@ -217,8 +209,14 @@ export function ShoppingCartModal({
                               className="font-medium text-indigo-600 hover:text-indigo-500"
                               onClick={() => setIsOpen(false)}
                             >
-                              Continue Shopping
-                              <span aria-hidden="true"> &rarr;</span>
+                              {t("continueShopping")}
+                              <span
+                                aria-hidden="true"
+                                className="rtl:rotate-180 inline-block"
+                              >
+                                {" "}
+                                &rarr;
+                              </span>
                             </button>
                           </p>
                         </div>

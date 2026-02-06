@@ -1,0 +1,158 @@
+{
+  "HomePage": {
+    "title": "Welcome to YES",
+    "about": "About Us",
+    "newCollection": "New Collection 2026",
+    "redefine": "REDEFINE",
+    "yourStyle": "YOUR STYLE",
+    "description": "Discover the essence of modern elegance. A collection designed for those who speak through their style.",
+    "shopNow": "Shop Now",
+    "exploreLookbook": "Explore Lookbook",
+    "featuredCollection": "Featured Collection",
+    "viewAll": "View all",
+    "crafted": "CRAFTED FOR THE BOLD",
+    "craftedDesc": "We believe style is a form of silence. It allows you to say everything without speaking a word. Our collections are designed for those who navigate the world with purpose and elegance."
+  },
+  "Navbar": {
+    "women": "Women",
+    "men": "Men",
+    "accessories": "Accessories",
+    "allProducts": "All Products",
+    "search": "Search",
+    "user": "User",
+    "cart": "Cart"
+  },
+  "Footer": {
+    "about": "About",
+    "ourStory": "Our Story",
+    "sustainability": "Sustainability",
+    "careers": "Careers",
+    "support": "Support",
+    "faq": "FAQ",
+    "shipping": "Shipping",
+    "returns": "Returns",
+    "legal": "Legal",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "newsletter": "Newsletter",
+    "subscribe": "Subscribe for the latest drops.",
+    "rights": "© {year} ESSENCE. All rights reserved."
+  },
+  "Cart": {
+    "title": "Shopping cart",
+    "empty": "Your cart is empty.",
+    "subtotal": "Subtotal",
+    "shippingNote": "Shipping and taxes calculated at checkout.",
+    "checkout": "Checkout",
+    "continueShopping": "Continue Shopping",
+    "remove": "Remove"
+  },
+  "Checkout": {
+    "title": "Checkout",
+    "shippingDetails": "Shipping Details",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "address": "Address",
+    "city": "City",
+    "paymentMethod": "Payment Method",
+    "cod": "Cash on Delivery",
+    "codDesc": "Pay when successful",
+    "online": "Card / Wallet",
+    "onlineDesc": "Pay securely online",
+    "orderSummary": "Order Summary",
+    "itemsInCart": "{count} items in cart",
+    "shipping": "Shipping",
+    "total": "Total",
+    "free": "Free",
+    "completeOrder": "Complete Order",
+    "processing": "Processing...",
+    "empty": "Your Cart is Empty",
+    "addItems": "Add items to your cart to proceed to checkout."
+  },
+  "Storefront": {
+    "Orders": {
+      "title": "My Orders",
+      "recentOrders": "Recent Orders",
+      "description": "View and track your recent purchases.",
+      "orderId": "Order ID",
+      "date": "Date",
+      "status": "Status",
+      "total": "Total",
+      "actions": "Actions",
+      "viewDetails": "View Details",
+      "noOrders": "No orders found."
+    },
+    "ProductDetails": {
+      "productInfo": "Product information",
+      "description": "Description"
+    }
+  },
+  "Admin": {
+    "dashboard": "Dashboard",
+    "orders": "Orders",
+    "products": "Products",
+    "customers": "Customers",
+    "admins": "Admins",
+    "activity": "Activity",
+    "settings": "Settings",
+    "signOut": "Sign Out",
+    "title": "YES ADMIN",
+    "Products": {
+      "title": "Products",
+      "addProduct": "Add Product",
+      "image": "Image",
+      "name": "Name",
+      "status": "Status",
+      "price": "Price",
+      "totalSales": "Total Sales",
+      "createdAt": "Created at",
+      "actions": "Actions",
+      "active": "Active",
+      "draft": "Draft",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "Orders": {
+      "title": "Orders",
+      "orderId": "Order ID",
+      "customer": "Customer",
+      "status": "Status",
+      "method": "Method",
+      "payment": "Payment",
+      "total": "Total",
+      "date": "Date",
+      "actions": "Actions",
+      "details": "Details",
+      "guest": "Guest",
+      "noOrders": "No orders found"
+    },
+    "Customers": {
+      "title": "Customers",
+      "description": "Manage your customer base and view their activity.",
+      "export": "Export Customers",
+      "allCustomers": "All Customers",
+      "listDesc": "List of all registered customers including their name, email, and status.",
+      "searchPlaceholder": "Search customers...",
+      "avatar": "Avatar",
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "actions": "Actions",
+      "active": "Active",
+      "noName": "No Name",
+      "viewDetails": "View details",
+      "viewOrders": "View orders",
+      "delete": "Delete customer"
+    }
+  },
+  "Auth": {
+    "signin": "Sign In",
+    "signout": "Sign Out"
+  },
+  "Common": {
+    "loading": "Loading...",
+    "error": "Something went wrong"
+  }
+}

@@ -6,6 +6,24 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { initiatePaymobPayment } from "@/lib/paymob";
+
+// Order Create Schema
+const orderSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  email: z.string().email(),
+  phone: z.string().min(10),
+  address: z.string().min(1),
+  city: z.string().min(1),
+  paymentMethod: z.enum(["COD", "ONLINE"]),
+  items: z.array(z.object({
+    productId: z.string(),
+    quantity: z.number().min(1),
+    size: z.string().optional(),
+    color: z.string().optional(),
+  })).min(1),
+});
 
 const productSchema = z.object({
   name: z.string().min(1),
@@ -122,4 +140,111 @@ export async function updateProduct(formData: FormData) {
 
   revalidatePath("/admin/products");
   redirect("/admin/products");
+}
+
+export async function createOrder(data: any) {
+  const validatedFields = orderSchema.safeParse(data);
+
+  if (!validatedFields.success) {
+    console.error("Order Validation Error:", validatedFields.error.flatten().fieldErrors);
+    return { success: false, error: "Invalid fields" };
+  }
+
+  const { firstName, lastName, email, phone, address, city, paymentMethod, items } = validatedFields.data;
+
+  // 1. Calculate Total Price securely from DB
+  let total = 0;
+  const orderItemsData = [];
+
+  for (const item of items) {
+    const product = await db.product.findUnique({ where: { id: item.productId } });
+    if (!product) {
+        return { success: false, error: `Product not found: ${item.productId}` };
+    }
+    const itemTotal = Number(product.price) * item.quantity;
+    total += itemTotal;
+    
+    orderItemsData.push({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: product.price, // Store the price at time of purchase
+        selectedSize: item.size,
+        selectedColor: item.color
+    });
+  }
+
+  // 2. Create User/Address if needed (Simplified: Just store address in Order for now, or create dedicated Address)
+  // We'll create a dedicated address record linked to the user if we had a user ID, 
+  // but here we might be guest or auth'd. For simplicity let's assume guest/detached address for this step 
+  // or link to existing user if we can get auth session. 
+  // For now, we will create an Address record but maybe not link it to a User if we don't have the ID handy (server action doesn't check auth yet).
+  // Let's create the Address record.
+
+  const newAddress = await db.address.create({
+      data: {
+          name: `${firstName} ${lastName}`,
+          phone,
+          street: address,
+          city,
+          country: "Egypt",
+          // User linkage would go here if we extracted userId
+      }
+  });
+
+  // 3. Create Order
+  const order = await db.order.create({
+      data: {
+          total: total,
+          status: "PENDING",
+          paymentMethod: paymentMethod === "COD" ? "COD" : "ONLINE",
+          paymentStatus: "PENDING",
+          addressId: newAddress.id,
+          items: {
+              create: orderItemsData
+          }
+      }
+  });
+
+  // 4. Handle Payment Flow
+  if (paymentMethod === "COD") {
+      // Success immediate
+      return { success: true, orderId: order.id, redirectUrl: `/checkout/success?orderId=${order.id}` };
+  } else {
+      // Initiate Paymob
+      try {
+          const paymentData = await initiatePaymobPayment(
+              order.id, // Merchant Order ID
+              total,
+              {
+                  first_name: firstName,
+                  last_name: lastName,
+                  email,
+                  phone_number: phone,
+                  street: address,
+                  city
+              }
+          );
+          
+          // Create a Payment record
+          await db.payment.create({
+              data: {
+                  orderId: order.id,
+                  amount: total,
+                  provider: "PAYMOB",
+                  status: "PENDING",
+                  transactionId: String(paymentData.paymobOrderId) // Storing Paymob Order ID initially
+              }
+          });
+
+          // Return the iframe URL
+          // Frame ID is from env, but we can construct the full URL
+          const iframeUrl = `https://accept.paymob.com/api/acceptance/iframes/${paymentData.iframeId}?payment_token=${paymentData.paymentKey}`;
+          
+          return { success: true, orderId: order.id, redirectUrl: iframeUrl };
+
+      } catch (error) {
+          console.error("Paymob Init Error:", error);
+          return { success: false, error: "Payment initialization failed" };
+      }
+  }
 }
