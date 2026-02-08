@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 import { updateOrderStatus } from "@/app/[locale]/(admin)/actions";
 import { formatPrice } from "@/lib/utils";
 import Image from "next/image";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -129,20 +136,20 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
                 <Badge>{order.status}</Badge>
               </div>
 
-              <form action={updateOrderStatus} className="space-y-2">
+              <form action={updateOrderStatus} className="space-y-4">
                 <input type="hidden" name="orderId" value={order.id} />
-                <label className="text-sm font-medium">Update Status</label>
-                <select
-                  name="status"
-                  defaultValue={order.status}
-                  className="w-full p-2 border rounded-md"
-                >
-                  <option value="PENDING">Pending</option>
-                  <option value="CONFIRMED">Confirmed</option>
-                  <option value="SHIPPED">Shipped</option>
-                  <option value="DELIVERED">Delivered</option>
-                  <option value="CANCELLED">Cancelled</option>
-                </select>
+                <Select name="status" defaultValue={order.status}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PENDING">Pending</SelectItem>
+                    <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+                    <SelectItem value="SHIPPED">Shipped</SelectItem>
+                    <SelectItem value="DELIVERED">Delivered</SelectItem>
+                    <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Button type="submit" className="w-full">
                   Update Status
                 </Button>

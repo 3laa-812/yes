@@ -5,7 +5,9 @@ import { formatPrice } from "@/lib/utils";
 import Image from "next/image";
 import { deleteProduct } from "@/app/actions";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
+import { format } from "date-fns";
+import { ar, enUS } from "date-fns/locale";
 
 async function getProducts() {
   return db.product.findMany({
@@ -23,6 +25,8 @@ export const dynamic = "force-dynamic";
 export default async function AdminProductsPage() {
   const products = await getProducts();
   const t = await getTranslations("Admin.Products");
+  const locale = await getLocale();
+  const dateLocale = locale === "ar" ? ar : enUS;
 
   return (
     <>
@@ -102,7 +106,9 @@ export default async function AdminProductsPage() {
                   </td>
                   <td className="p-4 align-middle">0</td>
                   <td className="p-4 align-middle">
-                    {new Date(product.createdAt).toLocaleDateString()}
+                    {format(new Date(product.createdAt), "MMM d, yyyy", {
+                      locale: dateLocale,
+                    })}
                   </td>
                   <td className="p-4 align-middle">
                     <div className="flex items-center gap-2">

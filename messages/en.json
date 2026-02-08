@@ -69,7 +69,20 @@
     "completeOrder": "Complete Order",
     "processing": "Processing...",
     "empty": "Your Cart is Empty",
-    "addItems": "Add items to your cart to proceed to checkout."
+    "addItems": "Add items to your cart to proceed to checkout.",
+    "validation": {
+      "firstName": "First name is required",
+      "lastName": "Last name is required",
+      "email": "Valid email is required",
+      "phone": "Valid phone number is required",
+      "address": "Address is required",
+      "city": "City is required"
+    },
+    "messages": {
+      "success": "Order placed successfully!",
+      "failed": "Failed to place order",
+      "error": "Something went wrong. Please try again."
+    }
   },
   "Storefront": {
     "Orders": {
@@ -84,13 +97,74 @@
       "viewDetails": "View Details",
       "noOrders": "No orders found."
     },
+    "Account": {
+      "orders": "My Orders",
+      "noOrders": "No orders yet",
+      "noOrdersDesc": "You haven't placed any orders yet.",
+      "startShopping": "Start Shopping",
+      "backToOrders": "Back to Orders",
+      "placedOn": "Placed on",
+      "deliveryDetails": "Delivery Details",
+      "paymentMethod": "Payment Method",
+      "address": "Address",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "free": "Free",
+      "total": "Total",
+      "items": "Items",
+      "cancelledMessage": "This order has been cancelled."
+    },
     "ProductDetails": {
       "productInfo": "Product information",
       "description": "Description"
+    },
+    "Product": {
+      "color": "Color",
+      "size": "Size",
+      "sizeGuide": "Size Guide",
+      "addToCart": "Add to Cart",
+      "outOfStock": "Out of Stock",
+      "selectOptions": "Please select both size and color",
+      "addedToCart": "Added to cart",
+      "combinationOutOfStock": "This combination is out of stock"
+    },
+    "OrderDetails": {
+      "title": "Order Details",
+      "orderId": "Order ID",
+      "viewDetails": "View Details",
+      "orderPlaced": "Order Placed",
+      "confirmed": "Confirmed",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "items": "Items",
+      "shippingAddress": "Shipping Address",
+      "paymentDetails": "Payment Details",
+      "method": "Method",
+      "status": "Status",
+      "qty": "Qty",
+      "total": "Total",
+      "subtotal": "Subtotal",
+      "noAddress": "No address details available",
+      "summary": "Order Summary"
+    },
+    "Status": {
+      "PENDING": "Pending",
+      "PAYMENT_PENDING": "Payment Pending",
+      "CONFIRMED": "Confirmed",
+      "SHIPPED": "Shipped",
+      "DELIVERED": "Delivered",
+      "CANCELLED": "Cancelled"
     }
   },
   "Admin": {
     "dashboard": "Dashboard",
+    "overview": "Overview of your store's performance.",
+    "totalRevenue": "Total Revenue",
+    "totalOrders": "Total Orders",
+    "lifetime": "Lifetime",
+    "registered": "Registered",
+    "active": "Total active",
     "orders": "Orders",
     "products": "Products",
     "customers": "Customers",
@@ -125,6 +199,7 @@
       "date": "Date",
       "actions": "Actions",
       "details": "Details",
+      "phone": "Phone",
       "guest": "Guest",
       "noOrders": "No orders found"
     },
@@ -149,7 +224,22 @@
   },
   "Auth": {
     "signin": "Sign In",
-    "signout": "Sign Out"
+    "signout": "Sign Out",
+    "register": "Register",
+    "createAccount": "Create an Account",
+    "enterInfo": "Enter your information to create an account",
+    "fullName": "Full Name",
+    "phone": "Phone Number",
+    "emailOptional": "Email (Optional)",
+    "password": "Password",
+    "creating": "Creating Account...",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginTitle": "Login",
+    "loginDesc": "Enter your phone number or email to sign in",
+    "phoneOrEmail": "Phone Number or Email",
+    "signingIn": "Signing in...",
+    "dontHaveAccount": "Don't have an account?",
+    "signup": "Sign up"
   },
   "Common": {
     "loading": "Loading...",

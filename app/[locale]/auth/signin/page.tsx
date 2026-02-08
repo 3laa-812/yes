@@ -32,7 +32,7 @@ export default function SignInPage() {
               </label>
               <input
                 id="email-address"
-                name="email"
+                name="identifier"
                 type="email"
                 autoComplete="email"
                 required

@@ -22,17 +22,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     providers: [
         Credentials({
             credentials: {
-                email: {},
+                identifier: {},
                 password: {},
             },
             authorize: async (credentials) => {
                 const parsedCredentials = z
-                    .object({ email: z.string().email(), password: z.string().min(6) })
+                    .object({ 
+                        identifier: z.string(), // changed from email to identifier
+                        password: z.string().min(6) 
+                    })
                     .safeParse(credentials);
 
                 if (parsedCredentials.success) {
-                    const { email, password } = parsedCredentials.data;
-                    const user = await getUser(email);
+                    const { identifier, password } = parsedCredentials.data;
+                    
+                    // Check by email or phone
+                    const user = await db.user.findFirst({
+                        where: {
+                            OR: [
+                                { email: identifier },
+                                { phone: identifier }
+                            ]
+                        }
+                    });
 
                     if (!user) return null;
                     

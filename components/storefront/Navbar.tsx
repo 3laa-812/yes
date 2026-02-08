@@ -17,8 +17,16 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-export function Navbar() {
+export function Navbar({ user }: { user?: any }) {
   const t = useTranslations("Navbar");
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -82,6 +90,37 @@ export function Navbar() {
                       </Link>
                     ))}
                   </div>
+                  {/* Mobile Auth Links */}
+                  <div className="border-t pt-4 space-y-2">
+                    {user ? (
+                      <>
+                        <Link
+                          href="/account/orders"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block text-lg font-medium text-gray-700"
+                        >
+                          My Orders
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link
+                          href="/login"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block text-lg font-medium text-gray-700"
+                        >
+                          Sign In
+                        </Link>
+                        <Link
+                          href="/register"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="block text-lg font-medium text-gray-700"
+                        >
+                          Register
+                        </Link>
+                      </>
+                    )}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
@@ -124,13 +163,60 @@ export function Navbar() {
             >
               <Search className="h-5 w-5" />
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-gray-700 hover:text-black"
-            >
-              <User className="h-5 w-5" />
-            </Button>
+            {/* User Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-700 hover:text-black"
+                >
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {user ? (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/account/orders" className="cursor-pointer">
+                        My Orders
+                      </Link>
+                    </DropdownMenuItem>
+                    {user.role !== "USER" && (
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/admin/dashboard"
+                          className="cursor-pointer"
+                        >
+                          Admin Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/signout" className="cursor-pointer">
+                        Sign Out
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/login" className="cursor-pointer">
+                        Sign In
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/register" className="cursor-pointer">
+                        Register
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant="ghost"
               size="icon"

@@ -10,16 +10,36 @@ export default auth((req) => {
     const isLoggedIn = !!req.auth;
     const { pathname } = req.nextUrl;
     
-    // Check for admin routes, accounting for locale prefixes
     const isUrlAdmin = pathname.includes('/admin');
+    const isUrlProtected = pathname.includes('/checkout') || pathname.includes('/account'); // Add other customer protected routes
+    
+    // console.log(`[Middleware] ${req.method} ${pathname} | Auth: ${isLoggedIn} | Admin: ${isUrlAdmin}`);
 
-    if (isUrlAdmin && !isLoggedIn) {
-        // Determine current locale to redirect correctly, default to 'en'
+    const userRole = req.auth?.user?.role as string | undefined;
+
+    if (isUrlAdmin) {
+        if (!isLoggedIn) {
+             // console.log(`[Middleware] Redirecting unauthenticated admin request to signin`);
+             const localeMatch = pathname.match(new RegExp(`^/(${routing.locales.join('|')})`));
+             const locale = localeMatch ? localeMatch[1] : routing.defaultLocale;
+             const callbackUrl = encodeURIComponent(pathname);
+             return Response.redirect(new URL(`/${locale}/auth/signin?callbackUrl=${callbackUrl}`, req.nextUrl));
+        }
+
+        if (userRole !== 'OWNER' && userRole !== 'MANAGER') {
+             // console.log(`[Middleware] Redirecting unauthorized user from admin`);
+             const localeMatch = pathname.match(new RegExp(`^/(${routing.locales.join('|')})`));
+             const locale = localeMatch ? localeMatch[1] : routing.defaultLocale;
+             return Response.redirect(new URL(`/${locale}`, req.nextUrl));
+        }
+    }
+
+    if (isUrlProtected && !isLoggedIn) {
+        // console.log(`[Middleware] Redirecting unauthenticated customer request to login`);
         const localeMatch = pathname.match(new RegExp(`^/(${routing.locales.join('|')})`));
         const locale = localeMatch ? localeMatch[1] : routing.defaultLocale;
-
         const callbackUrl = encodeURIComponent(pathname);
-        return Response.redirect(new URL(`/${locale}/auth/signin?callbackUrl=${callbackUrl}`, req.nextUrl));
+        return Response.redirect(new URL(`/${locale}/login?callbackUrl=${callbackUrl}`, req.nextUrl));
     }
 
     return intlMiddleware(req);

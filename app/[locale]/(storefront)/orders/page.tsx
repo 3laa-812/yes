@@ -31,6 +31,7 @@ async function getOrders() {
 export default async function OrdersPage() {
   const orders = await getOrders();
   const t = await getTranslations("Storefront.Orders");
+  const tStatus = await getTranslations("Storefront.Status");
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -71,7 +72,7 @@ export default async function OrdersPage() {
                             : "secondary"
                       }
                     >
-                      {order.status}
+                      {tStatus(order.status)}
                     </Badge>
                   </TableCell>
                   <TableCell>${Number(order.total).toFixed(2)}</TableCell>

@@ -69,7 +69,20 @@
     "completeOrder": "تأكيد الطلب",
     "processing": "جاري المعالجة...",
     "empty": "عربة التسوق فارغة",
-    "addItems": "أضف منتجات إلى عربة التسوق للمتابعة."
+    "addItems": "أضف منتجات إلى عربة التسوق للمتابعة.",
+    "validation": {
+      "firstName": "الاسم الأول مطلوب",
+      "lastName": "اسم العائلة مطلوب",
+      "email": "البريد الإلكتروني مطلوب",
+      "phone": "رقم الهاتف مطلوب",
+      "address": "العنوان مطلوب",
+      "city": "المدينة مطلوبة"
+    },
+    "messages": {
+      "success": "تم الطلب بنجاح!",
+      "failed": "فشل في إتمام الطلب",
+      "error": "حدث خطأ ما. حاول مرة أخرى."
+    }
   },
   "Storefront": {
     "Orders": {
@@ -84,13 +97,74 @@
       "viewDetails": "عرض التفاصيل",
       "noOrders": "لا توجد طلبات."
     },
+    "Account": {
+      "orders": "طلباتي",
+      "noOrders": "لا توجد طلبات بعد",
+      "noOrdersDesc": "لم تقم بطلب أي منتج بعد.",
+      "startShopping": "ابدأ التسوق",
+      "backToOrders": "العودة للطلبات",
+      "placedOn": "تاريخ الطلب",
+      "deliveryDetails": "تفاصيل التوصيل",
+      "paymentMethod": "طريقة الدفع",
+      "address": "العنوان",
+      "subtotal": "المجموع الفرعي",
+      "shipping": "الشحن",
+      "free": "مجاني",
+      "total": "الإجمالي",
+      "items": "المنتجات",
+      "cancelledMessage": "تم إلغاء هذا الطلب."
+    },
     "ProductDetails": {
       "productInfo": "معلومات المنتج",
       "description": "الوصف"
+    },
+    "Product": {
+      "color": "اللون",
+      "size": "المقاس",
+      "sizeGuide": "دليل المقاسات",
+      "addToCart": "أضف للسلة",
+      "outOfStock": "نفدت الكمية",
+      "selectOptions": "يرجى اختيار اللون والمقاس",
+      "addedToCart": "تمت الإضافة للسلة",
+      "combinationOutOfStock": "هذا الخيار غير متوفر حالياً"
+    },
+    "OrderDetails": {
+      "title": "تفاصيل الطلب",
+      "orderId": "رقم الطلب",
+      "viewDetails": "عرض التفاصيل",
+      "orderPlaced": "تم الطلب",
+      "confirmed": "تم التأكيد",
+      "shipped": "تم الشحن",
+      "delivered": "تم التوصيل",
+      "cancelled": "ملغى",
+      "items": "المنتجات",
+      "shippingAddress": "عنوان الشحن",
+      "paymentDetails": "تفاصيل الدفع",
+      "method": "طريقة الدفع",
+      "status": "الحالة",
+      "qty": "الكمية",
+      "total": "الإجمالي",
+      "subtotal": "المجموع الفرعي",
+      "noAddress": "لا توجد تفاصيل للعنوان",
+      "summary": "ملخص الطلب"
+    },
+    "Status": {
+      "PENDING": "قيد الانتظار",
+      "PAYMENT_PENDING": "بانتظار الدفع",
+      "CONFIRMED": "تم التأكيد",
+      "SHIPPED": "تم الشحن",
+      "DELIVERED": "تم التوصيل",
+      "CANCELLED": "ملغى"
     }
   },
   "Admin": {
     "dashboard": "لوحة التحكم",
+    "overview": "نظرة عامة على أداء متجرك.",
+    "totalRevenue": "إجمالي الإيرادات",
+    "totalOrders": "إجمالي الطلبات",
+    "lifetime": "طوال المدة",
+    "registered": "المسجلين",
+    "active": "إجمالي النشط",
     "orders": "الطلبات",
     "products": "المنتجات",
     "customers": "العملاء",
@@ -125,6 +199,7 @@
       "date": "التاريخ",
       "actions": "إجراءات",
       "details": "التفاصيل",
+      "phone": "الهاتف",
       "guest": "زائر",
       "noOrders": "لا توجد طلبات"
     },
@@ -149,7 +224,22 @@
   },
   "Auth": {
     "signin": "تسجيل الدخول",
-    "signout": "تسجيل الخروج"
+    "signout": "تسجيل الخروج",
+    "register": "تسجيل جديد",
+    "createAccount": "إنشاء حساب",
+    "enterInfo": "أدخل معلوماتك لإنشاء حساب جديد",
+    "fullName": "الاسم الكامل",
+    "phone": "رقم الهاتف",
+    "emailOptional": "البريد الإلكتروني (اختياري)",
+    "password": "كلمة المرور",
+    "creating": "جاري الإنشاء...",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "loginTitle": "تسجيل الدخول",
+    "loginDesc": "أدخل رقم الهاتف أو البريد الإلكتروني للدخول",
+    "phoneOrEmail": "رقم الهاتف أو البريد الإلكتروني",
+    "signingIn": "جاري الدخول...",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "signup": "سجل الآن"
   },
   "Common": {
     "loading": "جاري التحميل...",

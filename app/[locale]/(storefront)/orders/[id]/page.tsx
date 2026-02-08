@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import db from "@/lib/db";
+import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
@@ -22,15 +23,17 @@ async function getOrder(id: string) {
 }
 
 const steps = [
-  { id: "PENDING", label: "Order Placed", icon: Clock },
-  { id: "CONFIRMED", label: "Confirmed", icon: CheckCircle },
-  { id: "SHIPPED", label: "Shipped", icon: Truck },
-  { id: "DELIVERED", label: "Delivered", icon: Package },
+  { id: "PENDING", label: "orderPlaced", icon: Clock },
+  { id: "CONFIRMED", label: "confirmed", icon: CheckCircle },
+  { id: "SHIPPED", label: "shipped", icon: Truck },
+  { id: "DELIVERED", label: "delivered", icon: Package },
 ];
 
 export default async function OrderDetailsPage({ params }: Props) {
   const { id } = await params;
   const order = await getOrder(id);
+  const t = await getTranslations("Storefront.OrderDetails");
+  const tStatus = await getTranslations("Storefront.Status");
 
   if (!order) {
     notFound();
@@ -49,7 +52,7 @@ export default async function OrderDetailsPage({ params }: Props) {
               className="text-lg px-4 py-1"
               variant={isCancelled ? "destructive" : "default"}
             >
-              {order.status}
+              {tStatus(order.status)}
             </Badge>
           </div>
 
@@ -81,7 +84,7 @@ export default async function OrderDetailsPage({ params }: Props) {
                       <span
                         className={`mt-2 text-sm font-medium ${isActive ? "text-black" : "text-gray-400"}`}
                       >
-                        {step.label}
+                        {t(step.label)}
                       </span>
                     </div>
                   );
@@ -92,7 +95,7 @@ export default async function OrderDetailsPage({ params }: Props) {
 
           <Card>
             <CardHeader>
-              <CardTitle>Items</CardTitle>
+              <CardTitle>{t("items")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {order.items.map((item: any) => (
@@ -115,7 +118,9 @@ export default async function OrderDetailsPage({ params }: Props) {
                       {item.selectedSize} / {item.selectedColor}
                     </p>
                     <div className="flex justify-between mt-2">
-                      <span className="text-sm">Qty: {item.quantity}</span>
+                      <span className="text-sm">
+                        {t("qty")}: {item.quantity}
+                      </span>
                       <span className="font-medium">
                         ${Number(item.price).toFixed(2)}
                       </span>
@@ -125,7 +130,7 @@ export default async function OrderDetailsPage({ params }: Props) {
               ))}
 
               <div className="flex justify-between pt-4 font-bold text-lg">
-                <span>Total</span>
+                <span>{t("total")}</span>
                 <span>${Number(order.total).toFixed(2)}</span>
               </div>
             </CardContent>
@@ -136,7 +141,7 @@ export default async function OrderDetailsPage({ params }: Props) {
         <div className="w-full md:w-80 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Shipping Address</CardTitle>
+              <CardTitle>{t("shippingAddress")}</CardTitle>
             </CardHeader>
             <CardContent>
               {order.shippingAddress ? (
@@ -159,16 +164,16 @@ export default async function OrderDetailsPage({ params }: Props) {
 
           <Card>
             <CardHeader>
-              <CardTitle>Payment Details</CardTitle>
+              <CardTitle>{t("paymentDetails")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Method</span>
+                  <span className="text-gray-500">{t("method")}</span>
                   <span className="font-medium">{order.paymentMethod}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Status</span>
+                  <span className="text-gray-500">{t("status")}</span>
                   <Badge
                     variant={
                       order.paymentStatus === "PAID" ? "default" : "secondary"

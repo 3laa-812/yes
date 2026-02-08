@@ -50,14 +50,14 @@ export default function CheckoutPage() {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.firstName) newErrors.firstName = "First name is required";
-    if (!formData.lastName) newErrors.lastName = "Last name is required";
+    if (!formData.firstName) newErrors.firstName = t("validation.firstName");
+    if (!formData.lastName) newErrors.lastName = t("validation.lastName");
     if (!formData.email || !/^\S+@\S+\.\S+$/.test(formData.email))
-      newErrors.email = "Valid email is required";
+      newErrors.email = t("validation.email");
     if (!formData.phone || formData.phone.length < 10)
-      newErrors.phone = "Valid phone number is required";
-    if (!formData.address) newErrors.address = "Address is required";
-    if (!formData.city) newErrors.city = "City is required";
+      newErrors.phone = t("validation.phone");
+    if (!formData.address) newErrors.address = t("validation.address");
+    if (!formData.city) newErrors.city = t("validation.city");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -99,17 +99,17 @@ export default function CheckoutPage() {
       const result = await createOrder(orderData);
 
       if (result.success) {
-        toast.success("Order placed successfully!");
+        toast.success(t("messages.success"));
         clearCart();
         if (result.redirectUrl) {
           router.push(result.redirectUrl);
         }
       } else {
-        toast.error(result.error || "Failed to place order");
+        toast.error(result.error || t("messages.failed"));
       }
     } catch (error) {
       console.error("Order error", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(t("messages.error"));
     } finally {
       setIsSubmitting(false);
     }

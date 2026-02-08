@@ -18,6 +18,7 @@ async function getProduct(id: string) {
     },
     include: {
       category: true,
+      variants: true,
     },
   });
 
@@ -61,7 +62,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <div className="mt-6">
               <h3 className="sr-only">{t("description")}</h3>
               <div
-                className="space-y-6 text-base text-gray-700"
+                className="space-y-6 text-base text-gray-700 prose prose-sm sm:prose lg:prose-lg max-w-none"
                 dangerouslySetInnerHTML={{ __html: product.description }}
               />
             </div>
@@ -74,6 +75,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               category={product.category.name}
               sizes={JSON.parse(product.sizes as string)}
               colors={JSON.parse(product.colors as string)}
+              variants={product.variants}
             />
           </div>
         </div>

@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { updateOrderStatus } from "@/app/[locale]/(admin)/actions";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/routing";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
+import { format } from "date-fns";
+import { ar, enUS } from "date-fns/locale";
 
 async function getOrders() {
   return db.order.findMany({
@@ -13,6 +15,7 @@ async function getOrders() {
     },
     include: {
       user: true,
+      shippingAddress: true,
     },
   });
 }
@@ -22,6 +25,9 @@ export const dynamic = "force-dynamic";
 export default async function AdminOrdersPage() {
   const orders = await getOrders();
   const t = await getTranslations("Admin.Orders");
+  const statusT = await getTranslations("Storefront.Status");
+  const locale = await getLocale();
+  const dateLocale = locale === "ar" ? ar : enUS;
 
   return (
     <>
@@ -38,6 +44,9 @@ export default async function AdminOrdersPage() {
                 </th>
                 <th className="h-12 px-4 text-start align-middle font-medium text-muted-foreground">
                   {t("customer")}
+                </th>
+                <th className="h-12 px-4 text-start align-middle font-medium text-muted-foreground">
+                  {t("phone")}
                 </th>
                 <th className="h-12 px-4 text-start align-middle font-medium text-muted-foreground">
                   {t("status")}
@@ -69,7 +78,21 @@ export default async function AdminOrdersPage() {
                     #{order.id.slice(-6)}
                   </td>
                   <td className="p-4 align-middle">
-                    {order.user?.email || t("guest")}
+                    <div className="flex flex-col">
+                      <span className="font-medium">
+                        {order.shippingAddress?.name ||
+                          order.user?.name ||
+                          t("guest")}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {order.user?.email ||
+                          order.shippingAddress?.email ||
+                          ""}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="p-4 align-middle">
+                    {order.shippingAddress?.phone || order.user?.phone || "-"}
                   </td>
                   <td className="p-4 align-middle">
                     <Badge
@@ -77,7 +100,8 @@ export default async function AdminOrdersPage() {
                         order.status === "DELIVERED" ? "default" : "secondary"
                       }
                     >
-                      {order.status}
+                      {/* Use Storefront translation for status to match */}
+                      {statusT(order.status)}
                     </Badge>
                   </td>
                   <td className="p-4 align-middle">{order.paymentMethod}</td>
@@ -96,7 +120,9 @@ export default async function AdminOrdersPage() {
                     {formatPrice(Number(order.total))}
                   </td>
                   <td className="p-4 align-middle">
-                    {new Date(order.createdAt).toLocaleDateString()}
+                    {format(new Date(order.createdAt), "MMM d, yyyy", {
+                      locale: dateLocale,
+                    })}
                   </td>
                   <td className="p-4 align-middle">
                     <Button variant="outline" size="sm" asChild>
