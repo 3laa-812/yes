@@ -46,13 +46,14 @@ export default async function Home() {
           </Link>
         </div>
 
-        <StaggerContainer className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+        <StaggerContainer className="grid grid-cols-2 gap-4 lg:gap-8 sm:grid-cols-3 lg:grid-cols-4 cursor-pointer">
           {products.map((product: any) => (
             <StaggerItem key={product.id}>
               <ProductCard
                 id={product.id}
                 name={product.name}
                 price={product.price as unknown as number}
+                discountPrice={product.discountPrice as unknown as number}
                 category={product.category.name}
                 image={JSON.parse(product.images as string)[0]}
               />

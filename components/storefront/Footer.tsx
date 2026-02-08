@@ -6,18 +6,18 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-white border-t border-gray-100">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <footer className="bg-primary text-primary-foreground border-t border-primary/10">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-sm font-semibold tracking-wider text-black uppercase">
+            <h3 className="text-sm font-bold tracking-widest uppercase mb-6">
               {t("about")}
             </h3>
-            <ul className="mt-4 space-y-4">
+            <ul className="space-y-4">
               <li>
                 <Link
                   href="#"
-                  className="text-sm text-gray-500 hover:text-black"
+                  className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                 >
                   {t("ourStory")}
                 </Link>
@@ -25,7 +25,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-sm text-gray-500 hover:text-black"
+                  className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                 >
                   {t("sustainability")}
                 </Link>
@@ -33,7 +33,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-sm text-gray-500 hover:text-black"
+                  className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                 >
                   {t("careers")}
                 </Link>
@@ -41,14 +41,14 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold tracking-wider text-black uppercase">
+            <h3 className="text-sm font-bold tracking-widest uppercase mb-6">
               {t("support")}
             </h3>
-            <ul className="mt-4 space-y-4">
+            <ul className="space-y-4">
               <li>
                 <Link
                   href="#"
-                  className="text-sm text-gray-500 hover:text-black"
+                  className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                 >
                   {t("faq")}
                 </Link>
@@ -56,7 +56,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-sm text-gray-500 hover:text-black"
+                  className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                 >
                   {t("shipping")}
                 </Link>
@@ -64,7 +64,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-sm text-gray-500 hover:text-black"
+                  className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                 >
                   {t("returns")}
                 </Link>
@@ -72,14 +72,14 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold tracking-wider text-black uppercase">
+            <h3 className="text-sm font-bold tracking-widest uppercase mb-6">
               {t("legal")}
             </h3>
-            <ul className="mt-4 space-y-4">
+            <ul className="space-y-4">
               <li>
                 <Link
                   href="#"
-                  className="text-sm text-gray-500 hover:text-black"
+                  className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                 >
                   {t("terms")}
                 </Link>
@@ -87,7 +87,7 @@ export function Footer() {
               <li>
                 <Link
                   href="#"
-                  className="text-sm text-gray-500 hover:text-black"
+                  className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                 >
                   {t("privacy")}
                 </Link>
@@ -95,16 +95,21 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold tracking-wider text-black uppercase">
+            <h3 className="text-sm font-bold tracking-widest uppercase mb-6">
               {t("newsletter")}
             </h3>
-            <p className="mt-4 text-sm text-gray-500">{t("subscribe")}</p>
+            <p className="text-sm text-primary-foreground/70 leading-relaxed">
+              {t("subscribe")}
+            </p>
           </div>
         </div>
-        <div className="mt-12 border-t border-gray-100 pt-8">
-          <p className="text-sm text-gray-400 text-center">
+        <div className="mt-16 border-t border-primary-foreground/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-primary-foreground/50">
             {t("rights", { year })}
           </p>
+          <div className="flex gap-4">
+            {/* Social icons placeholders or similar could go here */}
+          </div>
         </div>
       </div>
     </footer>

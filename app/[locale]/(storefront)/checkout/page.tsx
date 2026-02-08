@@ -129,7 +129,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center md:text-left">
+      <h1 className="text-3xl font-bold mb-8 text-center md:text-left text-foreground">
         {t("title")}
       </h1>
 
@@ -158,7 +158,9 @@ export default function CheckoutPage() {
                       className="text-start"
                     />
                     {errors.firstName && (
-                      <p className="text-sm text-red-500">{errors.firstName}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.firstName}
+                      </p>
                     )}
                   </div>
                   <div className="space-y-2">
@@ -172,7 +174,9 @@ export default function CheckoutPage() {
                       className="text-start"
                     />
                     {errors.lastName && (
-                      <p className="text-sm text-red-500">{errors.lastName}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.lastName}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -189,7 +193,7 @@ export default function CheckoutPage() {
                     className="text-start"
                   />
                   {errors.email && (
-                    <p className="text-sm text-red-500">{errors.email}</p>
+                    <p className="text-sm text-destructive">{errors.email}</p>
                   )}
                 </div>
 
@@ -204,7 +208,7 @@ export default function CheckoutPage() {
                     className="text-start"
                   />
                   {errors.phone && (
-                    <p className="text-sm text-red-500">{errors.phone}</p>
+                    <p className="text-sm text-destructive">{errors.phone}</p>
                   )}
                 </div>
 
@@ -219,7 +223,7 @@ export default function CheckoutPage() {
                     className="text-start"
                   />
                   {errors.address && (
-                    <p className="text-sm text-red-500">{errors.address}</p>
+                    <p className="text-sm text-destructive">{errors.address}</p>
                   )}
                 </div>
 
@@ -234,7 +238,7 @@ export default function CheckoutPage() {
                     className="text-start"
                   />
                   {errors.city && (
-                    <p className="text-sm text-red-500">{errors.city}</p>
+                    <p className="text-sm text-destructive">{errors.city}</p>
                   )}
                 </div>
               </form>
@@ -250,16 +254,16 @@ export default function CheckoutPage() {
                 <div
                   onClick={() => setPaymentMethod("COD")}
                   className={cn(
-                    "cursor-pointer border-2 rounded-lg p-4 flex flex-col items-center justify-center transition-all",
+                    "cursor-pointer border-2 rounded-lg p-4 flex flex-col items-center justify-center transition-all bg-card hover:bg-muted/50",
                     paymentMethod === "COD"
-                      ? "border-black bg-gray-50"
-                      : "border-gray-200 hover:border-gray-300",
+                      ? "border-primary bg-muted"
+                      : "border-border hover:border-primary/50",
                   )}
                 >
-                  <span className="font-bold text-lg text-center">
+                  <span className="font-bold text-lg text-center text-foreground">
                     {t("cod")}
                   </span>
-                  <span className="text-sm text-gray-500 text-center">
+                  <span className="text-sm text-muted-foreground text-center">
                     {t("codDesc")}
                   </span>
                 </div>
@@ -267,16 +271,16 @@ export default function CheckoutPage() {
                 <div
                   onClick={() => setPaymentMethod("ONLINE")}
                   className={cn(
-                    "cursor-pointer border-2 rounded-lg p-4 flex flex-col items-center justify-center transition-all",
+                    "cursor-pointer border-2 rounded-lg p-4 flex flex-col items-center justify-center transition-all bg-card hover:bg-muted/50",
                     paymentMethod === "ONLINE"
-                      ? "border-black bg-gray-50"
-                      : "border-gray-200 hover:border-gray-300",
+                      ? "border-primary bg-muted"
+                      : "border-border hover:border-primary/50",
                   )}
                 >
-                  <span className="font-bold text-lg text-center">
+                  <span className="font-bold text-lg text-center text-foreground">
                     {t("online")}
                   </span>
-                  <span className="text-sm text-gray-500 text-center">
+                  <span className="text-sm text-muted-foreground text-center">
                     {t("onlineDesc")}
                   </span>
                 </div>
@@ -299,9 +303,9 @@ export default function CheckoutPage() {
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className="flex gap-4 py-2 border-b last:border-0"
+                    className="flex gap-4 py-2 border-b border-border last:border-0"
                   >
-                    <div className="relative h-16 w-16 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                    <div className="relative h-16 w-16 bg-muted rounded overflow-hidden flex-shrink-0 border border-border">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -310,15 +314,17 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium line-clamp-1">{item.name}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="font-medium line-clamp-1 text-foreground">
+                        {item.name}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
                         {item.size} / {item.color}
                       </p>
                       <div className="flex items-center justify-between mt-1">
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-muted-foreground">
                           Qty: {item.quantity}
                         </span>
-                        <span className="font-medium">
+                        <span className="font-medium text-foreground">
                           ${(item.price * item.quantity).toFixed(2)}
                         </span>
                       </div>
@@ -327,12 +333,12 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
-              <div className="mt-6 space-y-2 border-t pt-4">
-                <div className="flex justify-between">
+              <div className="mt-6 space-y-2 border-t border-border pt-4">
+                <div className="flex justify-between text-muted-foreground">
                   <span>{t("shipping", { default: "Shipping" })}</span>
                   <span>{t("free")}</span>
                 </div>
-                <div className="flex justify-between font-bold text-xl pt-2 border-t mt-2">
+                <div className="flex justify-between font-bold text-xl pt-2 border-t border-border mt-2 text-foreground">
                   <span>{t("total")}</span>
                   <span>${getTotal().toFixed(2)}</span>
                 </div>
@@ -341,7 +347,7 @@ export default function CheckoutPage() {
             <CardFooter>
               <Button
                 onClick={handleSubmit}
-                className="w-full text-lg py-6"
+                className="w-full text-lg py-6 font-bold shadow-lg"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (

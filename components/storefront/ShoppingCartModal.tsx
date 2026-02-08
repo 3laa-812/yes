@@ -48,7 +48,7 @@ export function ShoppingCartModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-hidden">
@@ -64,16 +64,16 @@ export function ShoppingCartModal({
                 leaveTo="translate-x-full rtl:-translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
-                  <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
+                  <div className="flex h-full flex-col overflow-y-scroll bg-card shadow-xl border-l border-border">
                     <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                       <div className="flex items-start justify-between">
-                        <Dialog.Title className="text-lg font-medium text-gray-900">
+                        <Dialog.Title className="text-lg font-bold text-foreground">
                           {t("title")}
                         </Dialog.Title>
                         <div className="ml-3 rtl:mr-3 rtl:ml-0 flex h-7 items-center">
                           <button
                             type="button"
-                            className="relative -m-2 p-2 text-gray-400 hover:text-gray-500"
+                            className="relative -m-2 p-2 text-muted-foreground hover:text-foreground transition-colors"
                             onClick={() => setIsOpen(false)}
                           >
                             <span className="absolute -inset-0.5" />
@@ -87,12 +87,12 @@ export function ShoppingCartModal({
                         <div className="flow-root">
                           <ul
                             role="list"
-                            className="-my-6 divide-y divide-gray-200"
+                            className="-my-6 divide-y divide-border"
                           >
                             {items.length === 0 && (
                               <div className="flex flex-col items-center justify-center py-20">
-                                <ShoppingBag className="h-16 w-16 text-gray-300" />
-                                <p className="mt-4 text-center text-gray-500">
+                                <ShoppingBag className="h-16 w-16 text-muted-foreground/50" />
+                                <p className="mt-4 text-center text-muted-foreground">
                                   {t("empty")}
                                 </p>
                               </div>
@@ -100,7 +100,7 @@ export function ShoppingCartModal({
 
                             {items.map((item) => (
                               <li key={item.id} className="flex py-6">
-                                <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-border">
                                   <Image
                                     src={item.image}
                                     alt={item.name}
@@ -112,32 +112,43 @@ export function ShoppingCartModal({
 
                                 <div className="ml-4 rtl:mr-4 rtl:ml-0 flex flex-1 flex-col">
                                   <div>
-                                    <div className="flex justify-between text-base font-medium text-gray-900">
+                                    <div className="flex justify-between text-base font-medium text-foreground">
                                       <h3>
                                         <Link
                                           href={`/products/${item.productId}`}
+                                          className="hover:text-primary transition-colors"
                                         >
                                           {item.name}
                                         </Link>
                                       </h3>
-                                      <p className="ml-4 rtl:mr-4 rtl:ml-0">
-                                        {formatPrice(
-                                          item.price * item.quantity,
+                                      <div className="ml-4 rtl:mr-4 rtl:ml-0 flex flex-col items-end">
+                                        <p>
+                                          {formatPrice(
+                                            item.price * item.quantity,
+                                          )}
+                                        </p>
+                                        {item.originalPrice && (
+                                          <p className="text-xs text-muted-foreground line-through">
+                                            {formatPrice(
+                                              item.originalPrice *
+                                                item.quantity,
+                                            )}
+                                          </p>
                                         )}
-                                      </p>
+                                      </div>
                                     </div>
-                                    <p className="mt-1 text-sm text-gray-500">
+                                    <p className="mt-1 text-sm text-muted-foreground">
                                       {item.category} - {item.size}
                                     </p>
                                     <div className="flex items-center gap-2 mt-1">
                                       <div
-                                        className="h-4 w-4 rounded-full border"
+                                        className="h-4 w-4 rounded-full border border-border"
                                         style={{ backgroundColor: item.color }}
                                       ></div>
                                     </div>
                                   </div>
                                   <div className="flex flex-1 items-end justify-between text-sm">
-                                    <div className="flex items-center gap-2 border rounded-md p-1">
+                                    <div className="flex items-center gap-2 border border-border rounded-md p-1">
                                       <button
                                         onClick={() =>
                                           updateQuantity(
@@ -145,11 +156,11 @@ export function ShoppingCartModal({
                                             Math.max(1, item.quantity - 1),
                                           )
                                         }
-                                        className="p-1 hover:bg-gray-100 rounded"
+                                        className="p-1 hover:bg-muted rounded transition-colors text-foreground"
                                       >
                                         <Minus className="h-3 w-3" />
                                       </button>
-                                      <span className="w-4 text-center">
+                                      <span className="w-4 text-center text-foreground font-medium">
                                         {item.quantity}
                                       </span>
                                       <button
@@ -159,7 +170,7 @@ export function ShoppingCartModal({
                                             item.quantity + 1,
                                           )
                                         }
-                                        className="p-1 hover:bg-gray-100 rounded"
+                                        className="p-1 hover:bg-muted rounded transition-colors text-foreground"
                                       >
                                         <Plus className="h-3 w-3" />
                                       </button>
@@ -169,7 +180,7 @@ export function ShoppingCartModal({
                                       <button
                                         type="button"
                                         onClick={() => removeItem(item.id)}
-                                        className="font-medium text-indigo-600 hover:text-indigo-500 flex items-center gap-1"
+                                        className="font-medium text-destructive hover:text-destructive/80 flex items-center gap-1 transition-colors"
                                       >
                                         <Trash2 className="h-4 w-4" />
                                         {t("remove")}
@@ -185,28 +196,28 @@ export function ShoppingCartModal({
                     </div>
 
                     {items.length > 0 && (
-                      <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
-                        <div className="flex justify-between text-base font-medium text-gray-900">
+                      <div className="border-t border-border px-4 py-6 sm:px-6 bg-card">
+                        <div className="flex justify-between text-base font-medium text-foreground">
                           <p>{t("subtotal")}</p>
                           <p>{formatPrice(getTotal())}</p>
                         </div>
-                        <p className="mt-0.5 text-sm text-gray-500">
+                        <p className="mt-0.5 text-sm text-muted-foreground">
                           {t("shippingNote")}
                         </p>
                         <div className="mt-6">
                           <Button
                             onClick={onCheckout}
-                            className="w-full rounded-full py-6 text-base"
+                            className="w-full rounded-full py-6 text-base font-bold shadow-lg"
                           >
                             {t("checkout")}
                           </Button>
                         </div>
-                        <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
+                        <div className="mt-6 flex justify-center text-center text-sm text-muted-foreground">
                           <p>
                             or{" "}
                             <button
                               type="button"
-                              className="font-medium text-indigo-600 hover:text-indigo-500"
+                              className="font-medium text-primary hover:text-primary/80 transition-colors"
                               onClick={() => setIsOpen(false)}
                             >
                               {t("continueShopping")}

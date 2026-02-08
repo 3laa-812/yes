@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-// import { Montserrat } from "next/font/google";
+import { Plus_Jakarta_Sans, Cairo } from "next/font/google";
 import "../globals.css";
 import { Toaster } from "sonner";
 import { NextIntlClientProvider } from "next-intl";
@@ -7,10 +7,8 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 
-// const montserrat = Montserrat({
-//   variable: "--font-montserrat",
-//   subsets: ["latin"],
-// });
+const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"] });
+const cairo = Cairo({ subsets: ["arabic"] });
 
 export const metadata: Metadata = {
   title: "YES",
@@ -32,10 +30,12 @@ export default async function RootLayout({
 
   const messages = await getMessages();
   const dir = locale === "ar" ? "rtl" : "ltr";
+  const fontClass =
+    locale === "ar" ? cairo.className : plusJakartaSans.className;
 
   return (
     <html lang={locale} dir={dir}>
-      <body className={`font-sans antialiased`}>
+      <body className={`${fontClass} antialiased`}>
         <NextIntlClientProvider messages={messages}>
           {children}
           <Toaster richColors />

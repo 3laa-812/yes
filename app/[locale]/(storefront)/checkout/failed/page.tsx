@@ -12,11 +12,11 @@ export default async function FailedPage({ searchParams }: Props) {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
-      <XCircle className="h-16 w-16 text-red-500 mb-6" />
-      <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+      <XCircle className="h-16 w-16 text-destructive mb-6" />
+      <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
         Payment Failed
       </h1>
-      <p className="mt-4 text-lg text-gray-500 max-w-md">
+      <p className="mt-4 text-lg text-muted-foreground max-w-md">
         Unfortunately, your payment could not be processed. Please try again or
         choose a different payment method.
       </p>

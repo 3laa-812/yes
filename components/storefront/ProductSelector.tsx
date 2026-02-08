@@ -11,6 +11,7 @@ interface ProductSelectorProps {
   id: string;
   name: string;
   price: number;
+  discountPrice?: number | null;
   image: string;
   category: string;
   sizes: string[];
@@ -26,6 +27,7 @@ export function ProductSelector({
   id,
   name,
   price,
+  discountPrice,
   image,
   category,
   sizes,
@@ -59,11 +61,17 @@ export function ProductSelector({
       return;
     }
 
+    const effectivePrice =
+      discountPrice && discountPrice < price ? discountPrice : price;
+    const originalPrice =
+      discountPrice && discountPrice < price ? price : undefined;
+
     addItem({
       id: `${id}-${selectedSize}-${selectedColor}`,
       productId: id,
       name,
-      price,
+      price: effectivePrice,
+      originalPrice: originalPrice,
       image,
       category,
       size: selectedSize,
@@ -78,7 +86,7 @@ export function ProductSelector({
     <div className="mt-10">
       {/* Colors */}
       <div>
-        <h3 className="text-sm font-medium text-gray-900">{t("color")}</h3>
+        <h3 className="text-sm font-medium text-foreground">{t("color")}</h3>
         <div className="mt-4 flex items-center space-x-3">
           {colors.map((color) => {
             // Optional: Check if color is available in any size?
@@ -88,13 +96,15 @@ export function ProductSelector({
                 key={color}
                 onClick={() => setSelectedColor(color)}
                 className={cn(
-                  "relative -m-0.5 flex cursor-pointer item-center justify-center rounded-full p-0.5 focus:outline-none ring-gray-400",
-                  selectedColor === color ? "ring ring-offset-1" : "",
+                  "relative -m-0.5 flex cursor-pointer item-center justify-center rounded-full p-0.5 focus:outline-none ring-offset-background transition-all",
+                  selectedColor === color
+                    ? "ring-2 ring-primary ring-offset-2"
+                    : "ring-1 ring-border hover:ring-primary/50",
                 )}
               >
                 <span
                   aria-hidden="true"
-                  className="h-8 w-8 rounded-full border border-black border-opacity-10"
+                  className="h-8 w-8 rounded-full border border-black/10"
                   style={{ backgroundColor: color }}
                 />
               </button>
@@ -106,10 +116,10 @@ export function ProductSelector({
       {/* Sizes */}
       <div className="mt-10">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-gray-900">{t("size")}</h3>
+          <h3 className="text-sm font-medium text-foreground">{t("size")}</h3>
           <a
             href="#"
-            className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
           >
             {t("sizeGuide")}
           </a>
@@ -128,12 +138,12 @@ export function ProductSelector({
                 onClick={() => setSelectedSize(size)}
                 disabled={!isAvailable && !!selectedColor}
                 className={cn(
-                  "group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase focus:outline-none sm:flex-1 sm:py-6",
+                  "group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase focus:outline-none sm:flex-1 sm:py-6 transition-all",
                   selectedSize === size
-                    ? "bg-indigo-600 text-white shadow-sm border-transparent hover:bg-indigo-700"
-                    : "bg-white text-gray-900 shadow-sm border-gray-200 hover:bg-gray-50",
+                    ? "bg-primary text-primary-foreground shadow-sm border-primary hover:bg-primary/90"
+                    : "bg-card text-foreground shadow-sm border-border hover:bg-muted font-normal",
                   !isAvailable && !!selectedColor
-                    ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400 decoration-slate-500 line-through"
+                    ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground decoration-muted-foreground/50 line-through"
                     : "",
                 )}
               >
@@ -148,7 +158,7 @@ export function ProductSelector({
         onClick={handleAddToCart}
         disabled={isOutOfStock || !selectedSize || !selectedColor}
         size="lg"
-        className="w-full mt-10 rounded-full h-14 text-base font-semibold"
+        className="w-full mt-10 rounded-full h-14 text-base font-bold shadow-lg"
       >
         <ShoppingBag className="mr-2 h-5 w-5" />
         {isOutOfStock ? t("outOfStock") : t("addToCart")}

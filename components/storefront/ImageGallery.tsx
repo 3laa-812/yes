@@ -15,14 +15,17 @@ export function ImageGallery({ images }: ImageGalleryProps) {
     <div className="grid gap-4 lg:grid-cols-5">
       <div className="order-last flex gap-4 lg:order-none lg:flex-col lg:col-span-1">
         {images.map((image, idx) => (
-          <div key={idx} className="overflow-hidden rounded-lg bg-gray-100">
+          <div
+            key={idx}
+            className="overflow-hidden rounded-lg bg-muted border border-border"
+          >
             <button
               onClick={() => setBigImage(image)}
               className={cn(
-                "relative aspect-square w-full overflow-hidden rounded-lg bg-gray-100",
+                "relative aspect-square w-full overflow-hidden rounded-lg bg-muted",
                 bigImage === image
-                  ? "ring-2 ring-indigo-500"
-                  : "ring-1 ring-transparent hover:ring-indigo-500/50",
+                  ? "ring-2 ring-primary"
+                  : "ring-1 ring-transparent hover:ring-primary/50 transition-all",
               )}
             >
               <Image
@@ -36,13 +39,14 @@ export function ImageGallery({ images }: ImageGalleryProps) {
           </div>
         ))}
       </div>
-      <div className="relative overflow-hidden rounded-lg bg-gray-100 lg:col-span-4">
+      <div className="relative overflow-hidden rounded-lg bg-muted border border-border lg:col-span-4 max-h-[600px]">
         <Image
           src={bigImage}
           alt="Big Product Image"
           width={800}
           height={800}
           className="h-full w-full object-cover object-center"
+          priority
         />
       </div>
     </div>

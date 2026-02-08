@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Link } from "@/i18n/routing";
 import { formatPrice } from "@/lib/utils";
+import { ScaleHover } from "@/components/ui/motion";
 
 interface ProductCardProps {
   id: string;
@@ -8,9 +9,8 @@ interface ProductCardProps {
   price: string | number;
   image: string;
   category: string;
+  discountPrice?: number | null;
 }
-
-import { ScaleHover } from "@/components/ui/motion";
 
 export function ProductCard({
   id,
@@ -18,32 +18,58 @@ export function ProductCard({
   price,
   image,
   category,
+  discountPrice,
 }: ProductCardProps) {
+  const isDiscounted =
+    discountPrice && discountPrice > 0 && discountPrice < Number(price);
+  const currentPrice = isDiscounted ? discountPrice : Number(price);
+  const originalPrice = Number(price);
+
+  // Calculate discount percentage
+  const discountPercentage = isDiscounted
+    ? Math.round(
+        ((originalPrice - (discountPrice as number)) / originalPrice) * 100,
+      )
+    : 0;
+
   return (
-    <ScaleHover className="group relative">
-      <div className="aspect-square w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-        <Image
-          src={image}
-          alt={name}
-          width={400}
-          height={400}
-          className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-        />
-      </div>
-      <div className="mt-4 flex justify-between">
-        <div>
-          <h3 className="text-sm text-gray-700">
-            <Link href={`/products/${id}`}>
-              <span aria-hidden="true" className="absolute inset-0" />
-              {name}
-            </Link>
-          </h3>
-          <p className="mt-1 text-sm text-gray-500">{category}</p>
+    <Link href={`/products/${id}`} className="group block">
+      <ScaleHover className="relative overflow-hidden rounded-lg bg-white shadow-sm transition-all duration-300 hover:shadow-md">
+        <div className="aspect-[3/4] w-full overflow-hidden bg-gray-100 relative">
+          <Image
+            src={image}
+            alt={name}
+            fill
+            className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+          />
+          {isDiscounted && (
+            <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider">
+              -{discountPercentage}%
+            </div>
+          )}
         </div>
-        <p className="text-sm font-medium text-gray-900">
-          {formatPrice(Number(price))}
-        </p>
-      </div>
-    </ScaleHover>
+        <div className="p-3 space-y-1">
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+            {category}
+          </p>
+          <h3 className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-primary/80 transition-colors">
+            {name}
+          </h3>
+          <div className="flex items-center gap-2">
+            <p
+              className={`text-sm font-bold ${isDiscounted ? "text-red-600" : "text-foreground"}`}
+            >
+              {formatPrice(currentPrice)}
+            </p>
+            {isDiscounted && (
+              <p className="text-xs text-muted-foreground line-through">
+                {formatPrice(originalPrice)}
+              </p>
+            )}
+          </div>
+        </div>
+      </ScaleHover>
+    </Link>
   );
 }

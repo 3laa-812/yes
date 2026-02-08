@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { ShoppingBag, User, Search, Menu } from "lucide-react";
+import { ShoppingBag, User, Search, Menu, Package } from "lucide-react"; // Added Package icon
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ export function Navbar({ user }: { user?: any }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const cartItems = useCartStore((state) => state.items);
 
-  // Handl hydration mismatch
+  // Handle hydration mismatch
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -43,82 +43,103 @@ export function Navbar({ user }: { user?: any }) {
     : 0;
 
   const navLinks = [
-    { href: "/collections/women", label: t("women") },
     { href: "/collections/men", label: t("men") },
-    { href: "/collections/accessories", label: t("accessories") },
+    { href: "/collections/kids", label: t("kids") },
+    { href: "/collections/shoes", label: t("shoes") },
     { href: "/products", label: t("allProducts") },
   ];
 
   return (
     <>
-      <nav className="w-full border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="flex items-center justify-between mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16">
+      <nav className="w-full border-b border-white/5 bg-gradient-to-b from-background/80 to-background/20 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300">
+        <div className="flex items-center justify-between mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-20">
           {/* Mobile Menu */}
           <div className="flex lg:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="-ml-2">
                   <Menu className="h-6 w-6" />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="flex flex-col gap-6 p-6">
+              <SheetContent
+                side="left"
+                className="flex flex-col gap-6 p-6 w-[85vw] sm:w-[350px]"
+              >
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                <div className="flex flex-col gap-6 mt-6">
+                <div className="flex flex-col gap-8 mt-8">
                   <Link
                     href="/"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-2xl font-bold tracking-tight uppercase"
+                    className="relative w-32 h-12"
                   >
                     <Image
-                      src="/branding/logo-primary.png"
+                      src="/branding/logo-dark.png"
                       alt="YES Logo"
-                      width={140}
-                      height={50}
-                      className="h-12 w-auto"
+                      fill
+                      className="object-contain object-left"
                     />
                   </Link>
-                  <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-6">
                     {navLinks.map((link) => (
                       <Link
                         key={link.href}
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-lg font-medium text-gray-700 hover:text-black transition-colors"
+                        className="text-xl font-medium text-foreground/80 hover:text-primary transition-colors hover:translate-x-2 duration-200"
                       >
                         {link.label}
                       </Link>
                     ))}
                   </div>
                   {/* Mobile Auth Links */}
-                  <div className="border-t pt-4 space-y-2">
+                  <div className="border-t border-border pt-8 space-y-4">
                     {user ? (
                       <>
                         <Link
                           href="/account/orders"
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className="block text-lg font-medium text-gray-700"
+                          className="flex items-center gap-3 text-lg font-medium text-foreground/80"
                         >
+                          <Package className="w-5 h-5" />
                           My Orders
+                        </Link>
+                        {user.role !== "USER" && (
+                          <Link
+                            href="/admin/dashboard"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="flex items-center gap-3 text-lg font-medium text-foreground/80"
+                          >
+                            Admin Dashboard
+                          </Link>
+                        )}
+                        <Link
+                          href="/signout"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-3 text-lg font-medium text-destructive"
+                        >
+                          Sign Out
                         </Link>
                       </>
                     ) : (
-                      <>
-                        <Link
-                          href="/login"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block text-lg font-medium text-gray-700"
-                        >
-                          Sign In
-                        </Link>
-                        <Link
-                          href="/register"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="block text-lg font-medium text-gray-700"
-                        >
-                          Register
-                        </Link>
-                      </>
+                      <div className="grid grid-cols-2 gap-4">
+                        <Button asChild variant="outline" className="w-full">
+                          <Link
+                            href="/login"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            Sign In
+                          </Link>
+                        </Button>
+                        <Button asChild className="w-full">
+                          <Link
+                            href="/register"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            Register
+                          </Link>
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -127,105 +148,135 @@ export function Navbar({ user }: { user?: any }) {
           </div>
 
           {/* Logo */}
-          <div className="flex lg:flex-1">
-            <Link href="/" className="flex items-center">
+          <div className="flex lg:flex-1 justify-center lg:justify-start">
+            <Link
+              href="/"
+              className="relative w-32 h-10 lg:w-40 lg:h-12 transition-opacity hover:opacity-80"
+            >
               <Image
-                src="/branding/logo-primary.png"
+                src="/branding/logo-dark.png"
                 alt="YES Logo"
-                width={160}
-                height={60}
-                className="h-14 w-auto"
+                fill
+                className="object-contain"
+                priority
               />
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex lg:gap-x-12">
+          <div className="hidden lg:flex lg:gap-x-10 items-center justify-center">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-gray-700 hover:text-black transition-colors"
+                className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide uppercase relative group"
               >
                 {link.label}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
               </Link>
             ))}
           </div>
 
           {/* Icons */}
-          <div className="flex flex-1 items-center justify-end gap-x-4">
-            <LanguageSwitcher />
+          <div className="flex flex-1 items-center justify-end gap-x-2 sm:gap-x-4">
+            <div className="hidden sm:block">
+              <LanguageSwitcher />
+            </div>
 
             <Button
               variant="ghost"
               size="icon"
-              className="text-gray-700 hover:text-black"
+              className="text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded-full"
             >
               <Search className="h-5 w-5" />
             </Button>
+
+            {/* My Orders Icon - Visible directly for quick access */}
+            {user && (
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                className="text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded-full hidden sm:flex"
+                title="My Orders"
+              >
+                <Link href="/account/orders">
+                  <Package className="h-5 w-5" />
+                </Link>
+              </Button>
+            )}
+
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-700 hover:text-black"
+                  className="text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded-full"
                 >
                   <User className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuContent align="end" className="w-56 p-2">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {user?.name || "Guest"}
+                    </p>
+                    {user?.email && (
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.email}
+                      </p>
+                    )}
+                  </div>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {user ? (
                   <>
-                    <DropdownMenuItem asChild>
-                      <Link href="/account/orders" className="cursor-pointer">
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link
+                        href="/account/orders"
+                        className="flex w-full items-center"
+                      >
+                        <Package className="mr-2 h-4 w-4" />
                         My Orders
                       </Link>
                     </DropdownMenuItem>
                     {user.role !== "USER" && (
-                      <DropdownMenuItem asChild>
-                        <Link
-                          href="/admin/dashboard"
-                          className="cursor-pointer"
-                        >
-                          Admin Dashboard
-                        </Link>
+                      <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/admin/dashboard">Admin Dashboard</Link>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/signout" className="cursor-pointer">
-                        Sign Out
-                      </Link>
+                    <DropdownMenuItem
+                      asChild
+                      className="cursor-pointer text-destructive focus:text-destructive"
+                    >
+                      <Link href="/signout">Sign Out</Link>
                     </DropdownMenuItem>
                   </>
                 ) : (
                   <>
-                    <DropdownMenuItem asChild>
-                      <Link href="/login" className="cursor-pointer">
-                        Sign In
-                      </Link>
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link href="/login">Sign In</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/register" className="cursor-pointer">
-                        Register
-                      </Link>
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link href="/register">Register</Link>
                     </DropdownMenuItem>
                   </>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
+
             <Button
               variant="ghost"
               size="icon"
-              className="text-gray-700 hover:text-black relative"
+              className="text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded-full relative group"
               onClick={() => setIsCartOpen(true)}
             >
-              <ShoppingBag className="h-5 w-5" />
+              <ShoppingBag className="h-5 w-5 group-hover:scale-110 transition-transform" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-black text-[10px] font-bold text-white flex items-center justify-center">
+                <span className="absolute top-0 right-0 h-4 w-4 rounded-full bg-accent text-[10px] font-bold text-accent-foreground flex items-center justify-center animate-in zoom-in">
                   {totalItems}
                 </span>
               )}
