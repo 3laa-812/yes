@@ -1,20 +1,28 @@
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import db from "@/lib/db";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 
 interface CategoryPageProps {
   params: Promise<{
     slug: string;
   }>;
+  searchParams: Promise<{
+    subCategoryId?: string;
+  }>;
 }
 
-async function getProductsByCategory(slug: string) {
+async function getCategoryWithProducts(slug: string, subCategoryId?: string) {
   const category = await db.category.findUnique({
     where: {
       slug: slug,
     },
     include: {
+      subCategories: true,
       products: {
+        where: subCategoryId ? { subCategoryId } : undefined,
         include: {
           category: true,
         },
@@ -22,17 +30,18 @@ async function getProductsByCategory(slug: string) {
     },
   });
 
-  if (!category) {
-    return null;
-  }
   return category;
 }
 
 export const dynamic = "force-dynamic";
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: CategoryPageProps) {
   const { slug } = await params;
-  const category = await getProductsByCategory(slug);
+  const { subCategoryId } = await searchParams;
+  const category = await getCategoryWithProducts(slug, subCategoryId);
 
   if (!category) {
     return (
@@ -41,9 +50,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <h2 className="text-2xl font-bold tracking-tight text-gray-900 capitalize">
             {slug} Collection
           </h2>
-          <p className="mt-4 text-gray-500">
-            No products found in this collection yet.
-          </p>
+          <p className="mt-4 text-gray-500">Category not found.</p>
         </div>
       </div>
     );
@@ -52,14 +59,54 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   return (
     <div className="bg-background">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground capitalize">
-          {category.name} Collection
-        </h2>
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground capitalize">
+            {category.name} Collection
+          </h2>
+          <span className="text-muted-foreground">
+            {category.products.length} Products
+          </span>
+        </div>
+
+        {/* SubCategory Pills */}
+        <div className="mt-6 flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          <Button
+            variant={!subCategoryId ? "default" : "outline"}
+            size="sm"
+            asChild
+            className="rounded-full"
+          >
+            <Link href={`/collections/${slug}`}>All</Link>
+          </Button>
+          {category.subCategories.map((sub) => (
+            <Button
+              key={sub.id}
+              variant={subCategoryId === sub.id ? "default" : "outline"}
+              size="sm"
+              asChild
+              className="rounded-full"
+            >
+              <Link href={`/collections/${slug}?subCategoryId=${sub.id}`}>
+                {sub.name}
+              </Link>
+            </Button>
+          ))}
+        </div>
 
         {category.products.length === 0 ? (
-          <p className="mt-4 text-gray-500">
-            No products found in this collection yet.
-          </p>
+          <div className="mt-10 text-center py-20 border-2 border-dashed rounded-lg bg-muted/30">
+            <h3 className="text-lg font-semibold text-muted-foreground">
+              No products found
+            </h3>
+            <p className="text-sm text-muted-foreground mt-2">
+              Try clearing the filters or check back later.
+            </p>
+            {subCategoryId && (
+              <Button variant="link" asChild className="mt-4">
+                <Link href={`/collections/${slug}`}>Clear Filters</Link>
+              </Button>
+            )}
+          </div>
         ) : (
           <div className="mt-6 grid grid-cols-2 gap-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
             {category.products.map((product: any) => (

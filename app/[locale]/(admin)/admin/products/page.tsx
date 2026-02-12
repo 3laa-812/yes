@@ -4,6 +4,7 @@ import db from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
 import Image from "next/image";
 import { deleteProduct } from "@/app/actions";
+import { DeleteProductButton } from "./_components/DeleteProductButton";
 import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
 import { format } from "date-fns";
@@ -117,21 +118,10 @@ export default async function AdminProductsPage() {
                           {t("edit")}
                         </Link>
                       </Button>
-                      <form action={deleteProduct}>
-                        <input
-                          type="hidden"
-                          name="productId"
-                          value={product.id}
-                        />
-                        <Button
-                          type="submit"
-                          variant="ghost"
-                          size="sm"
-                          className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                        >
-                          {t("delete")}
-                        </Button>
-                      </form>
+                      <DeleteProductButton
+                        id={product.id}
+                        label={t("delete")}
+                      />
                     </div>
                   </td>
                 </tr>

@@ -1,5 +1,7 @@
 import { ProductCard } from "@/components/storefront/ProductCard";
 import db from "@/lib/db";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/i18n/routing";
 
 async function getAllProducts() {
   const products = await db.product.findMany({
@@ -13,17 +15,45 @@ async function getAllProducts() {
   return products;
 }
 
+async function getCategories() {
+  return db.category.findMany({ orderBy: { name: "asc" } });
+}
+
 export const dynamic = "force-dynamic";
 
 export default async function ProductsPage() {
   const products = await getAllProducts();
+  const categories = await getCategories();
 
   return (
     <div className="bg-background">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
-          All Products
-        </h2>
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">
+            All Products
+          </h2>
+          <span className="text-muted-foreground">
+            {products.length} Products
+          </span>
+        </div>
+
+        {/* Category Pills */}
+        <div className="mt-6 flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          <Button variant="default" size="sm" asChild className="rounded-full">
+            <Link href="/products">All</Link>
+          </Button>
+          {categories.map((cat) => (
+            <Button
+              key={cat.id}
+              variant="outline"
+              size="sm"
+              asChild
+              className="rounded-full"
+            >
+              <Link href={`/collections/${cat.slug}`}>{cat.name}</Link>
+            </Button>
+          ))}
+        </div>
 
         <div className="mt-6 grid grid-cols-2 gap-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
           {products.map((product: any) => (

@@ -35,7 +35,11 @@ import { Badge } from "@/components/ui/badge";
 
 interface ProductFormProps {
   initialData?: any;
-  categories: { id: string; name: string }[];
+  categories: {
+    id: string;
+    name: string;
+    subCategories: { id: string; name: string }[];
+  }[];
 }
 
 const PREDEFINED_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
@@ -55,6 +59,18 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
   const [images, setImages] = useState<string[]>(
     initialData?.images ? JSON.parse(initialData.images) : [],
   );
+
+  // Category & SubCategory State
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
+    initialData?.categoryId || "",
+  );
+  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState<string>(
+    initialData?.subCategoryId || "",
+  );
+
+  // Derived state for available subcategories
+  const availableSubCategories =
+    categories.find((c) => c.id === selectedCategoryId)?.subCategories || [];
 
   // Variants State
   const [variants, setVariants] = useState<any[]>(initialData?.variants || []);
@@ -95,6 +111,11 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
     const formData = new FormData(e.currentTarget);
     formData.set("imageUrls", JSON.stringify(images));
     formData.set("variants", JSON.stringify(variants));
+    // categoryId and subCategoryId are inputs, so they are in formData automatically.
+    // Ensure we handle "undefined" or empty string for subcategory if optional.
+    if (!formData.get("subCategoryId")) {
+      formData.delete("subCategoryId");
+    }
 
     try {
       let result;
@@ -174,24 +195,60 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                   placeholder="Describe the product..."
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Category</label>
-                <Select
-                  name="category"
-                  defaultValue={initialData?.categoryId || undefined}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Category</label>
+                  <Select
+                    name="categoryId"
+                    value={selectedCategoryId}
+                    onValueChange={(val) => {
+                      setSelectedCategoryId(val);
+                      setSelectedSubCategoryId(""); // Reset subcategory on category change
+                    }}
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Sub-Category</label>
+                  <Select
+                    name="subCategoryId"
+                    value={selectedSubCategoryId}
+                    onValueChange={setSelectedSubCategoryId}
+                    disabled={
+                      !selectedCategoryId || availableSubCategories.length === 0
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          availableSubCategories.length === 0
+                            ? "No Sub-Categories"
+                            : "Select Sub-Category"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableSubCategories.map((sub) => (
+                        <SelectItem key={sub.id} value={sub.id}>
+                          {sub.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardContent>
           </Card>

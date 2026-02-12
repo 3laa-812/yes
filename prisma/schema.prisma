@@ -94,6 +94,8 @@ model Product {
   images        String   // JSON string of image URLs
   categoryId    String
   category      Category @relation(fields: [categoryId], references: [id])
+  subCategoryId String?  // Added for Sub-Categories
+  subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
   sizes         String   // JSON string (Keeping for backward compat/display)
   colors        String   // JSON string (Keeping for backward compat/display)
   stock         Int      @default(0) // Global stock or fallback
@@ -120,10 +122,21 @@ model ProductVariant {
 }
 
 model Category {
-  id       String    @id @default(cuid())
-  name     String
-  slug     String    @unique
-  products Product[]
+  id            String        @id @default(cuid())
+  name          String
+  slug          String        @unique
+  image         String?       // Added for visual representation
+  products      Product[]
+  subCategories SubCategory[] // Added relation
+}
+
+model SubCategory {
+  id         String   @id @default(cuid())
+  name       String
+  slug       String   @unique
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  products   Product[]
 }
 
 model Order {

@@ -18,7 +18,9 @@ export default async function EditProductPage({
     return <div>Product not found</div>;
   }
 
-  const categories = await db.category.findMany();
+  const categories = await db.category.findMany({
+    include: { subCategories: true },
+  });
 
   // Serialize data to avoid "Only plain objects" error
   const serializedProduct = {

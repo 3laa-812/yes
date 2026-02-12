@@ -26,7 +26,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function Navbar({ user }: { user?: any }) {
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  subCategories: { id: string; name: string; slug: string }[];
+}
+
+export function Navbar({
+  user,
+  categories = [],
+}: {
+  user?: any;
+  categories?: Category[];
+}) {
   const t = useTranslations("Navbar");
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -42,11 +55,46 @@ export function Navbar({ user }: { user?: any }) {
     ? cartItems.reduce((acc, item) => acc + item.quantity, 0)
     : 0;
 
-  const navLinks = [
-    { href: "/collections/men", label: t("men") },
-    { href: "/collections/kids", label: t("kids") },
-    { href: "/collections/shoes", label: t("shoes") },
-    { href: "/products", label: t("allProducts") },
+  // Combine static "All Products" with dynamic categories
+  // We can prioritize specific categories if needed, but for now just list them
+  // Or if categories are empty, fallback to static defaults for dev/testing
+  const dynamicLinks =
+    categories.length > 0
+      ? categories.map((c) => ({
+          href: `/collections/${c.slug}`,
+          label: c.name,
+          subCategories: c.subCategories,
+          categorySlug: c.slug,
+        }))
+      : [
+          {
+            href: "/collections/men",
+            label: t("men"),
+            subCategories: [],
+            categorySlug: "men",
+          },
+          {
+            href: "/collections/kids",
+            label: t("kids"),
+            subCategories: [],
+            categorySlug: "kids",
+          },
+          {
+            href: "/collections/shoes",
+            label: t("shoes"),
+            subCategories: [],
+            categorySlug: "shoes",
+          },
+        ];
+
+  const allLinks = [
+    ...dynamicLinks,
+    {
+      href: "/products",
+      label: t("allProducts"),
+      subCategories: [],
+      categorySlug: "",
+    },
   ];
 
   return (
@@ -81,15 +129,32 @@ export function Navbar({ user }: { user?: any }) {
                     />
                   </Link>
                   <div className="flex flex-col gap-6">
-                    {navLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="text-xl font-medium text-foreground/80 hover:text-primary transition-colors hover:translate-x-2 duration-200"
-                      >
-                        {link.label}
-                      </Link>
+                    {allLinks.map((link) => (
+                      <div key={link.href} className="flex flex-col gap-2">
+                        <Link
+                          href={link.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="text-xl font-medium text-foreground/80 hover:text-primary transition-colors hover:translate-x-2 duration-200"
+                        >
+                          {link.label}
+                        </Link>
+                        {/* Mobile Subcategories */}
+                        {link.subCategories &&
+                          link.subCategories.length > 0 && (
+                            <div className="pl-4 flex flex-col gap-2 border-l-2 border-muted ml-2">
+                              {link.subCategories.map((sub) => (
+                                <Link
+                                  key={sub.id}
+                                  href={`/collections/${link.categorySlug}?subCategoryId=${sub.id}`}
+                                  onClick={() => setIsMobileMenuOpen(false)}
+                                  className="text-base text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                  {sub.name}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                      </div>
                     ))}
                   </div>
                   {/* Mobile Auth Links */}
@@ -165,15 +230,32 @@ export function Navbar({ user }: { user?: any }) {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex lg:gap-x-10 items-center justify-center">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide uppercase relative group"
-              >
-                {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
-              </Link>
+            {allLinks.map((link) => (
+              <div key={link.href} className="relative group">
+                <Link
+                  href={link.href}
+                  className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors tracking-wide uppercase relative py-2"
+                >
+                  {link.label}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
+                </Link>
+                {/* Desktop Dropdown for Subcategories */}
+                {link.subCategories && link.subCategories.length > 0 && (
+                  <div className="absolute top-full left-0 pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <div className="bg-background border rounded-md shadow-lg p-2 flex flex-col gap-1">
+                      {link.subCategories.map((sub) => (
+                        <Link
+                          key={sub.id}
+                          href={`/collections/${link.categorySlug}?subCategoryId=${sub.id}`}
+                          className="text-sm px-3 py-2 rounded-sm hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                        >
+                          {sub.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
 

@@ -32,6 +32,7 @@ const productSchema = z.object({
   price: z.number().min(0.01),
   discountPrice: z.number().optional(),
   categoryId: z.string().min(1),
+  subCategoryId: z.string().optional().nullable(),
   images: z.array(z.string().url()).min(1),
   // sizes and colors will be derived from variants, so optional here or we validate variants
 });
@@ -56,6 +57,7 @@ export async function createProduct(formData: FormData) {
     price: Number(formData.get("price")),
     discountPrice: formData.get("discountPrice") ? Number(formData.get("discountPrice")) : undefined,
     categoryId: formData.get("category"),
+    subCategoryId: formData.get("subCategory") || null, // Handle SubCategory
     images: formData.get("imageUrls") ? JSON.parse(formData.get("imageUrls") as string) : [],
   };
 
@@ -69,7 +71,7 @@ export async function createProduct(formData: FormData) {
     throw new Error("Invalid fields");
   }
 
-  const { name, description, price, discountPrice, categoryId, images } = validatedFields.data;
+  const { name, description, price, discountPrice, categoryId, subCategoryId, images } = validatedFields.data;
   const variants = validatedVariants.data;
 
   // Derive unique sizes and colors for display
@@ -84,6 +86,7 @@ export async function createProduct(formData: FormData) {
       price,
       discountPrice,
       categoryId,
+      subCategoryId,
       images: JSON.stringify(images),
       sizes: JSON.stringify(sizes),
       colors: JSON.stringify(colors),
@@ -104,10 +107,18 @@ export async function createProduct(formData: FormData) {
 
 export async function deleteProduct(formData: FormData) {
     const productId = formData.get("productId") as string;
-    await db.product.delete({
-        where: { id: productId }
-    });
-    revalidatePath("/admin/products");
+    try {
+        await db.product.delete({
+            where: { id: productId }
+        });
+        revalidatePath("/admin/products");
+        return { success: true };
+    } catch (error: any) {
+        if (error.code === 'P2003') {
+            return { success: false, error: "Cannot delete product with associated orders. Please archive it instead." };
+        }
+        return { success: false, error: error.message };
+    }
 }
 
 export async function updateProduct(formData: FormData) {
@@ -120,6 +131,7 @@ export async function updateProduct(formData: FormData) {
       price: Number(formData.get("price")),
       discountPrice: formData.get("discountPrice") ? Number(formData.get("discountPrice")) : undefined,
       categoryId: formData.get("category"),
+      subCategoryId: formData.get("subCategory") || null,
       images: formData.get("imageUrls") ? JSON.parse(formData.get("imageUrls") as string) : [],
   };
 
@@ -129,6 +141,7 @@ export async function updateProduct(formData: FormData) {
       price: true,
       discountPrice: true,
       categoryId: true,
+      subCategoryId: true,
       images: true
   });
 
@@ -143,7 +156,7 @@ export async function updateProduct(formData: FormData) {
       return { success: false, error: "Invalid fields" };
   }
 
-  const { name, description, price, discountPrice, categoryId, images } = validatedFields.data;
+  const { name, description, price, discountPrice, categoryId, subCategoryId, images } = validatedFields.data;
   const variants = validatedVariants.data;
   
   const sizes = Array.from(new Set(variants.map(v => v.size)));
@@ -161,6 +174,7 @@ export async function updateProduct(formData: FormData) {
           price,
           discountPrice,
           categoryId,
+          subCategoryId,
           images: JSON.stringify(images),
           sizes: JSON.stringify(sizes),
           colors: JSON.stringify(colors),
@@ -388,5 +402,157 @@ export async function createOrder(data: any) {
           // User can retry payment? For now, redirect to failure page or similar.
           return { success: false, error: "Payment initialization failed" };
       }
+  }
+}
+
+// --- Category Actions ---
+
+const categorySchema = z.object({
+  name: z.string().min(1),
+  slug: z.string().min(1),
+  image: z.string().optional(),
+});
+
+export async function createCategory(formData: FormData) {
+  const rawData = {
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    image: formData.get("image") || undefined,
+  };
+
+  const validatedFields = categorySchema.safeParse(rawData);
+
+  if (!validatedFields.success) {
+    return { success: false, error: "Invalid fields" };
+  }
+
+  try {
+    await db.category.create({
+      data: validatedFields.data,
+    });
+    revalidatePath("/admin/categories");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Create Category Error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateCategory(formData: FormData) {
+  const categoryId = formData.get("id") as string;
+  const rawData = {
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    image: formData.get("image") || undefined,
+  };
+
+  const validatedFields = categorySchema.safeParse(rawData);
+
+  if (!validatedFields.success) {
+    return { success: false, error: "Invalid fields" };
+  }
+
+  try {
+    await db.category.update({
+      where: { id: categoryId },
+      data: validatedFields.data,
+    });
+    revalidatePath("/admin/categories");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Update Category Error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteCategory(formData: FormData) {
+  const categoryId = formData.get("id") as string;
+  try {
+    await db.category.delete({
+      where: { id: categoryId },
+    });
+    revalidatePath("/admin/categories");
+    return { success: true };
+  } catch (error: any) {
+    if (error.code === 'P2003') {
+        return { success: false, error: "Cannot delete category with associated products or sub-categories. Please remove them first." };
+    }
+    return { success: false, error: error.message };
+  }
+}
+
+// --- SubCategory Actions ---
+
+const subCategorySchema = z.object({
+  name: z.string().min(1),
+  slug: z.string().min(1),
+  categoryId: z.string().min(1),
+});
+
+export async function createSubCategory(formData: FormData) {
+  const rawData = {
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    categoryId: formData.get("categoryId"),
+  };
+
+  const validatedFields = subCategorySchema.safeParse(rawData);
+
+  if (!validatedFields.success) {
+    return { success: false, error: "Invalid fields" };
+  }
+
+  try {
+    await db.subCategory.create({
+      data: validatedFields.data,
+    });
+    revalidatePath("/admin/categories"); // Revalidate parent page
+    return { success: true };
+  } catch (error: any) {
+    console.error("Create SubCategory Error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateSubCategory(formData: FormData) {
+  const subCategoryId = formData.get("id") as string;
+  const rawData = {
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+    categoryId: formData.get("categoryId"),
+  };
+
+  const validatedFields = subCategorySchema.safeParse(rawData);
+
+  if (!validatedFields.success) {
+    return { success: false, error: "Invalid fields" };
+  }
+
+  try {
+    await db.subCategory.update({
+      where: { id: subCategoryId },
+      data: validatedFields.data,
+    });
+    revalidatePath("/admin/categories");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Update SubCategory Error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteSubCategory(formData: FormData) {
+  const subCategoryId = formData.get("id") as string;
+  try {
+    await db.subCategory.delete({
+      where: { id: subCategoryId },
+    });
+    revalidatePath("/admin/categories");
+    return { success: true };
+  } catch (error: any) {
+    if (error.code === 'P2003') {
+        return { success: false, error: "Cannot delete sub-category with associated products. Please remove them first." };
+    }
+    return { success: false, error: error.message };
   }
 }
