@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useRouter, Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { event as pixelEvent } from "@/lib/facebookPixel";
 
 interface ShoppingCartModalProps {
   isOpen: boolean;
@@ -30,6 +31,17 @@ export function ShoppingCartModal({
   }, []);
 
   const onCheckout = () => {
+    pixelEvent("InitiateCheckout", {
+      content_ids: items.map((item) => item.productId),
+      content_category: "checkout",
+      num_items: items.reduce((acc, item) => acc + item.quantity, 0),
+      value: getTotal(),
+      currency: "EGP",
+      contents: items.map((item) => ({
+        id: item.productId,
+        quantity: item.quantity,
+      })),
+    });
     setIsOpen(false);
     router.push("/checkout");
   };

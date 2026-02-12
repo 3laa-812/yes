@@ -20,6 +20,7 @@ interface ProductSelectorProps {
 }
 
 import { useTranslations } from "next-intl";
+import { event as pixelEvent } from "@/lib/facebookPixel";
 
 // ... (keep interface)
 
@@ -77,6 +78,15 @@ export function ProductSelector({
       size: selectedSize,
       color: selectedColor,
       quantity: 1,
+    });
+
+    pixelEvent("AddToCart", {
+      content_ids: [id],
+      content_name: name,
+      content_type: "product",
+      currency: "EGP",
+      value: effectivePrice,
+      contents: [{ id: id, quantity: 1 }],
     });
 
     toast.success(t("addedToCart"));
