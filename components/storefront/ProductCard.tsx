@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { Link } from "@/i18n/routing";
-import { formatPrice } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import { ScaleHover } from "@/components/ui/motion";
+import { useLocale } from "next-intl";
 
 interface ProductCardProps {
   id: string;
@@ -20,6 +21,7 @@ export function ProductCard({
   category,
   discountPrice,
 }: ProductCardProps) {
+  const locale = useLocale();
   const isDiscounted =
     discountPrice && discountPrice > 0 && discountPrice < Number(price);
   const currentPrice = isDiscounted ? discountPrice : Number(price);
@@ -60,11 +62,11 @@ export function ProductCard({
             <p
               className={`text-sm font-bold ${isDiscounted ? "text-red-600" : "text-foreground"}`}
             >
-              {formatPrice(currentPrice)}
+              {formatCurrency(currentPrice as number, locale)}
             </p>
             {isDiscounted && (
               <p className="text-xs text-muted-foreground line-through">
-                {formatPrice(originalPrice)}
+                {formatCurrency(originalPrice, locale)}
               </p>
             )}
           </div>

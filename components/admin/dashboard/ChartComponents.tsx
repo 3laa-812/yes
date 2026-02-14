@@ -68,7 +68,9 @@ export function RevenueChart({ data }: RevenueChartProps) {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) =>
+                  isRTL ? `${value} ج.م` : `${value} EGP`
+                }
                 orientation={isRTL ? "right" : "left"}
               />
               <Tooltip

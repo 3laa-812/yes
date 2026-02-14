@@ -1,7 +1,7 @@
 import db from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { formatPrice } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -66,7 +66,7 @@ export default async function OrdersPage({ params }: OrdersPageProps) {
                   <div>
                     <p className="text-sm text-gray-500">{tOrder("total")}</p>
                     <p className="font-medium">
-                      {formatPrice(Number(order.total))}
+                      {formatCurrency(Number(order.total), locale)}
                     </p>
                   </div>
                   <div>

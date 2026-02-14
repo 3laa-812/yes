@@ -2,14 +2,14 @@ import { getTranslations } from "next-intl/server";
 import { ar, enUS } from "date-fns/locale";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import db from "@/lib/db";
-import { DollarSign, Package, ShoppingBag, Users } from "lucide-react";
+import { Banknote, Package, ShoppingBag, Users } from "lucide-react";
 import { StatsCard } from "@/components/admin/dashboard/StatsCard";
 import {
   RevenueChart,
   OrdersChart,
   StatusChart,
 } from "@/components/admin/dashboard/ChartComponents";
-import { formatPrice } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 
 async function getStats(locale: string) {
   const dateLocale = locale === "ar" ? ar : enUS;
@@ -158,9 +158,9 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title={t("totalRevenue")}
-          value={formatPrice(Number(stats.revenue))}
+          value={formatCurrency(Number(stats.revenue), locale)}
           description={t("lifetime")}
-          icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
+          icon={<Banknote className="h-4 w-4 text-muted-foreground" />}
           index={0}
           trend="up"
         />

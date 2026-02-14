@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import db from "@/lib/db";
-import { formatPrice } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import Image from "next/image";
 import { deleteProduct } from "@/app/actions";
 import { DeleteProductButton } from "./_components/DeleteProductButton";
@@ -103,7 +103,7 @@ export default async function AdminProductsPage() {
                     {product.stock > 0 ? t("active") : t("draft")}
                   </td>
                   <td className="p-4 align-middle">
-                    {formatPrice(Number(product.price))}
+                    {formatCurrency(Number(product.price), locale)}
                   </td>
                   <td className="p-4 align-middle">0</td>
                   <td className="p-4 align-middle">

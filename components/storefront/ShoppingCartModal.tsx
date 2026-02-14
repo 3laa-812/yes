@@ -5,10 +5,10 @@ import { Dialog, Transition } from "@headlessui/react";
 import { X, ShoppingBag, Plus, Minus, Trash2 } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import Image from "next/image";
-import { formatPrice } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useRouter, Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { event as pixelEvent } from "@/lib/facebookPixel";
 
 interface ShoppingCartModalProps {
@@ -23,6 +23,7 @@ export function ShoppingCartModal({
   const { items, removeItem, updateQuantity, getTotal } = useCartStore();
   const t = useTranslations("Cart");
   const tCommon = useTranslations("Common");
+  const locale = useLocale();
   const router = useRouter();
 
   // Hydration handling
@@ -136,15 +137,17 @@ export function ShoppingCartModal({
                                       </h3>
                                       <div className="ml-4 rtl:mr-4 rtl:ml-0 flex flex-col items-end">
                                         <p>
-                                          {formatPrice(
+                                          {formatCurrency(
                                             item.price * item.quantity,
+                                            locale,
                                           )}
                                         </p>
                                         {item.originalPrice && (
                                           <p className="text-xs text-muted-foreground line-through">
-                                            {formatPrice(
+                                            {formatCurrency(
                                               item.originalPrice *
                                                 item.quantity,
+                                              locale,
                                             )}
                                           </p>
                                         )}
@@ -212,7 +215,7 @@ export function ShoppingCartModal({
                       <div className="border-t border-border px-4 py-6 sm:px-6 bg-card">
                         <div className="flex justify-between text-base font-medium text-foreground">
                           <p>{t("subtotal")}</p>
-                          <p>{formatPrice(getTotal())}</p>
+                          <p>{formatCurrency(getTotal(), locale)}</p>
                         </div>
                         <p className="mt-0.5 text-sm text-muted-foreground">
                           {t("shippingNote")}

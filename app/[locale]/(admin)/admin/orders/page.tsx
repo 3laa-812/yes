@@ -1,5 +1,5 @@
 import db from "@/lib/db";
-import { formatPrice } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { updateOrderStatus } from "@/app/[locale]/(admin)/actions";
 import { Badge } from "@/components/ui/badge";
@@ -117,7 +117,7 @@ export default async function AdminOrdersPage() {
                     </Badge>
                   </td>
                   <td className="p-4 align-middle">
-                    {formatPrice(Number(order.total))}
+                    {formatCurrency(Number(order.total), locale)}
                   </td>
                   <td className="p-4 align-middle">
                     {format(new Date(order.createdAt), "MMM d, yyyy", {

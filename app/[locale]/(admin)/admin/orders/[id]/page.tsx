@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { updateOrderStatus } from "@/app/[locale]/(admin)/actions";
-import { formatPrice } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import Image from "next/image";
 import {
   Select,
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { getLocale } from "next-intl/server";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -34,6 +35,7 @@ async function getOrder(id: string) {
 export default async function AdminOrderDetailsPage({ params }: Props) {
   const { id } = await params;
   const order = await getOrder(id);
+  const locale = await getLocale();
 
   if (!order) notFound();
 
@@ -78,17 +80,21 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
                     </div>
                     <div className="text-right">
                       <p className="font-medium">
-                        {formatPrice(Number(item.price))} x {item.quantity}
+                        {formatCurrency(Number(item.price), locale)} x{" "}
+                        {item.quantity}
                       </p>
                       <p className="font-bold">
-                        {formatPrice(Number(item.price) * item.quantity)}
+                        {formatCurrency(
+                          Number(item.price) * item.quantity,
+                          locale,
+                        )}
                       </p>
                     </div>
                   </div>
                 ))}
                 <div className="flex justify-between pt-4 font-bold text-lg border-t mt-4">
                   <span>Total</span>
-                  <span>{formatPrice(Number(order.total))}</span>
+                  <span>{formatCurrency(Number(order.total), locale)}</span>
                 </div>
               </div>
             </CardContent>

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import db from "@/lib/db";
-import { formatPrice } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import { ImageGallery } from "@/components/storefront/ImageGallery";
 import { ProductSelector } from "@/components/storefront/ProductSelector";
 import { PixelViewContent } from "@/components/storefront/PixelViewContent";
@@ -9,6 +9,7 @@ import { PixelViewContent } from "@/components/storefront/PixelViewContent";
 interface ProductPageProps {
   params: Promise<{
     id: string;
+    locale: string;
   }>;
 }
 
@@ -32,7 +33,7 @@ async function getProduct(id: string) {
 export const dynamic = "force-dynamic";
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { id } = await params;
+  const { id, locale } = await params;
   const product = await getProduct(id);
   const t = await getTranslations("Storefront.ProductDetails");
 
@@ -73,17 +74,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <p
                   className={`text-3xl tracking-tight ${product.discountPrice && (product.discountPrice as any) < product.price ? "text-destructive font-bold" : "text-foreground"}`}
                 >
-                  {formatPrice(
+                  {formatCurrency(
                     product.discountPrice &&
                       (product.discountPrice as any) < product.price
                       ? (product.discountPrice as any)
                       : (product.price as any),
+                    locale,
                   )}
                 </p>
                 {product.discountPrice &&
                   (product.discountPrice as any) < product.price && (
                     <p className="text-xl tracking-tight text-muted-foreground line-through mb-1">
-                      {formatPrice(product.price as any)}
+                      {formatCurrency(product.price as any, locale)}
                     </p>
                   )}
               </div>

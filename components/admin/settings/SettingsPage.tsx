@@ -93,7 +93,7 @@ export default function SettingsPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="currency">Currency</Label>
-                <Input id="currency" defaultValue="USD ($)" disabled />
+                <Input id="currency" defaultValue="EGP (ج.م)" disabled />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="tax-rate">Tax Rate (%)</Label>

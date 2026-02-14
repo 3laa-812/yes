@@ -1,7 +1,7 @@
 import db from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect, notFound } from "next/navigation";
-import { formatPrice } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -154,7 +154,7 @@ export default async function OrderDetailsPage({ params }: Props) {
                         {tOrder("qty")}: {item.quantity}
                       </div>
                       <div className="font-medium">
-                        {formatPrice(Number(item.price))}
+                        {formatCurrency(Number(item.price), locale)}
                       </div>
                     </div>
                   </div>
@@ -163,7 +163,7 @@ export default async function OrderDetailsPage({ params }: Props) {
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>{t("subtotal")}</span>
-                  <span>{formatPrice(Number(order.total))}</span>
+                  <span>{formatCurrency(Number(order.total), locale)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>{t("shipping")}</span>
@@ -171,7 +171,7 @@ export default async function OrderDetailsPage({ params }: Props) {
                 </div>
                 <div className="flex justify-between font-bold text-lg pt-2">
                   <span>{t("total")}</span>
-                  <span>{formatPrice(Number(order.total))}</span>
+                  <span>{formatCurrency(Number(order.total), locale)}</span>
                 </div>
               </div>
             </CardContent>
