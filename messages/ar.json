@@ -20,7 +20,15 @@
     "allProducts": "جميع المنتجات",
     "search": "بحث",
     "user": "حسابي",
-    "cart": "عربة التسوق"
+    "cart": "عربة التسوق",
+    "openMenu": "فتح القائمة",
+    "navigationMenu": "قائمة التنقل",
+    "logoAlt": "شعار YES",
+    "myOrders": "طلباتي",
+    "adminDashboard": "لوحة تحكم الإدارة",
+    "signOut": "تسجيل الخروج",
+    "signIn": "تسجيل الدخول",
+    "register": "تسجيل جديد"
   },
   "Footer": {
     "about": "عن المتجر",
@@ -45,7 +53,8 @@
     "shippingNote": "يتم حساب الشحن والضرائب عند الدفع.",
     "checkout": "إتمام الشراء",
     "continueShopping": "متابعة التسوق",
-    "remove": "إزالة"
+    "remove": "إزالة",
+    "closePanel": "إغلاق اللوحة"
   },
   "Checkout": {
     "title": "إتمام الشراء",
@@ -70,6 +79,18 @@
     "processing": "جاري المعالجة...",
     "empty": "عربة التسوق فارغة",
     "addItems": "أضف منتجات إلى عربة التسوق للمتابعة.",
+    "qty": "الكمية",
+    "placeholders": {
+      "firstName": "محمد",
+      "lastName": "أحمد",
+      "email": "mohamed@example.com",
+      "phone": "01xxxxxxxxx",
+      "address": "123 اسم الشارع، شقة 4",
+      "city": "القاهرة",
+      "phoneOrEmail": "01xxxxxxxxx أو m@example.com",
+      "fullName": "محمد أحمد",
+      "emailOptional": "m@example.com"
+    },
     "validation": {
       "firstName": "الاسم الأول مطلوب",
       "lastName": "اسم العائلة مطلوب",
@@ -173,6 +194,8 @@
     "settings": "الإعدادات",
     "signOut": "تسجيل الخروج",
     "title": "لوحة تحكم YES",
+    "logoAlt": "شعار YES",
+    "categories": "الفئات",
     "Products": {
       "title": "المنتجات",
       "addProduct": "إضافة منتج",
@@ -185,6 +208,70 @@
       "actions": "إجراءات",
       "active": "نشط",
       "draft": "مسودة",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "editProduct": "تعديل المنتج",
+      "newProduct": "منتج جديد",
+      "productDetails": "تفاصيل المنتج",
+      "basicInfo": "المعلومات الأساسية عن المنتج",
+      "nameLabel": "الاسم",
+      "namePlaceholder": "مثال: قميص قطني",
+      "descriptionLabel": "الوصف",
+      "descriptionPlaceholder": "اوصف المنتج...",
+      "categoryLabel": "الفئة",
+      "selectCategory": "اختر فئة",
+      "selectSize": "اختر المقاس",
+      "selectColor": "اختر اللون",
+      "priceLabel": "السعر",
+      "pricePlaceholder": "0.00",
+      "discountPriceLabel": "سعر الخصم",
+      "discountPricePlaceholder": "0.00",
+      "updateProduct": "تحديث المنتج",
+      "createProduct": "إنشاء منتج",
+      "productUpdated": "تم تحديث المنتج بنجاح!",
+      "productCreated": "تم إنشاء المنتج بنجاح!",
+      "productDeleted": "تم حذف المنتج بنجاح",
+      "deleteFailed": "فشل حذف المنتج",
+      "selectSizeAndColor": "يرجى اختيار المقاس واللون",
+      "variantExists": "هذا الخيار موجود بالفعل",
+      "somethingWentWrong": "حدث خطأ ما.",
+      "saving": "جاري الحفظ...",
+      "confirmDelete": "هل أنت متأكد من حذف هذا المنتج؟"
+    },
+    "Categories": {
+      "title": "الفئات",
+      "editCategory": "تعديل الفئة",
+      "newCategory": "فئة جديدة",
+      "updateDetails": "تحديث تفاصيل الفئة",
+      "addNew": "إضافة فئة جديدة للمتجر",
+      "nameLabel": "الاسم",
+      "namePlaceholder": "مثال: رجال",
+      "slugLabel": "الرابط",
+      "slugPlaceholder": "مثال: men",
+      "imageLabel": "الصورة",
+      "imageAlt": "صورة الفئة",
+      "imageUrlPlaceholder": "رابط الصورة",
+      "saving": "جاري الحفظ...",
+      "update": "تحديث",
+      "create": "إنشاء",
+      "cancel": "إلغاء",
+      "categoryUpdated": "تم تحديث الفئة",
+      "categoryCreated": "تم إنشاء الفئة",
+      "categoryDeleted": "تم حذف الفئة",
+      "deleteFailed": "فشل حذف الفئة"
+    },
+    "SubCategories": {
+      "created": "تم إنشاء الفئة الفرعية",
+      "createFailed": "فشل الإنشاء",
+      "deleted": "تم الحذف",
+      "deleteFailed": "فشل الحذف",
+      "updated": "تم التحديث",
+      "updateFailed": "فشل التحديث",
+      "namePlaceholder": "اسم الفئة الفرعية الجديدة",
+      "slugPlaceholder": "الرابط",
+      "addNew": "إضافة جديد",
+      "save": "حفظ",
+      "cancel": "إلغاء",
       "edit": "تعديل",
       "delete": "حذف"
     },
@@ -219,7 +306,8 @@
       "noName": "بدون اسم",
       "viewDetails": "عرض التفاصيل",
       "viewOrders": "عرض الطلبات",
-      "delete": "حذف العميل"
+      "delete": "حذف العميل",
+      "userAlt": "مستخدم"
     }
   },
   "Auth": {
@@ -239,10 +327,44 @@
     "phoneOrEmail": "رقم الهاتف أو البريد الإلكتروني",
     "signingIn": "جاري الدخول...",
     "dontHaveAccount": "ليس لديك حساب؟",
-    "signup": "سجل الآن"
+    "signup": "سجل الآن",
+    "adminAccess": "الوصول للإدارة",
+    "adminSignInDesc": "يرجى تسجيل الدخول للمتابعة إلى لوحة التحكم.",
+    "emailAddress": "البريد الإلكتروني",
+    "emailPlaceholder": "البريد الإلكتروني",
+    "passwordPlaceholder": "كلمة المرور",
+    "defaultCredentials": "بيانات الدخول الافتراضية:",
+    "defaultEmail": "البريد: admin@example.com",
+    "defaultPassword": "كلمة المرور: admin",
+    "placeholders": {
+      "phoneOrEmail": "01xxxxxxxxx أو m@example.com",
+      "phone": "01xxxxxxxxx",
+      "fullName": "محمد أحمد",
+      "emailOptional": "m@example.com"
+    }
+  },
+  "Product": {
+    "productImage": "صورة المنتج",
+    "bigProductImage": "صورة المنتج الكبيرة"
   },
   "Common": {
     "loading": "جاري التحميل...",
-    "error": "حدث خطأ ما"
+    "error": "حدث خطأ ما",
+    "or": "أو",
+    "guest": "زائر",
+    "invalidCredentials": "بيانات الدخول غير صحيحة"
+  },
+  "LanguageSwitcher": {
+    "changeLanguage": "تغيير اللغة",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "Metadata": {
+    "title": "YES",
+    "description": "للملابس الرجالية"
+  },
+  "Hero": {
+    "collection": "المجموعة",
+    "fashionModel": "عارضة أزياء"
   }
 }

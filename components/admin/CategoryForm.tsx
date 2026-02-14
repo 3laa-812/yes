@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { Loader2, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface CategoryFormProps {
   category?: {
@@ -29,6 +30,7 @@ interface CategoryFormProps {
 
 export function CategoryForm({ category }: CategoryFormProps) {
   const router = useRouter();
+  const t = useTranslations("Admin.Categories");
   const [loading, setLoading] = useState(false);
   const [slug, setSlug] = useState(category?.slug || "");
   const [image, setImage] = useState<string | null>(category?.image || null);
@@ -59,18 +61,18 @@ export function CategoryForm({ category }: CategoryFormProps) {
       const res = await action(formData);
 
       if (res.success) {
-        toast.success(category ? "Category updated" : "Category created");
+        toast.success(category ? t("categoryUpdated") : t("categoryCreated"));
         if (!category) {
           router.push("/admin/categories");
         } else {
           router.refresh();
         }
       } else {
-        toast.error((res.error as string) || "Something went wrong");
+        toast.error((res.error as string) || t("deleteFailed"));
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      toast.error(t("deleteFailed"));
     } finally {
       setLoading(false);
     }
@@ -81,23 +83,23 @@ export function CategoryForm({ category }: CategoryFormProps) {
       {category && <input type="hidden" name="id" value={category.id} />}
       <Card>
         <CardHeader>
-          <CardTitle>{category ? "Edit Category" : "New Category"}</CardTitle>
+          <CardTitle>{category ? t("editCategory") : t("newCategory")}</CardTitle>
           <CardDescription>
             {category
-              ? "Update category details"
-              : "Add a new category to your store"}
+              ? t("updateDetails")
+              : t("addNew")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{t("nameLabel")}</Label>
             <Input
               id="name"
               name="name"
               defaultValue={category?.name}
               onChange={handleNameChange}
               required
-              placeholder="e.g. Men"
+              placeholder={t("namePlaceholder")}
             />
           </div>
           <div className="space-y-2">
@@ -108,7 +110,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               required
-              placeholder="e.g. men"
+              placeholder={t("slugPlaceholder")}
             />
           </div>
 
@@ -119,7 +121,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
               <div className="relative w-40 h-40 rounded-md overflow-hidden border">
                 <Image
                   src={image}
-                  alt="Category Image"
+                  alt={t("imageAlt")}
                   fill
                   className="object-cover"
                 />
@@ -135,7 +137,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
               <div className="border-2 border-dashed rounded-md p-4 text-center cursor-pointer hover:bg-muted/50">
                 {/* Placeholder for Upload Thing or simple URL input for now */}
                 <Input
-                  placeholder="Image URL"
+                  placeholder={t("imageUrlPlaceholder")}
                   onChange={(e) => setImage(e.target.value)}
                   className="mb-2"
                 />
@@ -152,11 +154,11 @@ export function CategoryForm({ category }: CategoryFormProps) {
             type="button"
             onClick={() => window.history.back()}
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button disabled={loading} type="submit">
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {loading ? "Saving..." : category ? "Update" : "Create"}
+            {loading ? t("saving") : category ? t("update") : t("create")}
           </Button>
         </CardFooter>
       </Card>

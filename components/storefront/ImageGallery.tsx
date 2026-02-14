@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface ImageGalleryProps {
   images: string[];
@@ -10,6 +11,7 @@ interface ImageGalleryProps {
 
 export function ImageGallery({ images }: ImageGalleryProps) {
   const [bigImage, setBigImage] = useState(images[0]);
+  const t = useTranslations("Product");
 
   return (
     <div className="grid gap-4 lg:grid-cols-5">
@@ -30,7 +32,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
             >
               <Image
                 src={image}
-                alt="Product Image"
+                alt={t("productImage")}
                 width={200}
                 height={200}
                 className="h-full w-full object-cover object-center"
@@ -42,7 +44,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
       <div className="relative overflow-hidden rounded-lg bg-muted border border-border lg:col-span-4 max-h-[600px]">
         <Image
           src={bigImage}
-          alt="Big Product Image"
+          alt={t("bigProductImage")}
           width={800}
           height={800}
           className="h-full w-full object-cover object-center"

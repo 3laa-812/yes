@@ -121,7 +121,7 @@ export default function CheckoutPage() {
         <h1 className="text-3xl font-bold mb-4">{t("empty")}</h1>
         <p className="text-gray-500 mb-8">{t("addItems")}</p>
         <Button onClick={() => router.push("/")}>
-          {t("continueShopping", { default: "Continue Shopping" })}
+          {t("continueShopping")}
         </Button>
       </div>
     );
@@ -154,7 +154,7 @@ export default function CheckoutPage() {
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleInputChange}
-                      placeholder="John"
+                      placeholder={t("placeholders.firstName")}
                       className="text-start"
                     />
                     {errors.firstName && (
@@ -170,7 +170,7 @@ export default function CheckoutPage() {
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleInputChange}
-                      placeholder="Doe"
+                      placeholder={t("placeholders.lastName")}
                       className="text-start"
                     />
                     {errors.lastName && (
@@ -189,7 +189,7 @@ export default function CheckoutPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="john@example.com"
+                    placeholder={t("placeholders.email")}
                     className="text-start"
                   />
                   {errors.email && (
@@ -204,7 +204,7 @@ export default function CheckoutPage() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="01xxxxxxxxx"
+                    placeholder={t("placeholders.phone")}
                     className="text-start"
                   />
                   {errors.phone && (
@@ -219,7 +219,7 @@ export default function CheckoutPage() {
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    placeholder="123 Street Name, Apt 4"
+                    placeholder={t("placeholders.address")}
                     className="text-start"
                   />
                   {errors.address && (
@@ -234,7 +234,7 @@ export default function CheckoutPage() {
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
-                    placeholder="Cairo"
+                    placeholder={t("placeholders.city")}
                     className="text-start"
                   />
                   {errors.city && (
@@ -322,7 +322,7 @@ export default function CheckoutPage() {
                       </p>
                       <div className="flex items-center justify-between mt-1">
                         <span className="text-sm text-muted-foreground">
-                          Qty: {item.quantity}
+                          {t("qty")}: {item.quantity}
                         </span>
                         <span className="font-medium text-foreground">
                           ${(item.price * item.quantity).toFixed(2)}
@@ -335,7 +335,7 @@ export default function CheckoutPage() {
 
               <div className="mt-6 space-y-2 border-t border-border pt-4">
                 <div className="flex justify-between text-muted-foreground">
-                  <span>{t("shipping", { default: "Shipping" })}</span>
+                  <span>{t("shipping")}</span>
                   <span>{t("free")}</span>
                 </div>
                 <div className="flex justify-between font-bold text-xl pt-2 border-t border-border mt-2 text-foreground">

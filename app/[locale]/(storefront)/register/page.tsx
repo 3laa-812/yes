@@ -42,7 +42,7 @@ export default function RegisterPage() {
           <form action={formAction} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="name">{t("fullName")}</Label>
-              <Input id="name" name="name" placeholder="John Doe" required />
+              <Input id="name" name="name" placeholder={t("placeholders.fullName")} required />
               {state?.fieldErrors?.name && (
                 <p className="text-sm text-red-500">
                   {state.fieldErrors.name[0]}
@@ -56,7 +56,7 @@ export default function RegisterPage() {
                 id="phone"
                 name="phone"
                 type="tel"
-                placeholder="01xxxxxxxxx"
+                placeholder={t("placeholders.phone")}
                 required
               />
               {state?.fieldErrors?.phone && (
@@ -72,7 +72,7 @@ export default function RegisterPage() {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder={t("placeholders.emailOptional")}
               />
               {state?.fieldErrors?.email && (
                 <p className="text-sm text-red-500">

@@ -46,7 +46,7 @@ export default async function AdminLayout({
             <Link href="/" className="flex items-center gap-2">
               <Image
                 src="/branding/logo-icon.png"
-                alt="YES Logo"
+                alt={t("logoAlt")}
                 width={32}
                 height={32}
                 className="h-8 w-8"
@@ -87,7 +87,7 @@ export default async function AdminLayout({
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted"
               >
                 <Package className="h-4 w-4" />
-                Categories
+                {t("categories")}
               </Link>
               <Link
                 href="/admin/products"

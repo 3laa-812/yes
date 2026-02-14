@@ -11,12 +11,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslations } from "next-intl";
 
 export default function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const pathname = usePathname();
+  const t = useTranslations("LanguageSwitcher");
 
   function onSelectChange(nextLocale: string) {
     if (nextLocale === locale) return;
@@ -31,7 +33,7 @@ export default function LanguageSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" disabled={isPending}>
           <Globe className="h-5 w-5" />
-          <span className="sr-only">Change Language</span>
+          <span className="sr-only">{t("changeLanguage")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -39,13 +41,13 @@ export default function LanguageSwitcher() {
           onClick={() => onSelectChange("en")}
           className={locale === "en" ? "bg-accent" : ""}
         >
-          English
+          {t("english")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => onSelectChange("ar")}
           className={locale === "ar" ? "bg-accent" : ""}
         >
-          العربية
+          {t("arabic")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -41,6 +41,7 @@ export function Navbar({
   categories?: Category[];
 }) {
   const t = useTranslations("Navbar");
+  const tCommon = useTranslations("Common");
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const cartItems = useCartStore((state) => state.items);
@@ -107,14 +108,14 @@ export function Navbar({
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="-ml-2">
                   <Menu className="h-6 w-6" />
-                  <span className="sr-only">Open menu</span>
+                  <span className="sr-only">{t("openMenu")}</span>
                 </Button>
               </SheetTrigger>
               <SheetContent
                 side="left"
                 className="flex flex-col gap-6 p-6 w-[85vw] sm:w-[350px]"
               >
-                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                <SheetTitle className="sr-only">{t("navigationMenu")}</SheetTitle>
                 <div className="flex flex-col gap-8 mt-8">
                   <Link
                     href="/"
@@ -123,7 +124,7 @@ export function Navbar({
                   >
                     <Image
                       src="/branding/logo-dark.png"
-                      alt="YES Logo"
+                      alt={t("logoAlt")}
                       fill
                       className="object-contain object-left"
                     />
@@ -167,7 +168,7 @@ export function Navbar({
                           className="flex items-center gap-3 text-lg font-medium text-foreground/80"
                         >
                           <Package className="w-5 h-5" />
-                          My Orders
+                          {t("myOrders")}
                         </Link>
                         {user.role !== "USER" && (
                           <Link
@@ -175,7 +176,7 @@ export function Navbar({
                             onClick={() => setIsMobileMenuOpen(false)}
                             className="flex items-center gap-3 text-lg font-medium text-foreground/80"
                           >
-                            Admin Dashboard
+                            {t("adminDashboard")}
                           </Link>
                         )}
                         <Link
@@ -183,7 +184,7 @@ export function Navbar({
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="flex items-center gap-3 text-lg font-medium text-destructive"
                         >
-                          Sign Out
+                          {t("signOut")}
                         </Link>
                       </>
                     ) : (
@@ -193,7 +194,7 @@ export function Navbar({
                             href="/login"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
-                            Sign In
+                            {t("signIn")}
                           </Link>
                         </Button>
                         <Button asChild className="w-full">
@@ -201,7 +202,7 @@ export function Navbar({
                             href="/register"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
-                            Register
+                            {t("register")}
                           </Link>
                         </Button>
                       </div>
@@ -220,7 +221,7 @@ export function Navbar({
             >
               <Image
                 src="/branding/logo-dark.png"
-                alt="YES Logo"
+                alt={t("logoAlt")}
                 fill
                 className="object-contain"
                 priority
@@ -280,7 +281,7 @@ export function Navbar({
                 size="icon"
                 asChild
                 className="text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded-full hidden sm:flex"
-                title="My Orders"
+                title={t("myOrders")}
               >
                 <Link href="/account/orders">
                   <Package className="h-5 w-5" />
@@ -303,7 +304,7 @@ export function Navbar({
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      {user?.name || "Guest"}
+                      {user?.name || tCommon("guest")}
                     </p>
                     {user?.email && (
                       <p className="text-xs leading-none text-muted-foreground">
@@ -321,12 +322,12 @@ export function Navbar({
                         className="flex w-full items-center"
                       >
                         <Package className="mr-2 h-4 w-4" />
-                        My Orders
+                        {t("myOrders")}
                       </Link>
                     </DropdownMenuItem>
                     {user.role !== "USER" && (
                       <DropdownMenuItem asChild className="cursor-pointer">
-                        <Link href="/admin/dashboard">Admin Dashboard</Link>
+                        <Link href="/admin/dashboard">{t("adminDashboard")}</Link>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
@@ -334,16 +335,16 @@ export function Navbar({
                       asChild
                       className="cursor-pointer text-destructive focus:text-destructive"
                     >
-                      <Link href="/signout">Sign Out</Link>
+                      <Link href="/signout">{t("signOut")}</Link>
                     </DropdownMenuItem>
                   </>
                 ) : (
                   <>
                     <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link href="/login">Sign In</Link>
+                      <Link href="/login">{t("signIn")}</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link href="/register">Register</Link>
+                      <Link href="/register">{t("register")}</Link>
                     </DropdownMenuItem>
                   </>
                 )}

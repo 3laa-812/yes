@@ -20,7 +20,15 @@
     "allProducts": "All Products",
     "search": "Search",
     "user": "User",
-    "cart": "Cart"
+    "cart": "Cart",
+    "openMenu": "Open menu",
+    "navigationMenu": "Navigation Menu",
+    "logoAlt": "YES Logo",
+    "myOrders": "My Orders",
+    "adminDashboard": "Admin Dashboard",
+    "signOut": "Sign Out",
+    "signIn": "Sign In",
+    "register": "Register"
   },
   "Footer": {
     "about": "About",
@@ -45,7 +53,8 @@
     "shippingNote": "Shipping and taxes calculated at checkout.",
     "checkout": "Checkout",
     "continueShopping": "Continue Shopping",
-    "remove": "Remove"
+    "remove": "Remove",
+    "closePanel": "Close panel"
   },
   "Checkout": {
     "title": "Checkout",
@@ -70,6 +79,18 @@
     "processing": "Processing...",
     "empty": "Your Cart is Empty",
     "addItems": "Add items to your cart to proceed to checkout.",
+    "qty": "Qty",
+    "placeholders": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john@example.com",
+      "phone": "01xxxxxxxxx",
+      "address": "123 Street Name, Apt 4",
+      "city": "Cairo",
+      "phoneOrEmail": "01xxxxxxxxx or m@example.com",
+      "fullName": "John Doe",
+      "emailOptional": "m@example.com"
+    },
     "validation": {
       "firstName": "First name is required",
       "lastName": "Last name is required",
@@ -173,6 +194,8 @@
     "settings": "Settings",
     "signOut": "Sign Out",
     "title": "YES ADMIN",
+    "logoAlt": "YES Logo",
+    "categories": "Categories",
     "Products": {
       "title": "Products",
       "addProduct": "Add Product",
@@ -185,6 +208,70 @@
       "actions": "Actions",
       "active": "Active",
       "draft": "Draft",
+      "edit": "Edit",
+      "delete": "Delete",
+      "editProduct": "Edit Product",
+      "newProduct": "New Product",
+      "productDetails": "Product Details",
+      "basicInfo": "Basic information about the product",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Cotton T-Shirt",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Describe the product...",
+      "categoryLabel": "Category",
+      "selectCategory": "Select a category",
+      "selectSize": "Select Size",
+      "selectColor": "Select Color",
+      "priceLabel": "Price",
+      "pricePlaceholder": "0.00",
+      "discountPriceLabel": "Discount Price",
+      "discountPricePlaceholder": "0.00",
+      "updateProduct": "Update Product",
+      "createProduct": "Create Product",
+      "productUpdated": "Product updated successfully!",
+      "productCreated": "Product created successfully!",
+      "productDeleted": "Product deleted successfully",
+      "deleteFailed": "Failed to delete product",
+      "selectSizeAndColor": "Please select both size and color",
+      "variantExists": "This variant already exists",
+      "somethingWentWrong": "Something went wrong.",
+      "saving": "Saving...",
+      "confirmDelete": "Are you sure you want to delete this product?"
+    },
+    "Categories": {
+      "title": "Categories",
+      "editCategory": "Edit Category",
+      "newCategory": "New Category",
+      "updateDetails": "Update category details",
+      "addNew": "Add a new category to your store",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Men",
+      "slugLabel": "Slug",
+      "slugPlaceholder": "e.g. men",
+      "imageLabel": "Image",
+      "imageAlt": "Category Image",
+      "imageUrlPlaceholder": "Image URL",
+      "saving": "Saving...",
+      "update": "Update",
+      "create": "Create",
+      "cancel": "Cancel",
+      "categoryUpdated": "Category updated",
+      "categoryCreated": "Category created",
+      "categoryDeleted": "Category deleted",
+      "deleteFailed": "Failed to delete category"
+    },
+    "SubCategories": {
+      "created": "SubCategory Created",
+      "createFailed": "Failed to create",
+      "deleted": "Deleted",
+      "deleteFailed": "Failed to delete",
+      "updated": "Updated",
+      "updateFailed": "Failed to update",
+      "namePlaceholder": "New Sub-Category Name",
+      "slugPlaceholder": "slug",
+      "addNew": "Add New",
+      "save": "Save",
+      "cancel": "Cancel",
       "edit": "Edit",
       "delete": "Delete"
     },
@@ -219,7 +306,8 @@
       "noName": "No Name",
       "viewDetails": "View details",
       "viewOrders": "View orders",
-      "delete": "Delete customer"
+      "delete": "Delete customer",
+      "userAlt": "User"
     }
   },
   "Auth": {
@@ -239,10 +327,44 @@
     "phoneOrEmail": "Phone Number or Email",
     "signingIn": "Signing in...",
     "dontHaveAccount": "Don't have an account?",
-    "signup": "Sign up"
+    "signup": "Sign up",
+    "adminAccess": "Admin Access",
+    "adminSignInDesc": "Please sign in to continue to the dashboard.",
+    "emailAddress": "Email address",
+    "emailPlaceholder": "Email address",
+    "passwordPlaceholder": "Password",
+    "defaultCredentials": "Default Credentials:",
+    "defaultEmail": "Email: admin@example.com",
+    "defaultPassword": "Password: admin",
+    "placeholders": {
+      "phoneOrEmail": "01xxxxxxxxx or m@example.com",
+      "phone": "01xxxxxxxxx",
+      "fullName": "John Doe",
+      "emailOptional": "m@example.com"
+    }
+  },
+  "Product": {
+    "productImage": "Product Image",
+    "bigProductImage": "Big Product Image"
   },
   "Common": {
     "loading": "Loading...",
-    "error": "Something went wrong"
+    "error": "Something went wrong",
+    "or": "or",
+    "guest": "Guest",
+    "invalidCredentials": "Invalid credentials"
+  },
+  "LanguageSwitcher": {
+    "changeLanguage": "Change Language",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "Metadata": {
+    "title": "YES",
+    "description": "For Men's Wear"
+  },
+  "Hero": {
+    "collection": "Collection",
+    "fashionModel": "Fashion Model"
   }
 }

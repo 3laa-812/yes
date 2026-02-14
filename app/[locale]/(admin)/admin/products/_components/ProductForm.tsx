@@ -8,6 +8,7 @@ import { ChevronLeft, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -56,6 +57,7 @@ const PREDEFINED_COLORS = [
 
 export function ProductForm({ initialData, categories }: ProductFormProps) {
   const router = useRouter();
+  const t = useTranslations("Admin.Products");
   const [images, setImages] = useState<string[]>(
     initialData?.images ? JSON.parse(initialData.images) : [],
   );
@@ -84,7 +86,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
 
   const handleAddVariant = () => {
     if (!newVariant.size || !newVariant.color) {
-      toast.error("Please select both size and color");
+      toast.error(t("selectSizeAndColor"));
       return;
     }
     // Check for duplicate
@@ -92,7 +94,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
       (v) => v.size === newVariant.size && v.color === newVariant.color,
     );
     if (exists) {
-      toast.error("This variant already exists");
+      toast.error(t("variantExists"));
       return;
     }
 
@@ -128,17 +130,17 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
       if (result.success) {
         toast.success(
           initialData
-            ? "Product updated successfully!"
-            : "Product created successfully!",
+            ? t("productUpdated")
+            : t("productCreated"),
         );
         router.refresh();
         router.push("/admin/products");
       } else {
-        toast.error((result as any).error || "Something went wrong.");
+        toast.error((result as any).error || t("somethingWentWrong"));
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong.");
+      toast.error(t("somethingWentWrong"));
     } finally {
       setIsLoading(false);
     }
@@ -155,7 +157,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           </Link>
         </Button>
         <h1 className="text-2xl font-bold tracking-tight">
-          {initialData ? "Edit Product" : "New Product"}
+          {initialData ? t("editProduct") : t("newProduct")}
         </h1>
       </div>
       <form
@@ -170,35 +172,35 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
         <div className="lg:col-span-2 space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle>Product Details</CardTitle>
+              <CardTitle>{t("productDetails")}</CardTitle>
               <CardDescription>
-                Basic information about the product
+                {t("basicInfo")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Name</label>
+                <label className="text-sm font-medium">{t("nameLabel")}</label>
                 <Input
                   name="name"
                   defaultValue={initialData?.name}
                   required
-                  placeholder="e.g. Cotton T-Shirt"
+                  placeholder={t("namePlaceholder")}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Description</label>
+                <label className="text-sm font-medium">{t("descriptionLabel")}</label>
                 <textarea
                   name="description"
                   defaultValue={initialData?.description}
                   required
                   className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Describe the product..."
+                  placeholder={t("descriptionPlaceholder")}
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Category</label>
+                  <label className="text-sm font-medium">{t("categoryLabel")}</label>
                   <Select
                     name="categoryId"
                     value={selectedCategoryId}
@@ -209,7 +211,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                     required
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
+                      <SelectValue placeholder={t("selectCategory")} />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((category) => (
@@ -295,7 +297,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Size" />
+                      <SelectValue placeholder={t("selectSize")} />
                     </SelectTrigger>
                     <SelectContent>
                       {PREDEFINED_SIZES.map((s) => (
@@ -315,7 +317,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Color" />
+                      <SelectValue placeholder={t("selectColor")} />
                     </SelectTrigger>
                     <SelectContent>
                       {PREDEFINED_COLORS.map((c) => (
@@ -429,12 +431,12 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                   step="0.01"
                   defaultValue={Number(initialData?.price || 0)}
                   required
-                  placeholder="0.00"
+                  placeholder={t("pricePlaceholder")}
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">
-                  Discounted Price (Optional)
+                  {t("discountPriceLabel")}
                 </label>
                 <Input
                   name="discountPrice"
@@ -445,7 +447,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                       ? Number(initialData.discountPrice)
                       : ""
                   }
-                  placeholder="0.00"
+                  placeholder={t("discountPricePlaceholder")}
                 />
                 <p className="text-xs text-muted-foreground">
                   Set to show previous price as struck-through.
@@ -460,10 +462,10 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
             className="w-full text-lg h-12"
           >
             {isLoading
-              ? "Saving..."
+              ? t("saving")
               : initialData
-                ? "Update Product"
-                : "Create Product"}
+                ? t("updateProduct")
+                : t("createProduct")}
           </Button>
         </div>
       </form>

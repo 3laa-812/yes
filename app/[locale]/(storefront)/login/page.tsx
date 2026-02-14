@@ -42,7 +42,7 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        toast.error("Invalid credentials");
+        toast.error(tCommon("invalidCredentials"));
       } else {
         router.push(callbackUrl);
         router.refresh();
@@ -69,7 +69,7 @@ export default function LoginPage() {
                 id="identifier"
                 name="identifier"
                 type="text"
-                placeholder="01xxxxxxxxx or m@example.com"
+                placeholder={t("placeholders.phoneOrEmail")}
                 required
               />
             </div>

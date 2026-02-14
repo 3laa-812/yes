@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 
 export function Hero() {
   const t = useTranslations("HomePage");
+  const tHero = useTranslations("Hero");
   const heroRef = useRef(null);
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 150]);
@@ -160,7 +161,7 @@ export function Hero() {
                 <div className="w-full h-full bg-secondary relative flex items-center justify-center">
                   <Image
                     src="/hero-fashion.jpg"
-                    alt="Fashion Model"
+                    alt={tHero("fashionModel")}
                     fill
                     className="object-cover"
                     priority
@@ -181,7 +182,7 @@ export function Hero() {
                 <div className="flex flex-col">
                   <span className="text-3xl font-black tabular-nums">2026</span>
                   <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                    Collection
+                    {tHero("collection")}
                   </span>
                 </div>
               </motion.div>

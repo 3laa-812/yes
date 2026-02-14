@@ -56,8 +56,8 @@ export async function createProduct(formData: FormData) {
     description: formData.get("description"),
     price: Number(formData.get("price")),
     discountPrice: formData.get("discountPrice") ? Number(formData.get("discountPrice")) : undefined,
-    categoryId: formData.get("category"),
-    subCategoryId: formData.get("subCategory") || null, // Handle SubCategory
+    categoryId: formData.get("categoryId"),
+    subCategoryId: formData.get("subCategoryId") || null, // Handle SubCategory
     images: formData.get("imageUrls") ? JSON.parse(formData.get("imageUrls") as string) : [],
   };
 
@@ -68,7 +68,7 @@ export async function createProduct(formData: FormData) {
     console.error("Create Product Validation Error - Fields:", validatedFields.error?.flatten().fieldErrors);
     console.error("Create Product Validation Error - Variants:", validatedVariants.error?.flatten().fieldErrors);
     console.error("Raw Data:", rawData);
-    throw new Error("Invalid fields");
+    return { success: false, error: "Invalid fields" };
   }
 
   const { name, description, price, discountPrice, categoryId, subCategoryId, images } = validatedFields.data;
@@ -130,8 +130,8 @@ export async function updateProduct(formData: FormData) {
       description: formData.get("description"),
       price: Number(formData.get("price")),
       discountPrice: formData.get("discountPrice") ? Number(formData.get("discountPrice")) : undefined,
-      categoryId: formData.get("category"),
-      subCategoryId: formData.get("subCategory") || null,
+      categoryId: formData.get("categoryId"),
+      subCategoryId: formData.get("subCategoryId") || null,
       images: formData.get("imageUrls") ? JSON.parse(formData.get("imageUrls") as string) : [],
   };
 

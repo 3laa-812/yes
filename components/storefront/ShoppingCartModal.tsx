@@ -22,6 +22,7 @@ export function ShoppingCartModal({
 }: ShoppingCartModalProps) {
   const { items, removeItem, updateQuantity, getTotal } = useCartStore();
   const t = useTranslations("Cart");
+  const tCommon = useTranslations("Common");
   const router = useRouter();
 
   // Hydration handling
@@ -89,7 +90,7 @@ export function ShoppingCartModal({
                             onClick={() => setIsOpen(false)}
                           >
                             <span className="absolute -inset-0.5" />
-                            <span className="sr-only">Close panel</span>
+                            <span className="sr-only">{t("closePanel")}</span>
                             <X className="h-6 w-6" aria-hidden="true" />
                           </button>
                         </div>
@@ -226,7 +227,7 @@ export function ShoppingCartModal({
                         </div>
                         <div className="mt-6 flex justify-center text-center text-sm text-muted-foreground">
                           <p>
-                            or{" "}
+                            {tCommon("or")}{" "}
                             <button
                               type="button"
                               className="font-medium text-primary hover:text-primary/80 transition-colors"

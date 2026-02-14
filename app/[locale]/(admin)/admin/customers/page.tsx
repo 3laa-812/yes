@@ -82,7 +82,7 @@ export default async function CustomersPage() {
                     <Avatar>
                       <AvatarImage
                         src={user.image ?? ""}
-                        alt={user.name ?? "User"}
+                        alt={user.name ?? t("userAlt")}
                       />
                       <AvatarFallback>
                         {user.name?.charAt(0) ?? "U"}
