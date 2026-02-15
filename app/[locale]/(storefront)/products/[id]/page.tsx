@@ -52,7 +52,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         product={{
           id: product.id,
           name: product.name_en,
-          price: effectivePrice,
+          price: Number(effectivePrice),
           currency: "EGP",
           category: product.category.name_en,
         }}

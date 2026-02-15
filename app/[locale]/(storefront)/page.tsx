@@ -6,18 +6,24 @@ import { SectionReveal } from "@/components/ui/SectionReveal";
 import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 
-async function getFeaturedProducts() {
-  const products = await db.product.findMany({
-    take: 4,
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      category: true, // Include category relation to get category name
-    },
-  });
-  return products;
-}
+import { unstable_cache } from "next/cache";
+
+const getFeaturedProducts = unstable_cache(
+  async () => {
+    const products = await db.product.findMany({
+      take: 4,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        category: true, // Include category relation to get category name
+      },
+    });
+    return products;
+  },
+  ["featured-products"],
+  { revalidate: 3600, tags: ["products"] },
+);
 
 export const dynamic = "force-dynamic";
 

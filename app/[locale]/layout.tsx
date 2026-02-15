@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { RamadanProvider } from "@/components/global/RamadanContext";
 import { RamadanDecorations } from "@/components/global/RamadanDecorations";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 const cairo = Cairo({ subsets: ["arabic"] });
@@ -46,6 +47,7 @@ export default async function RootLayout({
             <RamadanDecorations />
             {children}
             <Toaster richColors />
+            <SpeedInsights/>
           </RamadanProvider>
         </NextIntlClientProvider>
       </body>

@@ -44,7 +44,8 @@
     "privacy": "Privacy",
     "newsletter": "Newsletter",
     "subscribe": "Subscribe for the latest drops.",
-    "rights": "© {year} ESSENCE. All rights reserved."
+    "rights": "© {year} YES. All rights reserved.",
+    "poweredBy": "Powered by"
   },
   "Cart": {
     "title": "Shopping cart",

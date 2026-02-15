@@ -1,5 +1,6 @@
 import { PrismaClient, Role } from '@prisma/client'
 import { hash } from 'bcryptjs'
+import { seedCategories } from './seed-categories'
 
 const prisma = new PrismaClient()
 
@@ -17,6 +18,8 @@ async function main() {
     },
   })
   console.log({ user })
+
+  await seedCategories()
 }
 
 main()

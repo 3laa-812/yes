@@ -11,11 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  createSubCategory,
-  deleteSubCategory,
-  updateSubCategory,
-} from "@/app/actions";
+import { createCategory, deleteCategory, updateCategory } from "@/app/actions";
 import { toast } from "sonner";
 import { Loader2, Pencil, Trash2, Check, X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -25,7 +21,7 @@ interface SubCategory {
   name_en: string;
   name_ar: string;
   slug: string;
-  categoryId: string;
+  parentId: string | null;
 }
 
 interface SubCategoriesManagerProps {
@@ -68,10 +64,10 @@ export function SubCategoriesManager({
     formData.append("name_en", newSubCatNameEn);
     formData.append("name_ar", newSubCatNameAr);
     formData.append("slug", newSubCatSlug);
-    formData.append("categoryId", categoryId);
+    formData.append("parentId", categoryId);
 
     try {
-      const res = await createSubCategory(formData);
+      const res = await createCategory(formData);
       if (res.success) {
         toast.success("SubCategory Created");
         setNewSubCatNameEn("");
@@ -102,7 +98,7 @@ export function SubCategoriesManager({
     formData.append("id", id);
 
     try {
-      const res = await deleteSubCategory(formData);
+      const res = await deleteCategory(formData);
       if (res.success) {
         setSubCategories((prev) => prev.filter((s) => s.id !== id));
         toast.success("Deleted");
@@ -138,10 +134,10 @@ export function SubCategoriesManager({
     formData.append("name_en", editNameEn);
     formData.append("name_ar", editNameAr);
     formData.append("slug", editSlug);
-    formData.append("categoryId", categoryId);
+    formData.append("parentId", categoryId);
 
     try {
-      const res = await updateSubCategory(formData);
+      const res = await updateCategory(formData);
       if (res.success) {
         toast.success("Updated");
         setSubCategories((prev) =>

@@ -40,7 +40,7 @@ interface ProductFormProps {
     id: string;
     name_en: string;
     name_ar?: string; // Optional if some migration isn't perfect, but schema says required
-    subCategories: { id: string; name_en: string; name_ar?: string }[];
+    children: { id: string; name_en: string; name_ar?: string }[];
   }[];
 }
 
@@ -63,19 +63,40 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
     initialData?.images ? JSON.parse(initialData.images) : [],
   );
 
-  // Category & SubCategory State
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
-    initialData?.categoryId || "",
-  );
-  const [selectedSubCategoryId, setSelectedSubCategoryId] = useState<string>(
-    initialData?.subCategoryId || "",
-  );
+  // Category & SubCategory State Logic
+  // We need to determine if initialData.categoryId belongs to a main category or a subcategory
+  let initialMainId = "";
+  let initialSubId = "";
 
-  // Derived state for available subcategories
+  if (initialData?.categoryId) {
+    // Check if it's a main category
+    const mainCat = categories.find((c) => c.id === initialData.categoryId);
+    if (mainCat) {
+      initialMainId = mainCat.id;
+    } else {
+      // Check if it's a child of any main category
+      const parentCat = categories.find((c) =>
+        c.children.some((child) => child.id === initialData.categoryId),
+      );
+      if (parentCat) {
+        initialMainId = parentCat.id;
+        initialSubId = initialData.categoryId;
+      }
+    }
+  }
+
+  const [selectedCategoryId, setSelectedCategoryId] =
+    useState<string>(initialMainId);
+  const [selectedSubCategoryId, setSelectedSubCategoryId] =
+    useState<string>(initialSubId);
+
+  // Derived state for available subcategories (using children)
   const availableSubCategories =
-    categories.find((c) => c.id === selectedCategoryId)?.subCategories || [];
+    categories.find((c) => c.id === selectedCategoryId)?.children || [];
 
   // Variants State
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [variants, setVariants] = useState<any[]>(initialData?.variants || []);
   const [newVariant, setNewVariant] = useState({
     size: "",
@@ -113,30 +134,37 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
     const form = document.querySelector("form") as HTMLFormElement;
     if (!form) return;
 
-    const enValue = (
-      form.querySelector(`[name="${field}_en"]`) as
-        | HTMLInputElement
-        | HTMLTextAreaElement
-    )?.value;
+    // Get English value
+    const enInput = form.querySelector(`[name="${field}_en"]`) as
+      | HTMLInputElement
+      | HTMLTextAreaElement;
+    const enValue = enInput?.value;
+
+    // Get Arabic input to update
     const arInput = form.querySelector(`[name="${field}_ar"]`) as
       | HTMLInputElement
       | HTMLTextAreaElement;
 
-    if (enValue && arInput && !arInput.value) {
+    if (enValue && arInput) {
       try {
-        // We use a server action or API route for translation to keep key secure.
-        // For now, simpler: we'll let the submit handler do it if missing,
-        // BUT for better UX, we can use a small server action just for this.
-        // Let's assume we rely on submit for now to avoid creating extra endpoints,
-        // OR we can simulate it if we had the client-side key (bad practice).
-        // Better: Create an action `translateString`
-        // For now, I'll just show a toast that it will be generated on save if left empty.
-        toast.info(
-          "Translation will be generated automatically on save if left empty.",
-        );
+        const { generateTranslation } = await import("@/app/actions");
+        const result = await generateTranslation(enValue, "ar");
+
+        if (result.success && result.text) {
+          // Update the input value
+          arInput.value = result.text;
+          // Trigger change event if needed for state (though this form uses uncontrolled inputs via formData on submit, but if we had state...)
+          // Since we use defaultValue in render and formData on submit, setting .value directly works for visual.
+          toast.success("Translation generated!");
+        } else {
+          toast.error("Failed to generate translation.");
+        }
       } catch (error) {
         console.error(error);
+        toast.error("Error generating translation.");
       }
+    } else {
+      toast.warning("Please enter English text first.");
     }
     setIsTranslating(false);
   }
@@ -148,11 +176,18 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
     const formData = new FormData(e.currentTarget);
     formData.set("imageUrls", JSON.stringify(images));
     formData.set("variants", JSON.stringify(variants));
-    // categoryId and subCategoryId are inputs, so they are in formData automatically.
-    // Ensure we handle "undefined" or empty string for subcategory if optional.
-    if (!formData.get("subCategoryId")) {
-      formData.delete("subCategoryId");
+
+    // Explicitly set categoryId based on selection
+    // If subCategory selected, it IS the categoryId
+    // If only Main selected, use it (though specific requirements usually enforce subcategory for leaf products, we allow either)
+    if (selectedSubCategoryId) {
+      formData.set("categoryId", selectedSubCategoryId);
+    } else {
+      formData.set("categoryId", selectedCategoryId);
     }
+    // Remove the temporary fields from formData as they are not in the schema
+    formData.delete("subCategoryId");
+    formData.delete("mainCategoryId");
 
     try {
       let result;
@@ -288,7 +323,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                     {t("categoryLabel")}
                   </label>
                   <Select
-                    name="categoryId"
+                    name="mainCategoryId" // internal use, not submitted directly as 'categoryId'
                     value={selectedCategoryId}
                     onValueChange={(val) => {
                       setSelectedCategoryId(val);
@@ -312,7 +347,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Sub-Category</label>
                   <Select
-                    name="subCategoryId"
+                    name="subCategoryId" // will be picked up by formData if set
                     value={selectedSubCategoryId}
                     onValueChange={setSelectedSubCategoryId}
                     disabled={
@@ -369,80 +404,126 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
             <CardHeader>
               <CardTitle>Variants & Stock</CardTitle>
               <CardDescription>
-                Manage available sizes, colors and stock levels
+                Manage available sizes, colors and stock levels. Use Bulk
+                Generate to quickly add multiple variants.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end border p-4 rounded-lg bg-gray-50/50">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Size</label>
-                  <Select
-                    value={newVariant.size}
-                    onValueChange={(val) =>
-                      setNewVariant({ ...newVariant, size: val })
-                    }
+              {/* Bulk Generation UI */}
+              <div className="border p-4 rounded-lg bg-gray-50 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-sm">
+                    Bulk Generate Variants
+                  </h3>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      if (
+                        selectedSizes.length === 0 ||
+                        selectedColors.length === 0
+                      ) {
+                        toast.error("Select at least one size and one color");
+                        return;
+                      }
+                      const newVariants: any[] = [];
+                      selectedSizes.forEach((size) => {
+                        selectedColors.forEach((color) => {
+                          // Check for duplicate
+                          const exists = variants.find(
+                            (v) => v.size === size && v.color === color,
+                          );
+                          if (!exists) {
+                            newVariants.push({ size, color, stock: 0 });
+                          }
+                        });
+                      });
+                      setVariants([...variants, ...newVariants]);
+                      setSelectedSizes([]);
+                      setSelectedColors([]);
+                      toast.success(`Generated ${newVariants.length} variants`);
+                    }}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t("selectSize")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PREDEFINED_SIZES.map((s) => (
-                        <SelectItem key={s} value={s}>
-                          {s}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    Generate Selected
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Color</label>
-                  <Select
-                    value={newVariant.color}
-                    onValueChange={(val) =>
-                      setNewVariant({ ...newVariant, color: val })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t("selectColor")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PREDEFINED_COLORS.map((c) => (
-                        <SelectItem key={c.name} value={c.name}>
-                          <div className="flex items-center gap-2">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Sizes */}
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium">Select Sizes</label>
+                    <div className="flex flex-wrap gap-2">
+                      {PREDEFINED_SIZES.map((size) => {
+                        const isSelected = selectedSizes.includes(size);
+                        return (
+                          <Button
+                            key={size}
+                            type="button"
+                            variant={isSelected ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              if (isSelected) {
+                                setSelectedSizes(
+                                  selectedSizes.filter((s) => s !== size),
+                                );
+                              } else {
+                                setSelectedSizes([...selectedSizes, size]);
+                              }
+                            }}
+                            className="h-8 min-w-[3rem]"
+                          >
+                            {size}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Colors */}
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium">Select Colors</label>
+                    <div className="flex flex-wrap gap-2">
+                      {PREDEFINED_COLORS.map((c) => {
+                        const isSelected = selectedColors.includes(c.name);
+                        return (
+                          <div
+                            key={c.name}
+                            onClick={() => {
+                              if (isSelected) {
+                                setSelectedColors(
+                                  selectedColors.filter(
+                                    (color) => color !== c.name,
+                                  ),
+                                );
+                              } else {
+                                setSelectedColors([...selectedColors, c.name]);
+                              }
+                            }}
+                            className={`
+                                            cursor-pointer rounded-full border-2 p-0.5 w-9 h-9 flex items-center justify-center transition-all
+                                            ${isSelected ? "border-primary scale-110" : "border-transparent hover:border-gray-200"}
+                                        `}
+                            title={c.name}
+                          >
                             <div
-                              className="w-4 h-4 rounded-full border"
+                              className="w-full h-full rounded-full border border-gray-100 shadow-sm"
                               style={{ backgroundColor: c.value }}
-                            ></div>
-                            {c.name}
+                            />
+                            {isSelected && (
+                              <div className="absolute inset-0 flex items-center justify-center text-white drop-shadow-md font-bold text-xs mix-blend-difference">
+                                ✓
+                              </div>
+                            )}
                           </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Stock</label>
-                  <Input
-                    type="number"
-                    min="0"
-                    value={newVariant.stock}
-                    onChange={(e) =>
-                      setNewVariant({
-                        ...newVariant,
-                        stock: parseInt(e.target.value) || 0,
-                      })
-                    }
-                  />
-                </div>
-                <Button
-                  type="button"
-                  onClick={handleAddVariant}
-                  className="w-full"
-                >
-                  <Plus className="mr-2 h-4 w-4" /> Add
-                </Button>
               </div>
 
+              {/* Variants Table */}
               {variants.length > 0 && (
                 <div className="rounded-md border">
                   <Table>
@@ -457,11 +538,13 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                     <TableBody>
                       {variants.map((v, idx) => (
                         <TableRow key={idx}>
-                          <TableCell>{v.size}</TableCell>
+                          <TableCell className="font-medium">
+                            {v.size}
+                          </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <div
-                                className="w-3 h-3 rounded-full border"
+                                className="w-4 h-4 rounded-full border shadow-sm"
                                 style={{
                                   backgroundColor:
                                     PREDEFINED_COLORS.find(
@@ -469,17 +552,24 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                                     )?.value || v.color,
                                 }}
                               />
-                              {v.color}
+                              <span className="text-xs text-muted-foreground">
+                                {v.color}
+                              </span>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge
-                              variant={
-                                v.stock > 0 ? "secondary" : "destructive"
-                              }
-                            >
-                              {v.stock}
-                            </Badge>
+                            <Input
+                              type="number"
+                              value={v.stock}
+                              min="0"
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value) || 0;
+                                const newVars = [...variants];
+                                newVars[idx].stock = val;
+                                setVariants(newVars);
+                              }}
+                              className="w-24 h-8"
+                            />
                           </TableCell>
                           <TableCell className="text-right">
                             <Button

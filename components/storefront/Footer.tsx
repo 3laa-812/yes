@@ -22,14 +22,7 @@ export function Footer() {
                   {t("ourStory")}
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="#"
-                  className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
-                >
-                  {t("sustainability")}
-                </Link>
-              </li>
+              <li></li>
               <li>
                 <Link
                   href="#"
@@ -107,8 +100,19 @@ export function Footer() {
           <p className="text-xs text-primary-foreground/50">
             {t("rights", { year })}
           </p>
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center">
             {/* Social icons placeholders or similar could go here */}
+            <p className="text-xs text-primary-foreground/50">
+              {t("poweredBy")}{" "}
+              <a
+                href="https://linktr.ee/3laaR"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-primary-foreground transition-colors"
+              >
+                3laa
+              </a>
+            </p>
           </div>
         </div>
       </div>

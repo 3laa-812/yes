@@ -4,6 +4,7 @@ import db from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
+import { SubCategoryFilter } from "@/components/storefront/SubCategoryFilter";
 
 interface CategoryPageProps {
   params: Promise<{
@@ -17,21 +18,47 @@ interface CategoryPageProps {
 
 async function getCategoryWithProducts(slug: string, subCategoryId?: string) {
   const category = await db.category.findUnique({
-    where: {
-      slug: slug,
-    },
+    where: { slug },
     include: {
-      subCategories: true,
-      products: {
-        where: subCategoryId ? { subCategoryId } : undefined,
-        include: {
-          category: true,
-        },
-      },
+      children: true,
     },
   });
 
-  return category;
+  if (!category) return null;
+
+  // Filter logic:
+  // If subCategoryId is present, ensure it's a valid child and fetch only its products.
+  // If not, fetch products for the main category AND all its children.
+
+  let targetCategoryIds = [category.id, ...category.children.map((c) => c.id)];
+
+  if (subCategoryId) {
+    const isChild = category.children.some((c) => c.id === subCategoryId);
+    if (isChild) {
+      targetCategoryIds = [subCategoryId];
+    } else {
+      // If subCategoryId is invalid/unrelated, we return products for the main category only (or empty?)
+      // Use case: user clicks a stale link. Let's fallback to main category view effectively ignoring the invalid sub.
+      // Or strictly return empty. Let's return empty to avoid confusion.
+      targetCategoryIds = [];
+    }
+  }
+
+  const products = await db.product.findMany({
+    where: {
+      categoryId: { in: targetCategoryIds },
+    },
+    include: {
+      category: true,
+    },
+  });
+
+  // Return structure compatible with component expectation (mapping children to subCategories)
+  return {
+    ...category,
+    subCategories: category.children,
+    products,
+  };
 }
 
 export const dynamic = "force-dynamic";
@@ -70,28 +97,12 @@ export default async function CategoryPage({
         </div>
 
         {/* SubCategory Pills */}
-        <div className="mt-6 flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          <Button
-            variant={!subCategoryId ? "default" : "outline"}
-            size="sm"
-            asChild
-            className="rounded-full"
-          >
-            <Link href={`/collections/${slug}`}>All</Link>
-          </Button>
-          {category.subCategories.map((sub) => (
-            <Button
-              key={sub.id}
-              variant={subCategoryId === sub.id ? "default" : "outline"}
-              size="sm"
-              asChild
-              className="rounded-full"
-            >
-              <Link href={`/collections/${slug}?subCategoryId=${sub.id}`}>
-                {locale === "ar" ? sub.name_ar : sub.name_en}
-              </Link>
-            </Button>
-          ))}
+        <div className="mt-6">
+          <SubCategoryFilter
+            subCategories={category.subCategories as any}
+            slug={slug}
+            locale={locale}
+          />
         </div>
 
         {category.products.length === 0 ? (

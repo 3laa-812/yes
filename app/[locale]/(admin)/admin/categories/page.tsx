@@ -14,15 +14,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DeleteCategoryButton } from "./_components/DeleteCategoryButton";
+import { CategoryList } from "@/components/admin/CategoryList";
 
 async function getCategories() {
   return db.category.findMany({
-    orderBy: {
-      name_en: "asc",
-    },
+    where: { parentId: null },
+    orderBy: { displayOrder: "asc" },
     include: {
+      children: {
+        include: {
+          _count: { select: { products: true } },
+        },
+        orderBy: { displayOrder: "asc" },
+      },
       _count: {
-        select: { products: true, subCategories: true },
+        select: { products: true, children: true },
       },
     },
   });
@@ -45,68 +51,7 @@ export default async function AdminCategoriesPage() {
           </Link>
         </Button>
       </div>
-      <div className="rounded-md border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">Image</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>Sub-Categories</TableHead>
-              <TableHead>Products</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {categories.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center py-10 text-muted-foreground"
-                >
-                  No categories found. Create one to get started.
-                </TableCell>
-              </TableRow>
-            ) : (
-              categories.map((category) => (
-                <TableRow key={category.id}>
-                  <TableCell>
-                    {category.image ? (
-                      <Image
-                        src={category.image}
-                        alt={category.name_en}
-                        width={40}
-                        height={40}
-                        className="rounded-md object-cover aspect-square"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center text-xs">
-                        No Img
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {category.name_en}
-                  </TableCell>
-                  <TableCell>{category.slug}</TableCell>
-                  <TableCell>{category._count.subCategories}</TableCell>
-                  <TableCell>{category._count.products}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/admin/categories/${category.id}`}>
-                          <Pencil className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <DeleteCategoryButton id={category.id} />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <CategoryList initialCategories={categories as any} />
     </>
   );
 }

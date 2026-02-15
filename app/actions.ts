@@ -10,7 +10,18 @@ import { initiatePaymobPayment } from "@/lib/paymob";
 import { auth } from "@/auth";
 import { translateText } from "@/lib/translation";
 
+export async function generateTranslation(text: string, targetLang: "ar" | "en") {
+  try {
+    const translated = await translateText(text, targetLang);
+    return { success: true, text: translated };
+  } catch (error) {
+    console.error("Translation action error:", error);
+    return { success: false, error: "Translation failed" };
+  }
+}
+
 // Order Create Schema
+
 const orderSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
@@ -34,8 +45,8 @@ const productSchema = z.object({
   description_ar: z.string().optional(), // Can be auto-generated
   price: z.number().min(0.01),
   discountPrice: z.number().optional(),
-  categoryId: z.string().min(1),
-  subCategoryId: z.string().optional().nullable(),
+  categoryId: z.string().min(1), // Now refers to the final category ID (sub or main)
+  // Removed subCategoryId schema as it's merged into category logic or handled by frontend sending the correct ID
   images: z.array(z.string().url()).min(1),
 });
 
@@ -52,7 +63,14 @@ export async function createProduct(formData: FormData) {
   // Parse variants first
   const variantsRaw = formData.get("variants") ? JSON.parse(formData.get("variants") as string) : [];
 
-  
+  // Logic: 
+  // If frontend sends "subCategoryId", we use that as the product's categoryId.
+  // If not, we use "categoryId" (main).
+  // Schema expects just "categoryId", so we map it here.
+  const mainCatId = formData.get("categoryId");
+  const subCatId = formData.get("subCategoryId");
+  const finalCategoryId = subCatId && subCatId !== "" ? subCatId : mainCatId;
+
   const rawData = {
     name_en: formData.get("name_en"),
     name_ar: formData.get("name_ar") || undefined,
@@ -60,8 +78,7 @@ export async function createProduct(formData: FormData) {
     description_ar: formData.get("description_ar") || undefined,
     price: Number(formData.get("price")),
     discountPrice: formData.get("discountPrice") ? Number(formData.get("discountPrice")) : undefined,
-    categoryId: formData.get("categoryId"),
-    subCategoryId: formData.get("subCategoryId") || null, // Handle SubCategory
+    categoryId: finalCategoryId,
     images: formData.get("imageUrls") ? JSON.parse(formData.get("imageUrls") as string) : [],
   };
 
@@ -75,7 +92,7 @@ export async function createProduct(formData: FormData) {
     return { success: false, error: "Invalid fields" };
   }
 
-  let { name_en, name_ar, description_en, description_ar, price, discountPrice, categoryId, subCategoryId, images } = validatedFields.data;
+  let { name_en, name_ar, description_en, description_ar, price, discountPrice, categoryId, images } = validatedFields.data;
   const variants = validatedVariants.data;
 
   // Auto-translate if missing
@@ -100,7 +117,7 @@ export async function createProduct(formData: FormData) {
       price,
       discountPrice,
       categoryId,
-      subCategoryId,
+      // No subCategoryId field anymore
       images: JSON.stringify(images),
       sizes: JSON.stringify(sizes),
       colors: JSON.stringify(colors),
@@ -139,6 +156,10 @@ export async function updateProduct(formData: FormData) {
   const productId = formData.get("productId") as string;
   const variantsRaw = formData.get("variants") ? JSON.parse(formData.get("variants") as string) : [];
 
+  const mainCatId = formData.get("categoryId");
+  const subCatId = formData.get("subCategoryId");
+  const finalCategoryId = subCatId && subCatId !== "" ? subCatId : mainCatId;
+
   const rawData = {
       name_en: formData.get("name_en"),
       name_ar: formData.get("name_ar") || undefined,
@@ -146,12 +167,11 @@ export async function updateProduct(formData: FormData) {
       description_ar: formData.get("description_ar") || undefined,
       price: Number(formData.get("price")),
       discountPrice: formData.get("discountPrice") ? Number(formData.get("discountPrice")) : undefined,
-      categoryId: formData.get("categoryId"),
-      subCategoryId: formData.get("subCategoryId") || null,
+      categoryId: finalCategoryId,
       images: formData.get("imageUrls") ? JSON.parse(formData.get("imageUrls") as string) : [],
   };
 
-  const updateSchema = productSchema.partial(); // Allow partial updates if needed, but form usually sends all
+  const updateSchema = productSchema.partial();
 
   const validatedFields = updateSchema.safeParse(rawData);
   const validatedVariants = z.array(variantSchema).safeParse(variantsRaw);
@@ -164,10 +184,9 @@ export async function updateProduct(formData: FormData) {
       return { success: false, error: "Invalid fields" };
   }
 
-  let { name_en, name_ar, description_en, description_ar, price, discountPrice, categoryId, subCategoryId, images } = validatedFields.data;
+  let { name_en, name_ar, description_en, description_ar, price, discountPrice, categoryId, images } = validatedFields.data;
   const variants = validatedVariants.data;
 
-  // Auto-translate if specifically provided as empty string but required by schema (handled by frontend usually, but good fallback)
    if (!name_ar && name_en) {
     name_ar = await translateText(name_en, "ar");
   }
@@ -179,7 +198,6 @@ export async function updateProduct(formData: FormData) {
   const colors = Array.from(new Set(variants.map(v => v.color)));
   const totalStock = variants.reduce((acc, v) => acc + v.stock, 0);
 
-  // Transaction to update product and replace variants
   await db.$transaction(async (tx) => {
       // 1. Update Product Base
       await tx.product.update({
@@ -192,7 +210,7 @@ export async function updateProduct(formData: FormData) {
           price,
           discountPrice,
           categoryId,
-          subCategoryId,
+          // No subCategoryId field
           images: JSON.stringify(images),
           sizes: JSON.stringify(sizes),
           colors: JSON.stringify(colors),
@@ -200,7 +218,7 @@ export async function updateProduct(formData: FormData) {
         },
       });
 
-      // 2. Delete existing variants (simplest strategy to handle removals/updates)
+      // 2. Delete existing variants
       await tx.productVariant.deleteMany({
           where: { productId }
       });
@@ -222,8 +240,7 @@ export async function updateProduct(formData: FormData) {
   return { success: true };
 }
 
-// ... (previous imports)
-import { cookies } from "next/headers"; // If we need auth later, but for now we trust form data for guest
+// ... (createOrder remains the same)
 
 export async function createOrder(data: any) {
   const validatedFields = orderSchema.safeParse(data);
@@ -241,20 +258,15 @@ export async function createOrder(data: any) {
 
   if (session?.user?.id) {
     userId = session.user.id;
-    // Update phone/email if needed? 
-    // For now just link.
   } else {
-      // Check if user exists by email
       let user = await db.user.findUnique({ where: { email } });
 
       if (user) {
           userId = user.id;
-          // Optionally update phone if missing
           if (!user.phone) {
               await db.user.update({ where: { id: user.id }, data: { phone } });
           }
       } else {
-          // Create new Customer User
           user = await db.user.create({
               data: {
                   email,
@@ -271,16 +283,13 @@ export async function createOrder(data: any) {
   let total = 0;
   const orderItemsData: any[] = [];
 
-  // specific type for transaction
   let order;
   try {
       order = await db.$transaction(async (tx) => {
           for (const item of items) {
-            // Find Product
             const product = await tx.product.findUnique({ where: { id: item.productId } });
             if (!product) throw new Error(`Product not found: ${item.productId}`);
 
-            // Find Variant (if size/color specified)
             if (item.size && item.color) {
                 const variant = await tx.productVariant.findFirst({
                     where: { 
@@ -291,27 +300,24 @@ export async function createOrder(data: any) {
                 });
 
                 if (!variant) {
-                    throw new Error(`Variant not found: ${product.name_en} (${item.size}, ${item.color})`); // Use name_en for error logging
+                    throw new Error(`Variant not found: ${product.name_en} (${item.size}, ${item.color})`);
                 }
 
                 if (variant.stock < item.quantity) {
                     throw new Error(`Insufficient stock for ${product.name_en} (${item.size}, ${item.color})`);
                 }
 
-                // Decrement Stock
                 await tx.productVariant.update({
                     where: { id: variant.id },
                     data: { stock: { decrement: item.quantity } }
                 });
                 
-                // Also decrement total product stock for quick reference?
                 await tx.product.update({
                     where: { id: product.id },
                     data: { stock: { decrement: item.quantity } }
                 });
 
             } else {
-                // No size/color? Check global stock
                 if (product.stock < item.quantity) {
                     throw new Error(`Insufficient stock for ${product.name_en}`);
                 }
@@ -321,7 +327,6 @@ export async function createOrder(data: any) {
                 });
             }
 
-            // Price Logic: Use discountPrice if available
             const priceToUse = product.discountPrice ? Number(product.discountPrice) : Number(product.price);
             const itemTotal = priceToUse * item.quantity;
             total += itemTotal;
@@ -335,7 +340,6 @@ export async function createOrder(data: any) {
             });
           }
 
-          // 3. Create Address
           const newAddress = await tx.address.create({
               data: {
                   name: `${firstName} ${lastName}`,
@@ -343,14 +347,13 @@ export async function createOrder(data: any) {
                   street: address,
                   city,
                   country: "Egypt",
-                  userId // Link address to user
+                  userId
               }
           });
 
-          // 4. Create Order
           const order = await tx.order.create({
               data: {
-                  userId, // Link order to User
+                  userId,
                   total: total,
                   status: "PENDING",
                   paymentMethod: paymentMethod === "COD" ? "COD" : "ONLINE",
@@ -362,24 +365,22 @@ export async function createOrder(data: any) {
               }
           });
 
-          // Pass order out of transaction scope for return
           return order;
       });
   } catch (error: any) {
-      console.error("Order Creation Failed:", error); // Fixed error logging
+      console.error("Order Creation Failed:", error);
       return { success: false, error: error.message || "Order creation failed" };
   }
 
   if (!order) return { success: false, error: "Transaction failed" };
 
-      // 5. Handle Payment Flow
       if (paymentMethod === "COD") {
           return { success: true, orderId: order.id, redirectUrl: `/checkout/success?orderId=${order.id}` };
       } else {
           try {
           const paymentData = await initiatePaymobPayment(
               order.id, 
-              Number(order.total), // Ensure number
+              Number(order.total),
               {
                   first_name: firstName,
                   last_name: lastName,
@@ -405,9 +406,6 @@ export async function createOrder(data: any) {
 
       } catch (error) {
           console.error("Paymob Init Error:", error);
-          // Don't fail the order creation entirely if payment fails? 
-          // Actually we should maybe return error but order is created PENDING.
-          // User can retry payment? For now, redirect to failure page or similar.
           return { success: false, error: "Payment initialization failed" };
       }
   }
@@ -420,6 +418,9 @@ const categorySchema = z.object({
   name_ar: z.string().optional(),
   slug: z.string().min(1),
   image: z.string().optional(),
+  parentId: z.string().optional().nullable(),
+  isActive: z.boolean().default(true).optional(),
+  displayOrder: z.number().default(0).optional(),
 });
 
 export async function createCategory(formData: FormData) {
@@ -428,6 +429,9 @@ export async function createCategory(formData: FormData) {
     name_ar: formData.get("name_ar") || undefined,
     slug: formData.get("slug"),
     image: formData.get("image") || undefined,
+    parentId: formData.get("parentId") || null,
+    isActive: formData.get("isActive") === "true",
+    displayOrder: Number(formData.get("displayOrder")) || 0,
   };
 
   const validatedFields = categorySchema.safeParse(rawData);
@@ -436,7 +440,7 @@ export async function createCategory(formData: FormData) {
     return { success: false, error: "Invalid fields" };
   }
 
-  let { name_en, name_ar, slug, image } = validatedFields.data;
+  let { name_en, name_ar, slug, image, parentId, isActive, displayOrder } = validatedFields.data;
 
   if (!name_ar) {
       name_ar = await translateText(name_en, "ar");
@@ -448,7 +452,10 @@ export async function createCategory(formData: FormData) {
           name_en,
           name_ar: name_ar!,
           slug,
-          image
+          image,
+          parentId,
+          isActive: isActive !== undefined ? isActive : true,
+          displayOrder: displayOrder || 0,
       },
     });
     revalidatePath("/admin/categories");
@@ -466,6 +473,9 @@ export async function updateCategory(formData: FormData) {
     name_ar: formData.get("name_ar") || undefined,
     slug: formData.get("slug"),
     image: formData.get("image") || undefined,
+    parentId: formData.get("parentId") || null,
+    isActive: formData.get("isActive") === "true",
+    displayOrder: Number(formData.get("displayOrder")) || 0,
   };
 
   const validatedFields = categorySchema.safeParse(rawData);
@@ -474,7 +484,7 @@ export async function updateCategory(formData: FormData) {
     return { success: false, error: "Invalid fields" };
   }
 
-  let { name_en, name_ar, slug, image } = validatedFields.data;
+  let { name_en, name_ar, slug, image, parentId, isActive, displayOrder } = validatedFields.data;
   
   if (!name_ar) {
       name_ar = await translateText(name_en, "ar");
@@ -487,7 +497,10 @@ export async function updateCategory(formData: FormData) {
           name_en,
           name_ar: name_ar!,
           slug,
-          image
+          image,
+          parentId,
+          isActive: isActive !== undefined ? isActive : true,
+          displayOrder: displayOrder || 0,
       },
     });
     revalidatePath("/admin/categories");
@@ -514,103 +527,21 @@ export async function deleteCategory(formData: FormData) {
   }
 }
 
-// --- SubCategory Actions ---
-
-const subCategorySchema = z.object({
-  name_en: z.string().min(1),
-  name_ar: z.string().optional(),
-  slug: z.string().min(1),
-  categoryId: z.string().min(1),
-});
-
-export async function createSubCategory(formData: FormData) {
-  const rawData = {
-    name_en: formData.get("name_en"),
-    name_ar: formData.get("name_ar") || undefined,
-    slug: formData.get("slug"),
-    categoryId: formData.get("categoryId"),
-  };
-
-  const validatedFields = subCategorySchema.safeParse(rawData);
-
-  if (!validatedFields.success) {
-    return { success: false, error: "Invalid fields" };
-  }
-
-  let { name_en, name_ar, slug, categoryId } = validatedFields.data;
-
-  if (!name_ar) {
-      name_ar = await translateText(name_en, "ar");
-  }
-
+export async function updateCategoryOrder(updates: { id: string; displayOrder: number }[]) {
   try {
-    await db.subCategory.create({
-      data: {
-          name_en,
-          name_ar: name_ar!,
-          slug,
-          categoryId
-      },
-    });
-    revalidatePath("/admin/categories"); // Revalidate parent page
-    return { success: true };
-  } catch (error: any) {
-    console.error("Create SubCategory Error:", error);
-    return { success: false, error: error.message };
-  }
-}
-
-export async function updateSubCategory(formData: FormData) {
-  const subCategoryId = formData.get("id") as string;
-  const rawData = {
-    name_en: formData.get("name_en"),
-    name_ar: formData.get("name_ar") || undefined,
-    slug: formData.get("slug"),
-    categoryId: formData.get("categoryId"),
-  };
-
-  const validatedFields = subCategorySchema.safeParse(rawData);
-
-  if (!validatedFields.success) {
-    return { success: false, error: "Invalid fields" };
-  }
-
-  let { name_en, name_ar, slug, categoryId } = validatedFields.data;
-
-  if (!name_ar) {
-      name_ar = await translateText(name_en, "ar");
-  }
-
-  try {
-    await db.subCategory.update({
-      where: { id: subCategoryId },
-      data: {
-          name_en,
-          name_ar: name_ar!,
-          slug,
-          categoryId
-      },
-    });
+    const transaction = updates.map((update) =>
+      db.category.update({
+        where: { id: update.id },
+        data: { displayOrder: update.displayOrder },
+      })
+    );
+    await db.$transaction(transaction);
     revalidatePath("/admin/categories");
     return { success: true };
   } catch (error: any) {
-    console.error("Update SubCategory Error:", error);
+    console.error("Update Category Order Error:", error);
     return { success: false, error: error.message };
   }
 }
 
-export async function deleteSubCategory(formData: FormData) {
-  const subCategoryId = formData.get("id") as string;
-  try {
-    await db.subCategory.delete({
-      where: { id: subCategoryId },
-    });
-    revalidatePath("/admin/categories");
-    return { success: true };
-  } catch (error: any) {
-    if (error.code === 'P2003') {
-        return { success: false, error: "Cannot delete sub-category with associated products. Please remove them first." };
-    }
-    return { success: false, error: error.message };
-  }
-}
+

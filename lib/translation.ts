@@ -1,10 +1,9 @@
-import { OpenAI } from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const openai = process.env.OPENAI_API_KEY
-  ? new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    })
-  : null;
+const apiKey = process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY;
+
+const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+const model = genAI ? genAI.getGenerativeModel({ model: "gemini-2.0-flash" }) : null;
 
 export async function translateText(
   text: string,
@@ -12,30 +11,19 @@ export async function translateText(
 ): Promise<string> {
   if (!text) return "";
   
-  if (!openai) {
-    console.warn("OpenAI API Key not found. Returning original text with prefix.");
+  if (!model) {
+    console.warn("Gemini API Key not found. Returning original text with prefix.");
     return `[${targetLang.toUpperCase()}] ${text}`;
   }
 
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: `You are a professional translator. Translate the following text to ${
-            targetLang === "ar" ? "Arabic" : "English"
-          }. Return ONLY the translated text, no keys, no markdown, no explanations.`,
-        },
-        {
-          role: "user",
-          content: text,
-        },
-      ],
-      temperature: 0.3,
-    });
+    const prompt = `You are a professional translator. Translate the following text to ${
+      targetLang === "ar" ? "Arabic" : "English"
+    }. Return ONLY the translated text, no keys, no markdown, no explanations, no quotes. Text: "${text}"`;
 
-    return response.choices[0]?.message?.content?.trim() || text;
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text().trim();
   } catch (error) {
     console.error("Translation Error:", error);
     return text; // Fallback to original text on error

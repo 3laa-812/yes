@@ -19,7 +19,9 @@ export default async function EditProductPage({
   }
 
   const categories = await db.category.findMany({
-    include: { subCategories: true },
+    where: { parentId: null },
+    include: { children: { orderBy: { displayOrder: "asc" } } },
+    orderBy: { displayOrder: "asc" },
   });
 
   // Serialize data to avoid "Only plain objects" error

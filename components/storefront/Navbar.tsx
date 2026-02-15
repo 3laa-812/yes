@@ -31,7 +31,7 @@ interface Category {
   name_en: string;
   name_ar: string;
   slug: string;
-  subCategories: {
+  children: {
     id: string;
     name_en: string;
     name_ar: string;
@@ -63,20 +63,19 @@ export function Navbar({
     : 0;
 
   // Combine static "All Products" with dynamic categories
-  // We can prioritize specific categories if needed, but for now just list them
-  // Or if categories are empty, fallback to static defaults for dev/testing
   const dynamicLinks =
     categories.length > 0
       ? categories.map((c) => ({
           href: `/collections/${c.slug}`,
           label: locale === "ar" ? c.name_ar : c.name_en,
-          subCategories: c.subCategories.map((sub) => ({
+          subCategories: c.children.map((sub) => ({
             ...sub,
             name: locale === "ar" ? sub.name_ar : sub.name_en,
           })),
           categorySlug: c.slug,
         }))
       : [
+          // Fallbacks for dev or if no categories seeded yet
           {
             href: "/collections/men",
             label: t("men"),
@@ -271,7 +270,7 @@ export function Navbar({
 
           {/* Icons */}
           <div className="flex flex-1 items-center justify-end gap-x-2 sm:gap-x-4">
-            <div className="hidden sm:block">
+            <div>
               <LanguageSwitcher />
             </div>
 

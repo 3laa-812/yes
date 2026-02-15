@@ -11,22 +11,31 @@ export default async function EditCategoryPage({
   const { id } = await params;
   const category = await db.category.findUnique({
     where: { id },
-    include: { subCategories: true },
+    include: { children: true },
   });
 
   if (!category) {
     notFound();
   }
 
+  // Fetch potential parents: All main categories except self
+  const categories = await db.category.findMany({
+    where: {
+      parentId: null,
+      id: { not: category.id },
+    },
+    orderBy: { name_en: "asc" },
+  });
+
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
-      <CategoryForm category={category} />
+      <CategoryForm category={category} categories={categories} />
 
       <div className="border-t pt-8">
         <h2 className="text-xl font-semibold mb-4">Sub-Categories</h2>
         <SubCategoriesManager
           categoryId={category.id}
-          initialSubCategories={category.subCategories}
+          initialSubCategories={category.children}
         />
       </div>
     </div>
