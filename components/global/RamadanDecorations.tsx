@@ -157,9 +157,9 @@ export const RamadanDecorations = () => {
               x2="30"
               y2="60"
               stroke="var(--ramadan-gold-dark)"
-              strokeWidth="1"
+              strokeWidth="1.5"
             />
-            <g transform="translate(0, 60) scale(0.7) translate(12, 0)">
+            <g transform="translate(0, 60) scale(0.7) translate(2.86, 0)">
               <path
                 d="M40 0 L55 15 L65 40 L55 90 L25 90 L15 40 L25 15 Z"
                 fill="rgba(255,255,255,0.05)"
@@ -217,7 +217,7 @@ export const RamadanDecorations = () => {
                 x2="40"
                 y2="100"
                 stroke="var(--ramadan-gold-dark)"
-                strokeWidth="1"
+                strokeWidth="1.5"
               />
               <g transform="translate(0, 100)">
                 <path
@@ -281,9 +281,9 @@ export const RamadanDecorations = () => {
                 x2="30"
                 y2="50"
                 stroke="var(--ramadan-gold-dark)"
-                strokeWidth="1"
+                strokeWidth="1.5"
               />
-              <g transform="translate(0, 50) scale(0.8) translate(8, 0)">
+              <g transform="translate(0, 50) scale(0.8) translate(-2.5, 0)">
                 <path
                   d="M40 0 L55 15 L65 40 L55 90 L25 90 L15 40 L25 15 Z"
                   fill="rgba(255,255,255,0.05)"
@@ -338,9 +338,9 @@ export const RamadanDecorations = () => {
                 x2="30"
                 y2="70"
                 stroke="var(--ramadan-gold-dark)"
-                strokeWidth="1"
+                strokeWidth="1.5"
               />
-              <g transform="translate(0, 70) scale(0.6) translate(15, 0)">
+              <g transform="translate(0, 70) scale(0.6) translate(10, 0)">
                 <path
                   d="M40 0 L55 15 L65 40 L55 90 L25 90 L15 40 L25 15 Z"
                   fill="rgba(255,255,255,0.05)"
