@@ -20,3 +20,5 @@ export function formatCurrency(amount: number, locale: string = "en") {
     maximumFractionDigits: 0,
   }).format(amount) + " EGP";
 }
+
+export const formatPrice = formatCurrency;

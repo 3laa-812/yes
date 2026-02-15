@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 
 export function Hero() {
   const t = useTranslations("HomePage");
-  const tHero = useTranslations("Hero");
   const heroRef = useRef(null);
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 150]);
@@ -19,7 +18,7 @@ export function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative min-h-[85vh] w-full overflow-hidden bg-background flex items-center"
+      className="relative min-h-[85vh] w-full overflow-hidden flex items-center bg-gradient-to-br from-background via-background to-secondary/30"
     >
       {/* Background Elements */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-secondary/20 -skew-x-12 transform origin-top-right z-0 hidden lg:block" />
@@ -161,7 +160,7 @@ export function Hero() {
                 <div className="w-full h-full bg-secondary relative flex items-center justify-center">
                   <Image
                     src="/hero-fashion.jpg"
-                    alt={tHero("fashionModel")}
+                    alt="Fashion Model"
                     fill
                     className="object-cover"
                     priority
@@ -177,12 +176,12 @@ export function Hero() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
-                className="absolute bottom-8 left-8 bg-background/90 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-white/20 z-20 hidden md:block"
+                className="absolute bottom-8 left-8 glass-card p-6 rounded-2xl z-20 hidden md:block"
               >
                 <div className="flex flex-col">
                   <span className="text-3xl font-black tabular-nums">2026</span>
                   <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                    {tHero("collection")}
+                    Collection
                   </span>
                 </div>
               </motion.div>

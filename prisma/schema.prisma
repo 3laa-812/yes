@@ -87,8 +87,10 @@ model VerificationToken {
 
 model Product {
   id            String   @id @default(cuid())
-  name          String
-  description   String
+  name_en       String
+  name_ar       String
+  description_en String
+  description_ar String
   price         Decimal
   discountPrice Decimal? // Added for Offers
   images        String   // JSON string of image URLs
@@ -123,7 +125,8 @@ model ProductVariant {
 
 model Category {
   id            String        @id @default(cuid())
-  name          String
+  name_en       String
+  name_ar       String
   slug          String        @unique
   image         String?       // Added for visual representation
   products      Product[]
@@ -132,7 +135,8 @@ model Category {
 
 model SubCategory {
   id         String   @id @default(cuid())
-  name       String
+  name_en    String
+  name_ar    String
   slug       String   @unique
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 interface CategoryPageProps {
   params: Promise<{
     slug: string;
+    locale: string;
   }>;
   searchParams: Promise<{
     subCategoryId?: string;
@@ -39,7 +40,7 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: CategoryPageProps) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const { subCategoryId } = await searchParams;
   const category = await getCategoryWithProducts(slug, subCategoryId);
 
@@ -61,7 +62,10 @@ export default async function CategoryPage({
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <h2 className="text-3xl font-bold tracking-tight text-foreground capitalize">
-            {category.name} Collection
+            {locale === "ar"
+              ? (category as any).name_ar || category.name
+              : (category as any).name_en || category.name}{" "}
+            Collection
           </h2>
           <span className="text-muted-foreground">
             {category.products.length} Products
@@ -87,7 +91,9 @@ export default async function CategoryPage({
               className="rounded-full"
             >
               <Link href={`/collections/${slug}?subCategoryId=${sub.id}`}>
-                {sub.name}
+                {locale === "ar"
+                  ? (sub as any).name_ar || sub.name
+                  : (sub as any).name_en || sub.name}
               </Link>
             </Button>
           ))}
@@ -114,9 +120,13 @@ export default async function CategoryPage({
                 key={product.id}
                 id={product.id}
                 name={product.name}
+                name_en={product.name_en}
+                name_ar={product.name_ar}
                 price={product.price as unknown as number}
                 discountPrice={product.discountPrice as unknown as number}
                 category={product.category.name}
+                category_en={product.category.name_en}
+                category_ar={product.category.name_ar}
                 image={JSON.parse(product.images as string)[0]}
               />
             ))}

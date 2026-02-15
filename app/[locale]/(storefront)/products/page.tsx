@@ -21,7 +21,12 @@ async function getCategories() {
 
 export const dynamic = "force-dynamic";
 
-export default async function ProductsPage() {
+export default async function ProductsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const products = await getAllProducts();
   const categories = await getCategories();
 
@@ -50,7 +55,11 @@ export default async function ProductsPage() {
               asChild
               className="rounded-full"
             >
-              <Link href={`/collections/${cat.slug}`}>{cat.name}</Link>
+              <Link href={`/collections/${cat.slug}`}>
+                {locale === "ar"
+                  ? (cat as any).name_ar || cat.name
+                  : (cat as any).name_en || cat.name}
+              </Link>
             </Button>
           ))}
         </div>
@@ -61,8 +70,12 @@ export default async function ProductsPage() {
               key={product.id}
               id={product.id}
               name={product.name}
+              name_en={product.name_en}
+              name_ar={product.name_ar}
               price={product.price as unknown as number}
               category={product.category.name}
+              category_en={product.category.name_en}
+              category_ar={product.category.name_ar}
               image={JSON.parse(product.images as string)[0]}
             />
           ))}

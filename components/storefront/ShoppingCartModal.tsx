@@ -5,7 +5,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { X, ShoppingBag, Plus, Minus, Trash2 } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import Image from "next/image";
-import { formatCurrency } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useRouter, Link } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
@@ -22,9 +22,8 @@ export function ShoppingCartModal({
 }: ShoppingCartModalProps) {
   const { items, removeItem, updateQuantity, getTotal } = useCartStore();
   const t = useTranslations("Cart");
-  const tCommon = useTranslations("Common");
-  const locale = useLocale();
   const router = useRouter();
+  const locale = useLocale();
 
   // Hydration handling
   const [mounted, setMounted] = useState(false);
@@ -91,7 +90,7 @@ export function ShoppingCartModal({
                             onClick={() => setIsOpen(false)}
                           >
                             <span className="absolute -inset-0.5" />
-                            <span className="sr-only">{t("closePanel")}</span>
+                            <span className="sr-only">Close panel</span>
                             <X className="h-6 w-6" aria-hidden="true" />
                           </button>
                         </div>
@@ -132,29 +131,33 @@ export function ShoppingCartModal({
                                           href={`/products/${item.productId}`}
                                           className="hover:text-primary transition-colors"
                                         >
-                                          {item.name}
+                                          {locale === "ar"
+                                            ? item.name_ar || item.name
+                                            : item.name_en || item.name}
                                         </Link>
                                       </h3>
                                       <div className="ml-4 rtl:mr-4 rtl:ml-0 flex flex-col items-end">
                                         <p>
-                                          {formatCurrency(
+                                          {formatPrice(
                                             item.price * item.quantity,
-                                            locale,
                                           )}
                                         </p>
                                         {item.originalPrice && (
                                           <p className="text-xs text-muted-foreground line-through">
-                                            {formatCurrency(
+                                            {formatPrice(
                                               item.originalPrice *
                                                 item.quantity,
-                                              locale,
                                             )}
                                           </p>
                                         )}
                                       </div>
                                     </div>
                                     <p className="mt-1 text-sm text-muted-foreground">
-                                      {item.category} - {item.size}
+                                      {locale === "ar"
+                                        ? item.category_ar || item.category
+                                        : item.category_en ||
+                                          item.category}{" "}
+                                      - {item.size}
                                     </p>
                                     <div className="flex items-center gap-2 mt-1">
                                       <div
@@ -215,7 +218,7 @@ export function ShoppingCartModal({
                       <div className="border-t border-border px-4 py-6 sm:px-6 bg-card">
                         <div className="flex justify-between text-base font-medium text-foreground">
                           <p>{t("subtotal")}</p>
-                          <p>{formatCurrency(getTotal(), locale)}</p>
+                          <p>{formatPrice(getTotal())}</p>
                         </div>
                         <p className="mt-0.5 text-sm text-muted-foreground">
                           {t("shippingNote")}
@@ -230,7 +233,7 @@ export function ShoppingCartModal({
                         </div>
                         <div className="mt-6 flex justify-center text-center text-sm text-muted-foreground">
                           <p>
-                            {tCommon("or")}{" "}
+                            or{" "}
                             <button
                               type="button"
                               className="font-medium text-primary hover:text-primary/80 transition-colors"

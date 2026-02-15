@@ -7,18 +7,26 @@ import { useLocale } from "next-intl";
 interface ProductCardProps {
   id: string;
   name: string;
+  name_en?: string;
+  name_ar?: string;
   price: string | number;
   image: string;
   category: string;
+  category_en?: string;
+  category_ar?: string;
   discountPrice?: number | null;
 }
 
 export function ProductCard({
   id,
   name,
+  name_en,
+  name_ar,
   price,
   image,
   category,
+  category_en,
+  category_ar,
   discountPrice,
 }: ProductCardProps) {
   const locale = useLocale();
@@ -36,7 +44,7 @@ export function ProductCard({
 
   return (
     <Link href={`/products/${id}`} className="group block">
-      <ScaleHover className="relative overflow-hidden rounded-lg bg-white shadow-sm transition-all duration-300 hover:shadow-md">
+      <ScaleHover className="relative overflow-hidden rounded-xl glass-card">
         <div className="aspect-[3/4] w-full overflow-hidden bg-gray-100 relative">
           <Image
             src={image}
@@ -53,10 +61,12 @@ export function ProductCard({
         </div>
         <div className="p-3 space-y-1">
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-            {category}
+            {locale === "ar"
+              ? category_ar || category
+              : category_en || category}
           </p>
           <h3 className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-primary/80 transition-colors">
-            {name}
+            {locale === "ar" ? name_ar || name : name_en || name}
           </h3>
           <div className="flex items-center gap-2">
             <p

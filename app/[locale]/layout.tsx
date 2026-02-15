@@ -6,6 +6,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import { RamadanProvider } from "@/components/global/RamadanContext";
+import { RamadanDecorations } from "@/components/global/RamadanDecorations";
 
 const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 const cairo = Cairo({ subsets: ["arabic"] });
@@ -40,8 +42,11 @@ export default async function RootLayout({
     <html lang={locale} dir={dir}>
       <body className={`${fontClass} antialiased`}>
         <NextIntlClientProvider messages={messages}>
-          {children}
-          <Toaster richColors />
+          <RamadanProvider>
+            <RamadanDecorations />
+            {children}
+            <Toaster richColors />
+          </RamadanProvider>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -8,6 +8,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { initiatePaymobPayment } from "@/lib/paymob";
 import { auth } from "@/auth";
+import { translateText } from "@/lib/translation";
 
 // Order Create Schema
 const orderSchema = z.object({
@@ -27,14 +28,15 @@ const orderSchema = z.object({
 });
 
 const productSchema = z.object({
-  name: z.string().min(1),
-  description: z.string().min(1),
+  name_en: z.string().min(1),
+  name_ar: z.string().optional(), // Can be auto-generated
+  description_en: z.string().min(1),
+  description_ar: z.string().optional(), // Can be auto-generated
   price: z.number().min(0.01),
   discountPrice: z.number().optional(),
   categoryId: z.string().min(1),
   subCategoryId: z.string().optional().nullable(),
   images: z.array(z.string().url()).min(1),
-  // sizes and colors will be derived from variants, so optional here or we validate variants
 });
 
 const variantSchema = z.object({
@@ -52,8 +54,10 @@ export async function createProduct(formData: FormData) {
 
   
   const rawData = {
-    name: formData.get("name"),
-    description: formData.get("description"),
+    name_en: formData.get("name_en"),
+    name_ar: formData.get("name_ar") || undefined,
+    description_en: formData.get("description_en"),
+    description_ar: formData.get("description_ar") || undefined,
     price: Number(formData.get("price")),
     discountPrice: formData.get("discountPrice") ? Number(formData.get("discountPrice")) : undefined,
     categoryId: formData.get("categoryId"),
@@ -71,8 +75,16 @@ export async function createProduct(formData: FormData) {
     return { success: false, error: "Invalid fields" };
   }
 
-  const { name, description, price, discountPrice, categoryId, subCategoryId, images } = validatedFields.data;
+  let { name_en, name_ar, description_en, description_ar, price, discountPrice, categoryId, subCategoryId, images } = validatedFields.data;
   const variants = validatedVariants.data;
+
+  // Auto-translate if missing
+  if (!name_ar) {
+    name_ar = await translateText(name_en, "ar");
+  }
+  if (!description_ar) {
+    description_ar = await translateText(description_en, "ar");
+  }
 
   // Derive unique sizes and colors for display
   const sizes = Array.from(new Set(variants.map(v => v.size)));
@@ -81,8 +93,10 @@ export async function createProduct(formData: FormData) {
 
   const product = await db.product.create({
     data: {
-      name,
-      description,
+      name_en,
+      name_ar: name_ar!,
+      description_en,
+      description_ar: description_ar!,
       price,
       discountPrice,
       categoryId,
@@ -126,8 +140,10 @@ export async function updateProduct(formData: FormData) {
   const variantsRaw = formData.get("variants") ? JSON.parse(formData.get("variants") as string) : [];
 
   const rawData = {
-      name: formData.get("name"),
-      description: formData.get("description"),
+      name_en: formData.get("name_en"),
+      name_ar: formData.get("name_ar") || undefined,
+      description_en: formData.get("description_en"),
+      description_ar: formData.get("description_ar") || undefined,
       price: Number(formData.get("price")),
       discountPrice: formData.get("discountPrice") ? Number(formData.get("discountPrice")) : undefined,
       categoryId: formData.get("categoryId"),
@@ -135,15 +151,7 @@ export async function updateProduct(formData: FormData) {
       images: formData.get("imageUrls") ? JSON.parse(formData.get("imageUrls") as string) : [],
   };
 
-  const updateSchema = productSchema.pick({
-      name: true,
-      description: true,
-      price: true,
-      discountPrice: true,
-      categoryId: true,
-      subCategoryId: true,
-      images: true
-  });
+  const updateSchema = productSchema.partial(); // Allow partial updates if needed, but form usually sends all
 
   const validatedFields = updateSchema.safeParse(rawData);
   const validatedVariants = z.array(variantSchema).safeParse(variantsRaw);
@@ -156,8 +164,16 @@ export async function updateProduct(formData: FormData) {
       return { success: false, error: "Invalid fields" };
   }
 
-  const { name, description, price, discountPrice, categoryId, subCategoryId, images } = validatedFields.data;
+  let { name_en, name_ar, description_en, description_ar, price, discountPrice, categoryId, subCategoryId, images } = validatedFields.data;
   const variants = validatedVariants.data;
+
+  // Auto-translate if specifically provided as empty string but required by schema (handled by frontend usually, but good fallback)
+   if (!name_ar && name_en) {
+    name_ar = await translateText(name_en, "ar");
+  }
+  if (!description_ar && description_en) {
+    description_ar = await translateText(description_en, "ar");
+  }
   
   const sizes = Array.from(new Set(variants.map(v => v.size)));
   const colors = Array.from(new Set(variants.map(v => v.color)));
@@ -169,8 +185,10 @@ export async function updateProduct(formData: FormData) {
       await tx.product.update({
         where: { id: productId },
         data: {
-          name,
-          description,
+          name_en,
+          name_ar,
+          description_en,
+          description_ar,
           price,
           discountPrice,
           categoryId,
@@ -188,10 +206,6 @@ export async function updateProduct(formData: FormData) {
       });
 
       // 3. Create new variants
-      // Note: createMany is safer for performance
-      // If sqlite, createMany is not supported, loop is needed. 
-      // But user environment is likely Postgres ("provider = postgresql").
-      // Check prisma schema again. Yes, postgresql.
       if (variants.length > 0) {
         await tx.productVariant.createMany({
             data: variants.map(v => ({
@@ -277,16 +291,11 @@ export async function createOrder(data: any) {
                 });
 
                 if (!variant) {
-                    // Fallback to product stock if no variant system used for this product?
-                    // But our plan enforces variants.
-                    // If migration happened, we might have issues. 
-                    // Let's assume strict stock check if variant exists in DB, else loose check.
-                    // For now, strict:
-                    throw new Error(`Variant not found: ${product.name} (${item.size}, ${item.color})`);
+                    throw new Error(`Variant not found: ${product.name_en} (${item.size}, ${item.color})`); // Use name_en for error logging
                 }
 
                 if (variant.stock < item.quantity) {
-                    throw new Error(`Insufficient stock for ${product.name} (${item.size}, ${item.color})`);
+                    throw new Error(`Insufficient stock for ${product.name_en} (${item.size}, ${item.color})`);
                 }
 
                 // Decrement Stock
@@ -304,7 +313,7 @@ export async function createOrder(data: any) {
             } else {
                 // No size/color? Check global stock
                 if (product.stock < item.quantity) {
-                    throw new Error(`Insufficient stock for ${product.name}`);
+                    throw new Error(`Insufficient stock for ${product.name_en}`);
                 }
                 await tx.product.update({
                     where: { id: product.id },
@@ -355,10 +364,9 @@ export async function createOrder(data: any) {
 
           // Pass order out of transaction scope for return
           return order;
-          return order;
       });
   } catch (error: any) {
-      console.error("Order Creation Failed:", error.message);
+      console.error("Order Creation Failed:", error); // Fixed error logging
       return { success: false, error: error.message || "Order creation failed" };
   }
 
@@ -408,14 +416,16 @@ export async function createOrder(data: any) {
 // --- Category Actions ---
 
 const categorySchema = z.object({
-  name: z.string().min(1),
+  name_en: z.string().min(1),
+  name_ar: z.string().optional(),
   slug: z.string().min(1),
   image: z.string().optional(),
 });
 
 export async function createCategory(formData: FormData) {
   const rawData = {
-    name: formData.get("name"),
+    name_en: formData.get("name_en"),
+    name_ar: formData.get("name_ar") || undefined,
     slug: formData.get("slug"),
     image: formData.get("image") || undefined,
   };
@@ -426,9 +436,20 @@ export async function createCategory(formData: FormData) {
     return { success: false, error: "Invalid fields" };
   }
 
+  let { name_en, name_ar, slug, image } = validatedFields.data;
+
+  if (!name_ar) {
+      name_ar = await translateText(name_en, "ar");
+  }
+
   try {
     await db.category.create({
-      data: validatedFields.data,
+      data: {
+          name_en,
+          name_ar: name_ar!,
+          slug,
+          image
+      },
     });
     revalidatePath("/admin/categories");
     return { success: true };
@@ -441,7 +462,8 @@ export async function createCategory(formData: FormData) {
 export async function updateCategory(formData: FormData) {
   const categoryId = formData.get("id") as string;
   const rawData = {
-    name: formData.get("name"),
+    name_en: formData.get("name_en"),
+    name_ar: formData.get("name_ar") || undefined,
     slug: formData.get("slug"),
     image: formData.get("image") || undefined,
   };
@@ -452,10 +474,21 @@ export async function updateCategory(formData: FormData) {
     return { success: false, error: "Invalid fields" };
   }
 
+  let { name_en, name_ar, slug, image } = validatedFields.data;
+  
+  if (!name_ar) {
+      name_ar = await translateText(name_en, "ar");
+  }
+
   try {
     await db.category.update({
       where: { id: categoryId },
-      data: validatedFields.data,
+      data: {
+          name_en,
+          name_ar: name_ar!,
+          slug,
+          image
+      },
     });
     revalidatePath("/admin/categories");
     return { success: true };
@@ -484,14 +517,16 @@ export async function deleteCategory(formData: FormData) {
 // --- SubCategory Actions ---
 
 const subCategorySchema = z.object({
-  name: z.string().min(1),
+  name_en: z.string().min(1),
+  name_ar: z.string().optional(),
   slug: z.string().min(1),
   categoryId: z.string().min(1),
 });
 
 export async function createSubCategory(formData: FormData) {
   const rawData = {
-    name: formData.get("name"),
+    name_en: formData.get("name_en"),
+    name_ar: formData.get("name_ar") || undefined,
     slug: formData.get("slug"),
     categoryId: formData.get("categoryId"),
   };
@@ -502,9 +537,20 @@ export async function createSubCategory(formData: FormData) {
     return { success: false, error: "Invalid fields" };
   }
 
+  let { name_en, name_ar, slug, categoryId } = validatedFields.data;
+
+  if (!name_ar) {
+      name_ar = await translateText(name_en, "ar");
+  }
+
   try {
     await db.subCategory.create({
-      data: validatedFields.data,
+      data: {
+          name_en,
+          name_ar: name_ar!,
+          slug,
+          categoryId
+      },
     });
     revalidatePath("/admin/categories"); // Revalidate parent page
     return { success: true };
@@ -517,7 +563,8 @@ export async function createSubCategory(formData: FormData) {
 export async function updateSubCategory(formData: FormData) {
   const subCategoryId = formData.get("id") as string;
   const rawData = {
-    name: formData.get("name"),
+    name_en: formData.get("name_en"),
+    name_ar: formData.get("name_ar") || undefined,
     slug: formData.get("slug"),
     categoryId: formData.get("categoryId"),
   };
@@ -528,10 +575,21 @@ export async function updateSubCategory(formData: FormData) {
     return { success: false, error: "Invalid fields" };
   }
 
+  let { name_en, name_ar, slug, categoryId } = validatedFields.data;
+
+  if (!name_ar) {
+      name_ar = await translateText(name_en, "ar");
+  }
+
   try {
     await db.subCategory.update({
       where: { id: subCategoryId },
-      data: validatedFields.data,
+      data: {
+          name_en,
+          name_ar: name_ar!,
+          slug,
+          categoryId
+      },
     });
     revalidatePath("/admin/categories");
     return { success: true };

@@ -5,6 +5,8 @@ import { auth } from "@/auth";
 import Script from "next/script";
 import { FacebookPixelTracker } from "@/components/FacebookPixelTracker";
 import { FB_PIXEL_ID } from "@/lib/facebookPixel";
+import { RamadanProvider } from "@/components/global/RamadanContext";
+import { RamadanDecorations } from "@/components/global/RamadanDecorations";
 
 import db from "@/lib/db";
 
@@ -22,13 +24,15 @@ export default async function StorefrontLayout({
   });
 
   return (
-    <div className="flex min-h-screen flex-col">
-      {FB_PIXEL_ID && (
-        <Script
-          id="fb-pixel"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
+    <RamadanProvider>
+      <div className="flex min-h-screen flex-col">
+        <RamadanDecorations />
+        {FB_PIXEL_ID && (
+          <Script
+            id="fb-pixel"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
             !function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -40,13 +44,14 @@ export default async function StorefrontLayout({
             fbq('init', '${FB_PIXEL_ID}');
             fbq('track', 'PageView');
             `,
-          }}
-        />
-      )}
-      <FacebookPixelTracker />
-      <Navbar user={session?.user} categories={categories} />
-      <FadeIn className="flex-1">{children}</FadeIn>
-      <Footer />
-    </div>
+            }}
+          />
+        )}
+        <FacebookPixelTracker />
+        <Navbar user={session?.user} categories={categories} />
+        <FadeIn className="flex-1">{children}</FadeIn>
+        <Footer />
+      </div>
+    </RamadanProvider>
   );
 }

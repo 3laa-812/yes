@@ -9,7 +9,7 @@ import { useCartStore } from "@/lib/store";
 import { ShoppingCartModal } from "@/components/storefront/ShoppingCartModal";
 import { useState, useEffect } from "react";
 import LanguageSwitcher from "@/components/global/LanguageSwitcher";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 import {
   Sheet,
@@ -29,8 +29,16 @@ import {
 interface Category {
   id: string;
   name: string;
+  name_en: string;
+  name_ar: string;
   slug: string;
-  subCategories: { id: string; name: string; slug: string }[];
+  subCategories: {
+    id: string;
+    name: string;
+    name_en: string;
+    name_ar: string;
+    slug: string;
+  }[];
 }
 
 export function Navbar({
@@ -41,7 +49,7 @@ export function Navbar({
   categories?: Category[];
 }) {
   const t = useTranslations("Navbar");
-  const tCommon = useTranslations("Common");
+  const locale = useLocale();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const cartItems = useCartStore((state) => state.items);
@@ -63,8 +71,14 @@ export function Navbar({
     categories.length > 0
       ? categories.map((c) => ({
           href: `/collections/${c.slug}`,
-          label: c.name,
-          subCategories: c.subCategories,
+          label: locale === "ar" ? c.name_ar || c.name : c.name_en || c.name,
+          subCategories: c.subCategories.map((sub) => ({
+            ...sub,
+            name:
+              locale === "ar"
+                ? sub.name_ar || sub.name
+                : sub.name_en || sub.name,
+          })),
           categorySlug: c.slug,
         }))
       : [
@@ -100,7 +114,7 @@ export function Navbar({
 
   return (
     <>
-      <nav className="w-full border-b border-white/5 bg-gradient-to-b from-background/80 to-background/20 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300">
+      <nav className="w-full glass sticky top-0 z-50 transition-all duration-300">
         <div className="flex items-center justify-between mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-20">
           {/* Mobile Menu */}
           <div className="flex lg:hidden">
@@ -108,14 +122,14 @@ export function Navbar({
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="-ml-2">
                   <Menu className="h-6 w-6" />
-                  <span className="sr-only">{t("openMenu")}</span>
+                  <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
               <SheetContent
                 side="left"
                 className="flex flex-col gap-6 p-6 w-[85vw] sm:w-[350px]"
               >
-                <SheetTitle className="sr-only">{t("navigationMenu")}</SheetTitle>
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <div className="flex flex-col gap-8 mt-8">
                   <Link
                     href="/"
@@ -124,7 +138,7 @@ export function Navbar({
                   >
                     <Image
                       src="/branding/logo-dark.png"
-                      alt={t("logoAlt")}
+                      alt="YES Logo"
                       fill
                       className="object-contain object-left"
                     />
@@ -168,7 +182,7 @@ export function Navbar({
                           className="flex items-center gap-3 text-lg font-medium text-foreground/80"
                         >
                           <Package className="w-5 h-5" />
-                          {t("myOrders")}
+                          My Orders
                         </Link>
                         {user.role !== "USER" && (
                           <Link
@@ -176,7 +190,7 @@ export function Navbar({
                             onClick={() => setIsMobileMenuOpen(false)}
                             className="flex items-center gap-3 text-lg font-medium text-foreground/80"
                           >
-                            {t("adminDashboard")}
+                            Admin Dashboard
                           </Link>
                         )}
                         <Link
@@ -184,7 +198,7 @@ export function Navbar({
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="flex items-center gap-3 text-lg font-medium text-destructive"
                         >
-                          {t("signOut")}
+                          Sign Out
                         </Link>
                       </>
                     ) : (
@@ -194,7 +208,7 @@ export function Navbar({
                             href="/login"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
-                            {t("signIn")}
+                            Sign In
                           </Link>
                         </Button>
                         <Button asChild className="w-full">
@@ -202,7 +216,7 @@ export function Navbar({
                             href="/register"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
-                            {t("register")}
+                            Register
                           </Link>
                         </Button>
                       </div>
@@ -221,7 +235,7 @@ export function Navbar({
             >
               <Image
                 src="/branding/logo-dark.png"
-                alt={t("logoAlt")}
+                alt="YES Logo"
                 fill
                 className="object-contain"
                 priority
@@ -243,7 +257,7 @@ export function Navbar({
                 {/* Desktop Dropdown for Subcategories */}
                 {link.subCategories && link.subCategories.length > 0 && (
                   <div className="absolute top-full left-0 pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                    <div className="bg-background border rounded-md shadow-lg p-2 flex flex-col gap-1">
+                    <div className="glass-card border rounded-md shadow-lg p-2 flex flex-col gap-1">
                       {link.subCategories.map((sub) => (
                         <Link
                           key={sub.id}
@@ -281,7 +295,7 @@ export function Navbar({
                 size="icon"
                 asChild
                 className="text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded-full hidden sm:flex"
-                title={t("myOrders")}
+                title="My Orders"
               >
                 <Link href="/account/orders">
                   <Package className="h-5 w-5" />
@@ -304,7 +318,7 @@ export function Navbar({
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      {user?.name || tCommon("guest")}
+                      {user?.name || "Guest"}
                     </p>
                     {user?.email && (
                       <p className="text-xs leading-none text-muted-foreground">
@@ -322,12 +336,12 @@ export function Navbar({
                         className="flex w-full items-center"
                       >
                         <Package className="mr-2 h-4 w-4" />
-                        {t("myOrders")}
+                        My Orders
                       </Link>
                     </DropdownMenuItem>
                     {user.role !== "USER" && (
                       <DropdownMenuItem asChild className="cursor-pointer">
-                        <Link href="/admin/dashboard">{t("adminDashboard")}</Link>
+                        <Link href="/admin/dashboard">Admin Dashboard</Link>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
@@ -335,16 +349,16 @@ export function Navbar({
                       asChild
                       className="cursor-pointer text-destructive focus:text-destructive"
                     >
-                      <Link href="/signout">{t("signOut")}</Link>
+                      <Link href="/signout">Sign Out</Link>
                     </DropdownMenuItem>
                   </>
                 ) : (
                   <>
                     <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link href="/login">{t("signIn")}</Link>
+                      <Link href="/login">Sign In</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link href="/register">{t("register")}</Link>
+                      <Link href="/register">Register</Link>
                     </DropdownMenuItem>
                   </>
                 )}

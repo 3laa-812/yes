@@ -10,10 +10,14 @@ import { toast } from "sonner";
 interface ProductSelectorProps {
   id: string;
   name: string;
+  name_en: string;
+  name_ar: string;
   price: number;
   discountPrice?: number | null;
   image: string;
   category: string;
+  category_en: string;
+  category_ar: string;
   sizes: string[];
   colors: string[];
   variants: any[]; // Using any to avoid importing prisma types client-side if complex, but ideally should be typed
@@ -27,10 +31,14 @@ import { event as pixelEvent } from "@/lib/facebookPixel";
 export function ProductSelector({
   id,
   name,
+  name_en,
+  name_ar,
   price,
   discountPrice,
   image,
   category,
+  category_en,
+  category_ar,
   sizes,
   colors,
   variants,
@@ -71,10 +79,14 @@ export function ProductSelector({
       id: `${id}-${selectedSize}-${selectedColor}`,
       productId: id,
       name,
+      name_en,
+      name_ar,
       price: effectivePrice,
       originalPrice: originalPrice,
       image,
       category,
+      category_en,
+      category_ar,
       size: selectedSize,
       color: selectedColor,
       quantity: 1,

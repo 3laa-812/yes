@@ -65,7 +65,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
           {/* Product Info */}
           <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              {product.name}
+              {locale === "ar"
+                ? (product as any).name_ar || product.name
+                : (product as any).name_en || product.name}
             </h1>
 
             <div className="mt-3">
@@ -95,17 +97,34 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <h3 className="sr-only">{t("description")}</h3>
               <div
                 className="space-y-6 text-base text-muted-foreground prose prose-sm sm:prose lg:prose-lg max-w-none"
-                dangerouslySetInnerHTML={{ __html: product.description }}
+                dangerouslySetInnerHTML={{
+                  __html:
+                    locale === "ar"
+                      ? (product as any).description_ar || product.description
+                      : (product as any).description_en || product.description,
+                }}
               />
             </div>
 
             <ProductSelector
               id={product.id}
-              name={product.name}
+              name={
+                locale === "ar"
+                  ? (product as any).name_ar || product.name
+                  : (product as any).name_en || product.name
+              }
+              name_en={(product as any).name_en || product.name}
+              name_ar={(product as any).name_ar || product.name}
               price={Number(product.price)}
               discountPrice={Number(product.discountPrice)}
               image={JSON.parse(product.images as string)[0]}
               category={product.category.name}
+              category_en={
+                (product.category as any).name_en || product.category.name
+              }
+              category_ar={
+                (product.category as any).name_ar || product.category.name
+              }
               sizes={JSON.parse(product.sizes as string)}
               colors={JSON.parse(product.colors as string)}
               variants={product.variants}

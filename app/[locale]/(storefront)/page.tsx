@@ -21,7 +21,12 @@ async function getFeaturedProducts() {
 
 export const dynamic = "force-dynamic";
 
-export default async function Home() {
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const products = await getFeaturedProducts();
   const t = await getTranslations("HomePage");
 
@@ -52,9 +57,13 @@ export default async function Home() {
               <ProductCard
                 id={product.id}
                 name={product.name}
+                name_en={product.name_en}
+                name_ar={product.name_ar}
                 price={product.price as unknown as number}
                 discountPrice={product.discountPrice as unknown as number}
                 category={product.category.name}
+                category_en={product.category.name_en}
+                category_ar={product.category.name_ar}
                 image={JSON.parse(product.images as string)[0]}
               />
             </StaggerItem>
