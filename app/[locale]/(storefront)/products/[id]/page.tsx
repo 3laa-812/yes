@@ -51,10 +51,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <PixelViewContent
         product={{
           id: product.id,
-          name: product.name,
+          name: product.name_en,
           price: effectivePrice,
           currency: "EGP",
-          category: product.category.name,
+          category: product.category.name_en,
         }}
       />
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
@@ -65,9 +65,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           {/* Product Info */}
           <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              {locale === "ar"
-                ? (product as any).name_ar || product.name
-                : (product as any).name_en || product.name}
+              {locale === "ar" ? product.name_ar : product.name_en}
             </h1>
 
             <div className="mt-3">
@@ -100,31 +98,27 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 dangerouslySetInnerHTML={{
                   __html:
                     locale === "ar"
-                      ? (product as any).description_ar || product.description
-                      : (product as any).description_en || product.description,
+                      ? product.description_ar
+                      : product.description_en,
                 }}
               />
             </div>
 
             <ProductSelector
               id={product.id}
-              name={
-                locale === "ar"
-                  ? (product as any).name_ar || product.name
-                  : (product as any).name_en || product.name
-              }
-              name_en={(product as any).name_en || product.name}
-              name_ar={(product as any).name_ar || product.name}
+              name={locale === "ar" ? product.name_ar : product.name_en}
+              name_en={product.name_en}
+              name_ar={product.name_ar}
               price={Number(product.price)}
               discountPrice={Number(product.discountPrice)}
               image={JSON.parse(product.images as string)[0]}
-              category={product.category.name}
-              category_en={
-                (product.category as any).name_en || product.category.name
+              category={
+                locale === "ar"
+                  ? product.category.name_ar
+                  : product.category.name_en
               }
-              category_ar={
-                (product.category as any).name_ar || product.category.name
-              }
+              category_en={product.category.name_en}
+              category_ar={product.category.name_ar}
               sizes={JSON.parse(product.sizes as string)}
               colors={JSON.parse(product.colors as string)}
               variants={product.variants}

@@ -16,7 +16,7 @@ async function getAllProducts() {
 }
 
 async function getCategories() {
-  return db.category.findMany({ orderBy: { name: "asc" } });
+  return db.category.findMany({ orderBy: { name_en: "asc" } });
 }
 
 export const dynamic = "force-dynamic";
@@ -56,9 +56,7 @@ export default async function ProductsPage({
               className="rounded-full"
             >
               <Link href={`/collections/${cat.slug}`}>
-                {locale === "ar"
-                  ? (cat as any).name_ar || cat.name
-                  : (cat as any).name_en || cat.name}
+                {locale === "ar" ? cat.name_ar : cat.name_en}
               </Link>
             </Button>
           ))}
@@ -69,11 +67,15 @@ export default async function ProductsPage({
             <ProductCard
               key={product.id}
               id={product.id}
-              name={product.name}
+              name={locale === "ar" ? product.name_ar : product.name_en}
               name_en={product.name_en}
               name_ar={product.name_ar}
               price={product.price as unknown as number}
-              category={product.category.name}
+              category={
+                locale === "ar"
+                  ? product.category.name_ar
+                  : product.category.name_en
+              }
               category_en={product.category.name_en}
               category_ar={product.category.name_ar}
               image={JSON.parse(product.images as string)[0]}

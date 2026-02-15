@@ -22,7 +22,8 @@ import { useRouter } from "next/navigation";
 
 interface SubCategory {
   id: string;
-  name: string;
+  name_en: string;
+  name_ar: string;
   slug: string;
   categoryId: string;
 }
@@ -39,13 +40,15 @@ export function SubCategoriesManager({
   const router = useRouter();
   const [subCategories, setSubCategories] =
     useState<SubCategory[]>(initialSubCategories);
-  const [newSubCatName, setNewSubCatName] = useState("");
+  const [newSubCatNameEn, setNewSubCatNameEn] = useState("");
+  const [newSubCatNameAr, setNewSubCatNameAr] = useState("");
   const [newSubCatSlug, setNewSubCatSlug] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Edit state
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editName, setEditName] = useState("");
+  const [editNameEn, setEditNameEn] = useState("");
+  const [editNameAr, setEditNameAr] = useState("");
   const [editSlug, setEditSlug] = useState("");
 
   const autoSlug = (name: string, isEdit: boolean) => {
@@ -58,11 +61,12 @@ export function SubCategoriesManager({
   };
 
   const handleCreate = async () => {
-    if (!newSubCatName || !newSubCatSlug) return;
+    if (!newSubCatNameEn || !newSubCatNameAr || !newSubCatSlug) return;
     setLoading(true);
 
     const formData = new FormData();
-    formData.append("name", newSubCatName);
+    formData.append("name_en", newSubCatNameEn);
+    formData.append("name_ar", newSubCatNameAr);
     formData.append("slug", newSubCatSlug);
     formData.append("categoryId", categoryId);
 
@@ -70,7 +74,8 @@ export function SubCategoriesManager({
       const res = await createSubCategory(formData);
       if (res.success) {
         toast.success("SubCategory Created");
-        setNewSubCatName("");
+        setNewSubCatNameEn("");
+        setNewSubCatNameAr("");
         setNewSubCatSlug("");
         router.refresh();
         // We should ideally fetch new list or optimistic update.
@@ -113,13 +118,15 @@ export function SubCategoriesManager({
 
   const startEdit = (sub: SubCategory) => {
     setEditingId(sub.id);
-    setEditName(sub.name);
+    setEditNameEn(sub.name_en);
+    setEditNameAr(sub.name_ar);
     setEditSlug(sub.slug);
   };
 
   const cancelEdit = () => {
     setEditingId(null);
-    setEditName("");
+    setEditNameEn("");
+    setEditNameAr("");
     setEditSlug("");
   };
 
@@ -128,7 +135,8 @@ export function SubCategoriesManager({
 
     const formData = new FormData();
     formData.append("id", editingId);
-    formData.append("name", editName);
+    formData.append("name_en", editNameEn);
+    formData.append("name_ar", editNameAr);
     formData.append("slug", editSlug);
     formData.append("categoryId", categoryId);
 
@@ -138,7 +146,14 @@ export function SubCategoriesManager({
         toast.success("Updated");
         setSubCategories((prev) =>
           prev.map((s) =>
-            s.id === editingId ? { ...s, name: editName, slug: editSlug } : s,
+            s.id === editingId
+              ? {
+                  ...s,
+                  name_en: editNameEn,
+                  name_ar: editNameAr,
+                  slug: editSlug,
+                }
+              : s,
           ),
         );
         setEditingId(null);
@@ -156,14 +171,23 @@ export function SubCategoriesManager({
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-4 items-end border p-4 rounded-md bg-muted/40">
         <div className="grid gap-2 flex-1 w-full">
-          <label className="text-sm font-medium">Name</label>
+          <label className="text-sm font-medium">English Name</label>
           <Input
-            placeholder="New Sub-Category Name"
-            value={newSubCatName}
+            placeholder="Name (EN)"
+            value={newSubCatNameEn}
             onChange={(e) => {
-              setNewSubCatName(e.target.value);
+              setNewSubCatNameEn(e.target.value);
               autoSlug(e.target.value, false);
             }}
+          />
+        </div>
+        <div className="grid gap-2 flex-1 w-full">
+          <label className="text-sm font-medium">Arabic Name</label>
+          <Input
+            placeholder="الاسم (AR)"
+            className="text-right"
+            value={newSubCatNameAr}
+            onChange={(e) => setNewSubCatNameAr(e.target.value)}
           />
         </div>
         <div className="grid gap-2 flex-1 w-full">
@@ -183,7 +207,8 @@ export function SubCategoriesManager({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
+              <TableHead>English Name</TableHead>
+              <TableHead>Arabic Name</TableHead>
               <TableHead>Slug</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -192,7 +217,7 @@ export function SubCategoriesManager({
             {subCategories.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={3}
+                  colSpan={4}
                   className="text-center text-muted-foreground py-8"
                 >
                   No sub-categories yet. Add one above.
@@ -204,15 +229,26 @@ export function SubCategoriesManager({
                   <TableCell>
                     {editingId === sub.id ? (
                       <Input
-                        value={editName}
+                        value={editNameEn}
                         onChange={(e) => {
-                          setEditName(e.target.value);
+                          setEditNameEn(e.target.value);
                           autoSlug(e.target.value, true);
                         }}
                         className="h-8"
                       />
                     ) : (
-                      <span className="font-medium">{sub.name}</span>
+                      <span className="font-medium">{sub.name_en}</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {editingId === sub.id ? (
+                      <Input
+                        value={editNameAr}
+                        onChange={(e) => setEditNameAr(e.target.value)}
+                        className="h-8 text-right"
+                      />
+                    ) : (
+                      <span className="font-medium">{sub.name_ar}</span>
                     )}
                   </TableCell>
                   <TableCell>

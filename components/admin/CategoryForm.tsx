@@ -22,7 +22,8 @@ import { useTranslations } from "next-intl";
 interface CategoryFormProps {
   category?: {
     id: string;
-    name: string;
+    name_en: string;
+    name_ar: string;
     slug: string;
     image?: string | null;
   };
@@ -35,9 +36,9 @@ export function CategoryForm({ category }: CategoryFormProps) {
   const [slug, setSlug] = useState(category?.slug || "");
   const [image, setImage] = useState<string | null>(category?.image || null);
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNameEnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!category) {
-      // Auto-generate slug from name if creating new
+      // Auto-generate slug from English name if creating new
       const val = e.target.value;
       setSlug(
         val
@@ -83,24 +84,37 @@ export function CategoryForm({ category }: CategoryFormProps) {
       {category && <input type="hidden" name="id" value={category.id} />}
       <Card>
         <CardHeader>
-          <CardTitle>{category ? t("editCategory") : t("newCategory")}</CardTitle>
+          <CardTitle>
+            {category ? t("editCategory") : t("newCategory")}
+          </CardTitle>
           <CardDescription>
-            {category
-              ? t("updateDetails")
-              : t("addNew")}
+            {category ? t("updateDetails") : t("addNew")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">{t("nameLabel")}</Label>
-            <Input
-              id="name"
-              name="name"
-              defaultValue={category?.name}
-              onChange={handleNameChange}
-              required
-              placeholder={t("namePlaceholder")}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="name_en">English Name</Label>
+              <Input
+                id="name_en"
+                name="name_en"
+                defaultValue={category?.name_en}
+                onChange={handleNameEnChange}
+                required
+                placeholder="Category Name (EN)"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="name_ar">Arabic Name</Label>
+              <Input
+                id="name_ar"
+                name="name_ar"
+                defaultValue={category?.name_ar}
+                required
+                placeholder="اسم الفئة (AR)"
+                className="text-right"
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="slug">Slug</Label>

@@ -18,7 +18,7 @@ import { DeleteCategoryButton } from "./_components/DeleteCategoryButton";
 async function getCategories() {
   return db.category.findMany({
     orderBy: {
-      name: "asc",
+      name_en: "asc",
     },
     include: {
       _count: {
@@ -74,7 +74,7 @@ export default async function AdminCategoriesPage() {
                     {category.image ? (
                       <Image
                         src={category.image}
-                        alt={category.name}
+                        alt={category.name_en}
                         width={40}
                         height={40}
                         className="rounded-md object-cover aspect-square"
@@ -85,7 +85,9 @@ export default async function AdminCategoriesPage() {
                       </div>
                     )}
                   </TableCell>
-                  <TableCell className="font-medium">{category.name}</TableCell>
+                  <TableCell className="font-medium">
+                    {category.name_en}
+                  </TableCell>
                   <TableCell>{category.slug}</TableCell>
                   <TableCell>{category._count.subCategories}</TableCell>
                   <TableCell>{category._count.products}</TableCell>

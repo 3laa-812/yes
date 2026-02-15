@@ -8,9 +8,10 @@ async function main() {
   // UPSERT: Kids
   await prisma.category.upsert({
     where: { slug: 'kids' },
-    update: { name: 'Kids' },
+    update: { name_en: 'Kids', name_ar: 'أطفال' },
     create: {
-      name: 'Kids',
+      name_en: 'Kids',
+      name_ar: 'أطفال',
       slug: 'kids',
     },
   })
@@ -19,9 +20,10 @@ async function main() {
   // UPSERT: Shoes
   await prisma.category.upsert({
     where: { slug: 'shoes' },
-    update: { name: 'Shoes' },
+    update: { name_en: 'Shoes', name_ar: 'أحذية' },
     create: {
-      name: 'Shoes',
+      name_en: 'Shoes',
+      name_ar: 'أحذية',
       slug: 'shoes',
     },
   })
@@ -30,9 +32,10 @@ async function main() {
   // UPSERT: Men (Ensure it exists)
   await prisma.category.upsert({
     where: { slug: 'men' },
-    update: { name: 'Men' },
+    update: { name_en: 'Men', name_ar: 'رجال' },
     create: {
-      name: 'Men',
+      name_en: 'Men',
+      name_ar: 'رجال',
       slug: 'men',
     },
   })

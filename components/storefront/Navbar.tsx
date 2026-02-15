@@ -28,13 +28,11 @@ import {
 
 interface Category {
   id: string;
-  name: string;
   name_en: string;
   name_ar: string;
   slug: string;
   subCategories: {
     id: string;
-    name: string;
     name_en: string;
     name_ar: string;
     slug: string;
@@ -71,13 +69,10 @@ export function Navbar({
     categories.length > 0
       ? categories.map((c) => ({
           href: `/collections/${c.slug}`,
-          label: locale === "ar" ? c.name_ar || c.name : c.name_en || c.name,
+          label: locale === "ar" ? c.name_ar : c.name_en,
           subCategories: c.subCategories.map((sub) => ({
             ...sub,
-            name:
-              locale === "ar"
-                ? sub.name_ar || sub.name
-                : sub.name_en || sub.name,
+            name: locale === "ar" ? sub.name_ar : sub.name_en,
           })),
           categorySlug: c.slug,
         }))

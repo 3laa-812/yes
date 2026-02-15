@@ -20,7 +20,7 @@ export default async function StorefrontLayout({
   const session = await auth();
   const categories = await db.category.findMany({
     include: { subCategories: true },
-    orderBy: { name: "asc" },
+    orderBy: { name_en: "asc" },
   });
 
   return (
