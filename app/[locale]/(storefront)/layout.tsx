@@ -7,6 +7,7 @@ import { FacebookPixelTracker } from "@/components/FacebookPixelTracker";
 import { FB_PIXEL_ID } from "@/lib/facebookPixel";
 
 import db from "@/lib/db";
+import { WhatsAppButton } from "@/components/storefront/WhatsAppButton";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,7 @@ export default async function StorefrontLayout({
       <FacebookPixelTracker />
       <Navbar user={session?.user} categories={categories} />
       <FadeIn className="flex-1">{children}</FadeIn>
+      <WhatsAppButton />
       <Footer />
     </div>
   );
