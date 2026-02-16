@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { event } from "@/lib/facebookPixel";
+import { trackViewContent } from "@/lib/facebookPixel";
 
 interface PixelViewContentProps {
   product: {
@@ -15,14 +15,7 @@ interface PixelViewContentProps {
 
 export function PixelViewContent({ product }: PixelViewContentProps) {
   useEffect(() => {
-    event("ViewContent", {
-      content_name: product.name,
-      content_ids: [product.id],
-      content_type: "product",
-      value: Number(product.price),
-      currency: product.currency,
-      content_category: product.category,
-    });
+    trackViewContent(product);
   }, [product]);
 
   return null;

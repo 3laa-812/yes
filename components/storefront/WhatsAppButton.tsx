@@ -5,6 +5,7 @@ import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
+import { trackContact } from "@/lib/facebookPixel";
 
 export function WhatsAppButton() {
   const locale = useLocale();
@@ -19,12 +20,17 @@ export function WhatsAppButton() {
 
   const isRtl = locale === "ar";
 
+  const handleClick = () => {
+    trackContact();
+  };
+
   return createPortal(
     <a
       href={`https://wa.me/${whatsappNumber}`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"
+      onClick={handleClick}
       className={cn(
         "fixed bottom-6 z-[9999] flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl hover:ring-4 hover:ring-[#25D366]/30",
         isRtl ? "left-6" : "right-6",

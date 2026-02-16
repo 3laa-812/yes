@@ -1,36 +1,57 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { pageview } from "@/lib/facebookPixel";
+import Script from "next/script";
+import { usePathname } from "next/navigation";
+import { useLocale } from "next-intl";
+import { useMemo } from "react";
+import {
+  FB_PIXEL_ID,
+  shouldLoadPixel,
+  isDevelopment,
+} from "@/lib/facebookPixel";
 
+/**
+ * Facebook Pixel Script Component
+ * Loads Facebook Pixel script only on allowed routes
+ * Respects locale (RTL/LTR) and excludes dashboard/admin/auth routes
+ */
 export function FacebookPixel() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [loaded, setLoaded] = useState(false);
+  const locale = useLocale();
 
-  useEffect(() => {
-    // Initialize Facebook Pixel
-    if (!loaded) {
-      import("react-facebook-pixel")
-        .then((x) => x.default)
-        .then((ReactPixel) => {
-          ReactPixel.init(process.env.NEXT_PUBLIC_FB_PIXEL_ID as string); // 1634437144398713
-          ReactPixel.pageView();
-          setLoaded(true);
-        });
-    }
-  }, [loaded]);
+  // Map locale to Facebook Pixel locale format
+  // Facebook supports: en_US, ar_AR, etc.
+  const fbLocale = useMemo(() => {
+    return locale === "ar" ? "ar_AR" : "en_US";
+  }, [locale]);
 
-  useEffect(() => {
-    if (loaded) {
-      import("react-facebook-pixel")
-        .then((x) => x.default)
-        .then((ReactPixel) => {
-          ReactPixel.pageView();
-        });
-    }
-  }, [pathname, searchParams, loaded]);
+  // Check if pixel should load on this route
+  const shouldLoad = useMemo(() => {
+    return pathname ? shouldLoadPixel(pathname) : false;
+  }, [pathname]);
 
-  return null;
+  // Don't load in development or on excluded routes
+  if (isDevelopment() || !shouldLoad || !FB_PIXEL_ID) {
+    return null;
+  }
+
+  return (
+    <Script
+      id="fb-pixel"
+      strategy="afterInteractive"
+      dangerouslySetInnerHTML={{
+        __html: `
+          !function(f,b,e,v,n,t,s)
+          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+          n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t,s)}(window, document,'script',
+          'https://connect.facebook.net/${fbLocale}/fbevents.js');
+          fbq('init', '${FB_PIXEL_ID}');
+        `,
+      }}
+    />
+  );
 }

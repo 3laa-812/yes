@@ -24,7 +24,7 @@ interface ProductSelectorProps {
 }
 
 import { useTranslations } from "next-intl";
-import { event as pixelEvent } from "@/lib/facebookPixel";
+import { trackAddToCart } from "@/lib/facebookPixel";
 
 // ... (keep interface)
 
@@ -92,13 +92,12 @@ export function ProductSelector({
       quantity: 1,
     });
 
-    pixelEvent("AddToCart", {
-      content_ids: [id],
-      content_name: name,
-      content_type: "product",
+    trackAddToCart({
+      productId: id,
+      productName: name,
+      price: effectivePrice,
       currency: "EGP",
-      value: effectivePrice,
-      contents: [{ id: id, quantity: 1 }],
+      quantity: 1,
     });
 
     toast.success(t("addedToCart"));

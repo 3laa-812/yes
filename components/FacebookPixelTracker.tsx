@@ -2,15 +2,16 @@
 
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, Suspense } from "react";
-import { pageview } from "@/lib/facebookPixel";
+import { pageView, shouldLoadPixel } from "@/lib/facebookPixel";
 
 function PixelEvents() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (pathname) {
-      pageview();
+    // Only track pageviews on allowed routes
+    if (pathname && shouldLoadPixel(pathname)) {
+      pageView();
     }
   }, [pathname, searchParams]);
 
