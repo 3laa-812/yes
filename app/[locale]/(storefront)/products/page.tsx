@@ -71,6 +71,7 @@ export default async function ProductsPage({
               name_en={product.name_en}
               name_ar={product.name_ar}
               price={product.price as unknown as number}
+              discountPrice={product.discountPrice as unknown as number}
               category={
                 locale === "ar"
                   ? product.category.name_ar

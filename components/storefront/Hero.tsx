@@ -159,7 +159,7 @@ export function Hero() {
                 {/* Placeholder for Fashion Image */}
                 <div className="w-full h-full bg-secondary relative flex items-center justify-center">
                   <Image
-                    src="/hero-fashion.jpg"
+                    src="/her-v2.png"
                     alt="Fashion Model"
                     fill
                     className="object-cover"

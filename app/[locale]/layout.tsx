@@ -8,7 +8,8 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { RamadanProvider } from "@/components/global/RamadanContext";
 import { RamadanDecorations } from "@/components/global/RamadanDecorations";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { FacebookPixel } from "@/components/FacebookPixel";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 const cairo = Cairo({ subsets: ["arabic"] });
@@ -45,9 +46,10 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <RamadanProvider>
             <RamadanDecorations />
+            <FacebookPixel />
             {children}
             <Toaster richColors />
-            <SpeedInsights/>
+            <SpeedInsights />
           </RamadanProvider>
         </NextIntlClientProvider>
       </body>

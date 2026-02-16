@@ -13,8 +13,17 @@ async function checkOwner() {
         throw new Error("Unauthorized");
     }
     // Force non-null assertion or check
-    if (!session || !session.user) throw new Error("Unauthorized");
-    return session.user;
+    if (!session || !session.user || !session.user.id) throw new Error("Unauthorized");
+
+    const user = await db.user.findUnique({
+        where: { id: session.user.id }
+    });
+
+    if (!user || user.role !== Role.OWNER) {
+        throw new Error("Unauthorized");
+    }
+
+    return user;
 }
 
 export async function changeOwnPassword(currentPassword: string, newPassword: string, confirmPassword: string) {
