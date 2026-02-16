@@ -45,9 +45,33 @@ function debugLog(message: string, ...args: any[]): void {
 
 /**
  * Check if Facebook Pixel is initialized
+ * Returns true if fbq exists (even if script is blocked, queue will handle it)
  */
 export function isPixelInitialized(): boolean {
-  return typeof window !== "undefined" && typeof window.fbq === "function";
+  if (typeof window === "undefined") return false;
+  
+  // Check if fbq exists (either as function or queued)
+  return (
+    typeof window.fbq === "function" ||
+    (typeof (window as any)._fbq !== "undefined" && Array.isArray((window as any)._fbq))
+  );
+}
+
+/**
+ * Initialize fbq queue if it doesn't exist
+ * This ensures events can be queued even if script is blocked
+ */
+export function ensurePixelQueue(): void {
+  if (typeof window === "undefined") return;
+  
+  if (!window.fbq && !(window as any)._fbq) {
+    (window as any).fbq = function(...args: any[]) {
+      ((window as any)._fbq = (window as any)._fbq || []).push(args);
+    };
+    (window as any).fbq.loaded = false;
+    (window as any).fbq.version = "2.0";
+    (window as any).fbq.queue = [];
+  }
 }
 
 /**
@@ -55,14 +79,23 @@ export function isPixelInitialized(): boolean {
  * Should be called on route changes (not just initial load)
  */
 export function pageView(): void {
+  ensurePixelQueue();
+  
   if (!isPixelInitialized()) {
     debugLog("PageView skipped: Pixel not initialized");
     return;
   }
 
   try {
-    window.fbq("track", "PageView");
-    debugLog("PageView tracked");
+    if (typeof window.fbq === "function") {
+      window.fbq("track", "PageView");
+      debugLog("PageView tracked");
+    } else {
+      // Queue the event if fbq is not yet a function
+      (window as any)._fbq = (window as any)._fbq || [];
+      (window as any)._fbq.push(["track", "PageView"]);
+      debugLog("PageView queued");
+    }
   } catch (error) {
     debugLog("PageView error:", error);
   }
@@ -77,14 +110,23 @@ export function trackEvent(
   eventName: string,
   payload: Record<string, any> = {}
 ): void {
+  ensurePixelQueue();
+  
   if (!isPixelInitialized()) {
     debugLog(`Event "${eventName}" skipped: Pixel not initialized`);
     return;
   }
 
   try {
-    window.fbq("track", eventName, payload);
-    debugLog(`Event "${eventName}" tracked`, payload);
+    if (typeof window.fbq === "function") {
+      window.fbq("track", eventName, payload);
+      debugLog(`Event "${eventName}" tracked`, payload);
+    } else {
+      // Queue the event if fbq is not yet a function
+      (window as any)._fbq = (window as any)._fbq || [];
+      (window as any)._fbq.push(["track", eventName, payload]);
+      debugLog(`Event "${eventName}" queued`, payload);
+    }
   } catch (error) {
     debugLog(`Event "${eventName}" error:`, error);
   }
