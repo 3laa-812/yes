@@ -49,7 +49,7 @@ export default async function OrdersPage({ params }: OrdersPageProps) {
         </div>
       ) : (
         <div className="space-y-6">
-          {orders.map((order) => (
+          {orders.map((order: any) => (
             <Card key={order.id} className="overflow-hidden">
               <CardHeader className="bg-gray-50/50 flex flex-row items-center justify-between p-4">
                 <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-8">

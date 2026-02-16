@@ -30,10 +30,13 @@ async function getCategoryWithProducts(slug: string, subCategoryId?: string) {
   // If subCategoryId is present, ensure it's a valid child and fetch only its products.
   // If not, fetch products for the main category AND all its children.
 
-  let targetCategoryIds = [category.id, ...category.children.map((c) => c.id)];
+  let targetCategoryIds = [
+    category.id,
+    ...category.children.map((c: any) => c.id),
+  ];
 
   if (subCategoryId) {
-    const isChild = category.children.some((c) => c.id === subCategoryId);
+    const isChild = category.children.some((c: any) => c.id === subCategoryId);
     if (isChild) {
       targetCategoryIds = [subCategoryId];
     } else {

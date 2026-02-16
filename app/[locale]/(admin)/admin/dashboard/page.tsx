@@ -70,7 +70,7 @@ async function getStats(locale: string) {
     revenueMap[key] = 0;
   }
 
-  recentOrders.forEach((order) => {
+  recentOrders.forEach((order: any) => {
     const key = format(order.createdAt, "MMM dd", { locale: dateLocale });
     if (revenueMap[key] !== undefined) {
       revenueMap[key] += Number(order.total);
@@ -99,7 +99,7 @@ async function getStats(locale: string) {
     ordersMap[key] = 0;
   }
 
-  allRecentOrders.forEach((order) => {
+  allRecentOrders.forEach((order: any) => {
     const key = format(order.createdAt, "EEE", { locale: dateLocale });
     if (ordersMap[key] !== undefined) {
       ordersMap[key]++;
@@ -120,7 +120,7 @@ async function getStats(locale: string) {
     CANCELLED: "#ef4444", // red-500
   };
 
-  const statusChartData = orderStatusGroups.map((group) => ({
+  const statusChartData = orderStatusGroups.map((group: any) => ({
     name: group.status,
     value: group._count._all,
     color: statusColors[group.status] || "#9ca3af", // gray-400 default

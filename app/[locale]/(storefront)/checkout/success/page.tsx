@@ -28,7 +28,7 @@ export default async function SuccessPage({ searchParams }: Props) {
             id: order.id,
             value: Number(order.total),
             currency: "EGP", // Assuming EGP as per req
-            contents: order.items.map((item) => ({
+            contents: order.items.map((item: any) => ({
               id: item.productId,
               quantity: item.quantity,
             })),

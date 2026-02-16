@@ -47,7 +47,7 @@ export default async function ProductsPage({
           <Button variant="default" size="sm" asChild className="rounded-full">
             <Link href="/products">All</Link>
           </Button>
-          {categories.map((cat) => (
+          {categories.map((cat: any) => (
             <Button
               key={cat.id}
               variant="outline"

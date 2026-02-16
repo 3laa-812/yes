@@ -198,7 +198,7 @@ export async function updateProduct(formData: FormData) {
   const colors = Array.from(new Set(variants.map(v => v.color)));
   const totalStock = variants.reduce((acc, v) => acc + v.stock, 0);
 
-  await db.$transaction(async (tx) => {
+  await db.$transaction(async (tx: any) => {
       // 1. Update Product Base
       await tx.product.update({
         where: { id: productId },
@@ -285,7 +285,7 @@ export async function createOrder(data: any) {
 
   let order;
   try {
-      order = await db.$transaction(async (tx) => {
+      order = await db.$transaction(async (tx: any) => {
           for (const item of items) {
             const product = await tx.product.findUnique({ where: { id: item.productId } });
             if (!product) throw new Error(`Product not found: ${item.productId}`);
