@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { toast } from "sonner";
+import { useTranslations, useLocale } from "next-intl";
+import { getColorDisplayName, getColorValue } from "@/lib/colors";
 
 interface ProductSelectorProps {
   id: string;
@@ -22,10 +24,6 @@ interface ProductSelectorProps {
   colors: string[];
   variants: any[]; // Using any to avoid importing prisma types client-side if complex, but ideally should be typed
 }
-
-import { useTranslations } from "next-intl";
-
-// ... (keep interface)
 
 export function ProductSelector({
   id,
@@ -46,6 +44,7 @@ export function ProductSelector({
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const addItem = useCartStore((state) => state.addItem);
   const t = useTranslations("Storefront.Product");
+  const locale = useLocale() as "en" | "ar";
 
   // Helper to check stock
   const getVariantStock = (size: string, color: string) => {
@@ -99,26 +98,36 @@ export function ProductSelector({
       {/* Colors */}
       <div>
         <h3 className="text-sm font-medium text-foreground">{t("color")}</h3>
-        <div className="mt-4 flex items-center space-x-3">
+        <div className="mt-4 flex flex-wrap gap-3">
           {colors.map((color) => {
-            // Optional: Check if color is available in any size?
-            // For now just standard selection
+            const isSelected = selectedColor === color;
+            const displayName = getColorDisplayName(color, locale);
+            const value = getColorValue(color);
+
             return (
               <button
                 key={color}
+                type="button"
                 onClick={() => setSelectedColor(color)}
-                className={cn(
-                  "relative -m-0.5 flex cursor-pointer item-center justify-center rounded-full p-0.5 focus:outline-none ring-offset-background transition-all",
-                  selectedColor === color
-                    ? "ring-2 ring-primary ring-offset-2"
-                    : "ring-1 ring-border hover:ring-primary/50",
-                )}
+                className="flex flex-col items-center gap-1"
               >
                 <span
-                  aria-hidden="true"
-                  className="h-8 w-8 rounded-full border border-black/10"
-                  style={{ backgroundColor: color }}
-                />
+                  className={cn(
+                    "relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none ring-offset-background transition-all",
+                    isSelected
+                      ? "ring-2 ring-primary ring-offset-2 scale-110"
+                      : "ring-1 ring-border hover:ring-primary/50 hover:scale-105",
+                  )}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="h-8 w-8 rounded-full border border-black/10 shadow-sm"
+                    style={{ backgroundColor: value }}
+                  />
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {displayName}
+                </span>
               </button>
             );
           })}

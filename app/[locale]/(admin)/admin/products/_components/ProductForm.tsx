@@ -8,7 +8,7 @@ import { ChevronLeft, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -33,6 +33,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { ColorPalette } from "@/components/admin/products/ColorPalette";
+import { getColorValue, getColorDisplayName, findColorByName } from "@/lib/colors";
 
 interface ProductFormProps {
   initialData?: any;
@@ -45,20 +47,11 @@ interface ProductFormProps {
 }
 
 const PREDEFINED_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
-const PREDEFINED_COLORS = [
-  { name: "Black", value: "#000000" },
-  { name: "White", value: "#FFFFFF" },
-  { name: "Red", value: "#FF0000" },
-  { name: "Blue", value: "#0000FF" },
-  { name: "Green", value: "#008000" },
-  { name: "Yellow", value: "#FFFF00" },
-  { name: "Navy", value: "#000080" },
-  { name: "Gray", value: "#808080" },
-];
 
 export function ProductForm({ initialData, categories }: ProductFormProps) {
   const router = useRouter();
   const t = useTranslations("Admin.Products");
+  const locale = useLocale() as "en" | "ar";
   const [images, setImages] = useState<string[]>(
     initialData?.images ? JSON.parse(initialData.images) : [],
   );
@@ -471,7 +464,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                                 setSelectedSizes([...selectedSizes, size]);
                               }
                             }}
-                            className="h-8 min-w-[3rem]"
+                            className="h-8 min-w-12"
                           >
                             {size}
                           </Button>
@@ -480,45 +473,12 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                     </div>
                   </div>
 
-                  {/* Colors */}
+                  {/* Colors - New Color Palette */}
                   <div className="space-y-3">
-                    <label className="text-sm font-medium">Select Colors</label>
-                    <div className="flex flex-wrap gap-2">
-                      {PREDEFINED_COLORS.map((c) => {
-                        const isSelected = selectedColors.includes(c.name);
-                        return (
-                          <div
-                            key={c.name}
-                            onClick={() => {
-                              if (isSelected) {
-                                setSelectedColors(
-                                  selectedColors.filter(
-                                    (color) => color !== c.name,
-                                  ),
-                                );
-                              } else {
-                                setSelectedColors([...selectedColors, c.name]);
-                              }
-                            }}
-                            className={`
-                                            cursor-pointer rounded-full border-2 p-0.5 w-9 h-9 flex items-center justify-center transition-all
-                                            ${isSelected ? "border-primary scale-110" : "border-transparent hover:border-gray-200"}
-                                        `}
-                            title={c.name}
-                          >
-                            <div
-                              className="w-full h-full rounded-full border border-gray-100 shadow-sm"
-                              style={{ backgroundColor: c.value }}
-                            />
-                            {isSelected && (
-                              <div className="absolute inset-0 flex items-center justify-center text-white drop-shadow-md font-bold text-xs mix-blend-difference">
-                                ✓
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <ColorPalette
+                      selectedColors={selectedColors}
+                      onSelectionChange={setSelectedColors}
+                    />
                   </div>
                 </div>
               </div>
@@ -544,16 +504,13 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <div
-                                className="w-4 h-4 rounded-full border shadow-sm"
+                                className="w-5 h-5 rounded-full border shadow-sm shrink-0"
                                 style={{
-                                  backgroundColor:
-                                    PREDEFINED_COLORS.find(
-                                      (c) => c.name === v.color,
-                                    )?.value || v.color,
+                                  backgroundColor: getColorValue(v.color),
                                 }}
                               />
-                              <span className="text-xs text-muted-foreground">
-                                {v.color}
+                              <span className="text-sm text-foreground font-medium">
+                                {getColorDisplayName(v.color, locale)}
                               </span>
                             </div>
                           </TableCell>
