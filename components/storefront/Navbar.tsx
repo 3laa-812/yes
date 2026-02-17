@@ -3,10 +3,10 @@
 import { Link } from "@/i18n/routing";
 import { ShoppingBag, User, Search, Menu, Package } from "lucide-react"; // Added Package icon
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/store";
-import { ShoppingCartModal } from "@/components/storefront/ShoppingCartModal";
 import { useState, useEffect } from "react";
 import LanguageSwitcher from "@/components/global/LanguageSwitcher";
 import { useTranslations, useLocale } from "next-intl";
@@ -25,6 +25,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+const ShoppingCartModal = dynamic(
+  () =>
+    import("@/components/storefront/ShoppingCartModal").then(
+      (m) => m.ShoppingCartModal,
+    ),
+  {
+    ssr: false,
+  },
+);
 
 interface Category {
   id: string;

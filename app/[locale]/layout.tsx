@@ -3,18 +3,25 @@ import { Plus_Jakarta_Sans, Cairo } from "next/font/google";
 import "../globals.css";
 import { Toaster } from "sonner";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations } from "next-intl/server";
+import {
+  getMessages as getMessagesBase,
+  getTranslations as getTranslationsBase,
+} from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { RamadanProvider } from "@/components/global/RamadanContext";
 import { RamadanDecorations } from "@/components/global/RamadanDecorations";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { PublicSpeedInsights } from "@/components/global/PublicSpeedInsights";
+import { cache } from "react";
 
 const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 const cairo = Cairo({ subsets: ["arabic"] });
 
+const getMessages = cache(() => getMessagesBase());
+const getMetadataTranslations = cache(() => getTranslationsBase("Metadata"));
+
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Metadata");
+  const t = await getMetadataTranslations();
   return {
     title: t("title"),
     description: t("description"),
@@ -47,7 +54,7 @@ export default async function RootLayout({
             <RamadanDecorations />
             {children}
             <Toaster richColors />
-            <SpeedInsights />
+            <PublicSpeedInsights />
           </RamadanProvider>
         </NextIntlClientProvider>
       </body>
