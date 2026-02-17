@@ -3,7 +3,6 @@ import { Footer } from "@/components/storefront/Footer";
 import { FadeIn } from "@/components/ui/motion";
 import { auth } from "@/auth";
 import { FacebookPixel } from "@/components/FacebookPixel";
-import { FacebookPixelTracker } from "@/components/FacebookPixelTracker";
 
 import db from "@/lib/db";
 import { WhatsAppButton } from "@/components/storefront/WhatsAppButton";
@@ -35,7 +34,6 @@ export default async function StorefrontLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <FacebookPixel />
-      <FacebookPixelTracker />
       <Navbar user={session?.user} categories={categories} />
       <FadeIn className="flex-1">{children}</FadeIn>
       <WhatsAppButton />

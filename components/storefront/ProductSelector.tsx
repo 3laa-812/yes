@@ -24,7 +24,6 @@ interface ProductSelectorProps {
 }
 
 import { useTranslations } from "next-intl";
-import { trackAddToCart } from "@/lib/facebookPixel";
 
 // ... (keep interface)
 
@@ -89,14 +88,6 @@ export function ProductSelector({
       category_ar,
       size: selectedSize,
       color: selectedColor,
-      quantity: 1,
-    });
-
-    trackAddToCart({
-      productId: id,
-      productName: name,
-      price: effectivePrice,
-      currency: "EGP",
       quantity: 1,
     });
 

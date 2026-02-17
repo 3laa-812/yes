@@ -9,7 +9,6 @@ import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useRouter, Link } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
-import { trackInitiateCheckout } from "@/lib/facebookPixel";
 
 interface ShoppingCartModalProps {
   isOpen: boolean;
@@ -32,16 +31,6 @@ export function ShoppingCartModal({
   }, []);
 
   const onCheckout = () => {
-    trackInitiateCheckout({
-      contentIds: items.map((item) => item.productId),
-      value: getTotal(),
-      currency: "EGP",
-      numItems: items.reduce((acc, item) => acc + item.quantity, 0),
-      contents: items.map((item) => ({
-        id: item.productId,
-        quantity: item.quantity,
-      })),
-    });
     setIsOpen(false);
     router.push("/checkout");
   };
