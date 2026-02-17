@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 const f = createUploadthing();
 
 export const ourFileRouter = {
-  imageUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 4 } })
+  imageUploader: f({ image: { maxFileSize: "8MB", maxFileCount: 6 } })
     .middleware(async ({ req }) => {
       const session = await auth();
       if (!session) throw new Error("Unauthorized");
