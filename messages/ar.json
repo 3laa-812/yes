@@ -81,6 +81,7 @@
     "empty": "عربة التسوق فارغة",
     "addItems": "أضف منتجات إلى عربة التسوق للمتابعة.",
     "qty": "الكمية",
+    "continueShopping": "متابعة التسوق",
     "placeholders": {
       "firstName": "محمد",
       "lastName": "أحمد",

@@ -81,6 +81,7 @@
     "empty": "Your Cart is Empty",
     "addItems": "Add items to your cart to proceed to checkout.",
     "qty": "Qty",
+    "continueShopping": "Continue Shopping",
     "placeholders": {
       "firstName": "John",
       "lastName": "Doe",

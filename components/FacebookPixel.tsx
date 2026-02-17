@@ -49,6 +49,9 @@ export function FacebookPixel() {
       <Script
         id="fb-pixel"
         strategy="afterInteractive"
+        onError={() => {
+          // Script failed to load (e.g., blocked by ad blocker). Events are queued by fbq stub.
+        }}
         dangerouslySetInnerHTML={{
           __html: `
 !function(f,b,e,v,n,t,s)
