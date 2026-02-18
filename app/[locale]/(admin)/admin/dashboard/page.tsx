@@ -4,11 +4,7 @@ import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import db from "@/lib/db";
 import { Banknote, Package, ShoppingBag, Users } from "lucide-react";
 import { StatsCard } from "@/components/admin/dashboard/StatsCard";
-import {
-  RevenueChart,
-  OrdersChart,
-  StatusChart,
-} from "@/components/admin/dashboard/ChartComponents";
+import dynamic from "next/dynamic";
 import { formatCurrency } from "@/lib/utils";
 
 async function getStats(locale: string) {
@@ -142,6 +138,24 @@ async function getStats(locale: string) {
 interface DashboardPageProps {
   params: Promise<{ locale: string }>;
 }
+
+const RevenueChart = dynamic(() =>
+  import("@/components/admin/dashboard/ChartComponents").then(
+    (mod) => mod.RevenueChart,
+  ),
+);
+
+const OrdersChart = dynamic(() =>
+  import("@/components/admin/dashboard/ChartComponents").then(
+    (mod) => mod.OrdersChart,
+  ),
+);
+
+const StatusChart = dynamic(() =>
+  import("@/components/admin/dashboard/ChartComponents").then(
+    (mod) => mod.StatusChart,
+  ),
+);
 
 export default async function DashboardPage({ params }: DashboardPageProps) {
   const { locale } = await params;

@@ -1,13 +1,18 @@
-import { StorefrontShell } from "@/components/storefront/StorefrontShell";
+import {StorefrontShell} from "@/components/storefront/StorefrontShell";
+import {StorefrontProviders} from "@/components/providers/StorefrontProviders";
 
-export const dynamic = "force-dynamic";
-
-export default function StorefrontLayout({
+export default async function StorefrontLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+
   return (
-    <StorefrontShell>{children}</StorefrontShell>
+    <StorefrontProviders locale={locale}>
+      <StorefrontShell>{children}</StorefrontShell>
+    </StorefrontProviders>
   );
 }

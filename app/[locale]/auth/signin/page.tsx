@@ -1,10 +1,45 @@
-import { signIn } from "@/auth"; // We will need to import this or use a server action
+"use client";
+
+import { useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/ui/motion";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 
-export default async function SignInPage() {
-  const t = await getTranslations("Auth");
+export default function SignInPage() {
+  const t = useTranslations("Auth");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const callbackUrl = searchParams.get("callbackUrl") || "/admin/dashboard";
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const identifier = formData.get("identifier") as string;
+    const password = formData.get("password") as string;
+
+    const result = await signIn("credentials", {
+      identifier,
+      password,
+      redirect: false,
+      callbackUrl,
+    });
+
+    setLoading(false);
+
+    if (result?.error) {
+      // Let global error handling or UI patterns show error if desired
+      return;
+    }
+
+    router.push(result?.url || callbackUrl);
+    router.refresh();
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <FadeIn className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-lg ring-1 ring-gray-900/5">
@@ -12,21 +47,10 @@ export default async function SignInPage() {
           <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-900">
             {t("adminAccess")}
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            {t("adminSignInDesc")}
-          </p>
+          <p className="mt-2 text-sm text-gray-600">{t("adminSignInDesc")}</p>
         </div>
 
-        <form
-          action={async (formData) => {
-            "use server";
-            await signIn("credentials", {
-              ...Object.fromEntries(formData),
-              redirectTo: "/admin/dashboard",
-            });
-          }}
-          className="mt-8 space-y-6"
-        >
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="-space-y-px rounded-md shadow-sm">
             <div>
               <label htmlFor="email-address" className="sr-only">
@@ -64,8 +88,9 @@ export default async function SignInPage() {
             <Button
               type="submit"
               className="group relative flex w-full justify-center"
+              disabled={loading}
             >
-              {t("signin")}
+              {loading ? t("signingIn") : t("signin")}
             </Button>
           </div>
 

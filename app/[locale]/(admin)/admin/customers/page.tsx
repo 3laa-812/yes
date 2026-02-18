@@ -1,4 +1,5 @@
-import db from "@/lib/db";
+import { getCustomers } from "@/lib/data/admin";
+import { Link } from "@/i18n/routing";
 import {
   Card,
   CardContent,
@@ -27,11 +28,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getTranslations } from "next-intl/server";
-
-async function getCustomers() {
-  const data = await db.user.findMany({});
-  return data;
-}
 
 export default async function CustomersPage() {
   const data = await getCustomers();
@@ -108,8 +104,22 @@ export default async function CustomersPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>{t("actions")}</DropdownMenuLabel>
-                        <DropdownMenuItem>{t("viewDetails")}</DropdownMenuItem>
-                        <DropdownMenuItem>{t("viewOrders")}</DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link
+                            href={`/admin/customers/${user.id}`}
+                            className="w-full"
+                          >
+                            {t("viewDetails")}
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link
+                            href={`/admin/customers/${user.id}`}
+                            className="w-full"
+                          >
+                            {t("viewOrders")}
+                          </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive">
                           {t("delete")}

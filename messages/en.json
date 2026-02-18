@@ -309,7 +309,17 @@
       "viewDetails": "View details",
       "viewOrders": "View orders",
       "delete": "Delete customer",
-      "userAlt": "User"
+      "userAlt": "User",
+      "detailsTitle": "Customer Details",
+      "profile": "Profile",
+      "contactInfo": "Contact Information",
+      "addresses": "Addresses",
+      "orderHistory": "Order History",
+      "noAddresses": "No saved addresses.",
+      "default": "Default",
+      "spent": "Total Spent",
+      "lastOrder": "Last Order",
+      "deleteConfirm": "Are you sure you want to delete this customer?"
     }
   },
   "Auth": {

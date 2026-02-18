@@ -35,6 +35,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
                 alt={t("productImage")}
                 width={200}
                 height={200}
+                sizes="80px"
                 className="h-full w-full object-cover object-center"
               />
             </button>
@@ -47,6 +48,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
           alt={t("bigProductImage")}
           width={800}
           height={800}
+          sizes="(max-width: 1024px) 100vw, 50vw"
           className="h-full w-full object-cover object-center"
           priority
         />

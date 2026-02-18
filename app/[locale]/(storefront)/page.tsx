@@ -1,25 +1,16 @@
-import { Hero } from "@/components/storefront/Hero";
+import dynamic from "next/dynamic";
 import { ProductCard } from "@/components/storefront/ProductCard";
-import db from "@/lib/db";
 import { StaggerContainer, StaggerItem } from "@/components/ui/motion";
 import { SectionReveal } from "@/components/ui/SectionReveal";
 import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
+import { getFeaturedProducts } from "@/lib/data/storefront";
 
-const getFeaturedProducts = async () => {
-  const products = await db.product.findMany({
-    take: 4,
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      category: true, // Include category relation to get category name
-    },
-  });
-  return products;
-};
+const Hero = dynamic(() =>
+  import("@/components/storefront/Hero").then((mod) => mod.Hero),
+);
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function Home({
   params,

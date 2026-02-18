@@ -1,25 +1,10 @@
 import { ProductCard } from "@/components/storefront/ProductCard";
-import db from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
 
-async function getAllProducts() {
-  const products = await db.product.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      category: true,
-    },
-  });
-  return products;
-}
+import { getAllProducts, getCategories } from "@/lib/data/storefront";
 
-async function getCategories() {
-  return db.category.findMany({ orderBy: { name_en: "asc" } });
-}
-
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function ProductsPage({
   params,

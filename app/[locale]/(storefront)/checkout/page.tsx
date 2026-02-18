@@ -311,6 +311,7 @@ export default function CheckoutPage() {
                         alt={item.name}
                         fill
                         className="object-cover"
+                        sizes="64px"
                       />
                     </div>
                     <div className="flex-1">

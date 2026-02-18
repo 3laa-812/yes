@@ -1,0 +1,64 @@
+
+> yes@0.1.0 build /home/alaar/Desktop/proDev/TheKitchen/yes
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local, .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 10.2s
+  Running TypeScript ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/7) ...
+  Generating static pages using 11 workers (1/7) 
+  Generating static pages using 11 workers (3/7) 
+  Generating static pages using 11 workers (5/7) 
+✓ Generating static pages using 11 workers (7/7) in 233.5ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/account/orders
+├ ƒ /[locale]/account/orders/[id]
+├ ƒ /[locale]/admin/activity
+├ ƒ /[locale]/admin/admins
+├ ƒ /[locale]/admin/categories
+├ ƒ /[locale]/admin/categories/[id]
+├ ƒ /[locale]/admin/categories/new
+├ ƒ /[locale]/admin/customers
+├ ƒ /[locale]/admin/customers/[id]
+├ ƒ /[locale]/admin/dashboard
+├ ƒ /[locale]/admin/orders
+├ ƒ /[locale]/admin/orders/[id]
+├ ƒ /[locale]/admin/products
+├ ƒ /[locale]/admin/products/[id]
+├ ƒ /[locale]/admin/products/new
+├ ƒ /[locale]/admin/settings
+├ ƒ /[locale]/auth/signin
+├ ƒ /[locale]/checkout
+├ ƒ /[locale]/checkout/failed
+├ ƒ /[locale]/checkout/success
+├ ƒ /[locale]/collections
+├ ƒ /[locale]/collections/[slug]
+├ ƒ /[locale]/login
+├ ƒ /[locale]/orders
+├ ƒ /[locale]/orders/[id]
+├ ƒ /[locale]/products
+├ ƒ /[locale]/products/[id]
+├ ƒ /[locale]/register
+├ ƒ /[locale]/signout
+├ ƒ /api/auth/[...nextauth]
+├ ƒ /api/payment/callback
+├ ƒ /api/uploadthing
+├ ƒ /api/webhooks/stripe
+├ ○ /apple-icon.png
+└ ○ /icon.png
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -309,7 +309,17 @@
       "viewDetails": "عرض التفاصيل",
       "viewOrders": "عرض الطلبات",
       "delete": "حذف العميل",
-      "userAlt": "مستخدم"
+      "userAlt": "مستخدم",
+      "detailsTitle": "تفاصيل العميل",
+      "profile": "الملف الشخصي",
+      "contactInfo": "معلومات الاتصال",
+      "addresses": "العناوين",
+      "orderHistory": "سجل الطلبات",
+      "noAddresses": "لا توجد عناوين محفوظة.",
+      "default": "افتراضي",
+      "spent": "إجمالي الإنفاق",
+      "lastOrder": "آخر طلب",
+      "deleteConfirm": "هل أنت متأكد من رغبتك في حذف هذا العميل؟"
     }
   },
   "Auth": {
