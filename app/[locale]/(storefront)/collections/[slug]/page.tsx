@@ -1,77 +1,21 @@
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/storefront/ProductCard";
-import db from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
-import { cn } from "@/lib/utils";
 import { SubCategoryFilter } from "@/components/storefront/SubCategoryFilter";
+import { getCategoryWithProducts } from "@/lib/data/storefront";
 
-interface CategoryPageProps {
-  params: Promise<{
-    slug: string;
-    locale: string;
-  }>;
-  searchParams: Promise<{
-    subCategoryId?: string;
-  }>;
-}
-
-async function getCategoryWithProducts(slug: string, subCategoryId?: string) {
-  const category = await db.category.findUnique({
-    where: { slug },
-    include: {
-      children: true,
-    },
-  });
-
-  if (!category) return null;
-
-  // Filter logic:
-  // If subCategoryId is present, ensure it's a valid child and fetch only its products.
-  // If not, fetch products for the main category AND all its children.
-
-  let targetCategoryIds = [
-    category.id,
-    ...category.children.map((c: any) => c.id),
-  ];
-
-  if (subCategoryId) {
-    const isChild = category.children.some((c: any) => c.id === subCategoryId);
-    if (isChild) {
-      targetCategoryIds = [subCategoryId];
-    } else {
-      // If subCategoryId is invalid/unrelated, we return products for the main category only (or empty?)
-      // Use case: user clicks a stale link. Let's fallback to main category view effectively ignoring the invalid sub.
-      // Or strictly return empty. Let's return empty to avoid confusion.
-      targetCategoryIds = [];
-    }
-  }
-
-  const products = await db.product.findMany({
-    where: {
-      categoryId: { in: targetCategoryIds },
-    },
-    include: {
-      category: true,
-    },
-  });
-
-  // Return structure compatible with component expectation (mapping children to subCategories)
-  return {
-    ...category,
-    subCategories: category.children,
-    products,
-  };
-}
-
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function CategoryPage({
   params,
   searchParams,
-}: CategoryPageProps) {
-  const { slug, locale } = await params;
-  const { subCategoryId } = await searchParams;
+}: {
+  params: { slug: string; locale: string };
+  searchParams: { subCategoryId?: string };
+}) {
+  const { slug, locale } = params;
+  const { subCategoryId } = searchParams;
   const category = await getCategoryWithProducts(slug, subCategoryId);
 
   if (!category) {

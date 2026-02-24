@@ -32,12 +32,13 @@ import {
   Calendar,
   ShoppingBag,
 } from "lucide-react";
+import { AdminShell } from "../../_components/AdminShell";
 
 interface PageProps {
-  params: Promise<{
+  params: {
     id: string;
     locale: string;
-  }>;
+  };
 }
 
 async function getCustomer(id: string) {
@@ -59,7 +60,7 @@ async function getCustomer(id: string) {
 }
 
 export default async function CustomerDetailsPage({ params }: PageProps) {
-  const { id } = await params;
+  const { id } = params;
   const customer = await getCustomer(id);
   const t = await getTranslations("Admin.Customers");
   const tOrders = await getTranslations("Admin.Orders");
@@ -79,7 +80,8 @@ export default async function CustomerDetailsPage({ params }: PageProps) {
     customer.orders.length > 0 ? customer.orders[0].createdAt : null;
 
   return (
-    <div className="flex flex-col gap-8 p-4 md:p-8">
+    <AdminShell locale={params.locale} titleKey="customers">
+    <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Avatar className="h-20 w-20">
@@ -262,5 +264,6 @@ export default async function CustomerDetailsPage({ params }: PageProps) {
         </Card>
       </div>
     </div>
+    </AdminShell>
   );
 }

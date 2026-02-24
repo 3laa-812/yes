@@ -65,7 +65,13 @@ export function Navbar({
   // Handle hydration mismatch
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    setMounted(true);
+    let isMounted = true;
+    if (isMounted) {
+      setMounted(true);
+    }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const totalItems = mounted

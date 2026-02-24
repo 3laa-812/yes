@@ -12,7 +12,13 @@ export function WhatsAppButton() {
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
 
   useEffect(() => {
-    setMounted(true);
+    let isMounted = true;
+    if (isMounted) {
+      setMounted(true);
+    }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (!mounted || !whatsappNumber) return null;

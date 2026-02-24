@@ -5,6 +5,7 @@ import { updateOrderStatus } from "@/app/[locale]/(admin)/actions";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/routing";
 import { getTranslations, getLocale } from "next-intl/server";
+import { AdminShell } from "../_components/AdminShell";
 import { format } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
 
@@ -22,7 +23,11 @@ async function getOrders() {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminOrdersPage() {
+export default async function AdminOrdersPage({
+  params,
+}: {
+  params: { locale: string };
+}) {
   const orders = await getOrders();
   const t = await getTranslations("Admin.Orders");
   const statusT = await getTranslations("Storefront.Status");
@@ -30,10 +35,7 @@ export default async function AdminOrdersPage() {
   const dateLocale = locale === "ar" ? ar : enUS;
 
   return (
-    <>
-      <div className="flex items-center">
-        <h1 className="text-lg font-semibold md:text-2xl">{t("title")}</h1>
-      </div>
+    <AdminShell locale={params.locale} titleKey="orders">
       <div className="rounded-md border">
         <div className="relative w-full overflow-auto">
           <table className="w-full caption-bottom text-sm">
@@ -144,6 +146,6 @@ export default async function AdminOrdersPage() {
           </table>
         </div>
       </div>
-    </>
+    </AdminShell>
   );
 }

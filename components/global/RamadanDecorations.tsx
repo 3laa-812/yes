@@ -1,27 +1,50 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRamadan } from "./RamadanContext";
 import { motion } from "framer-motion";
 
-export const RamadanDecorations = () => {
-  const { isRamadan } = useRamadan();
+interface Star {
+  id: number;
+  top: string;
+  left: string;
+  size: number;
+  delay: number;
+  duration: number;
+}
 
-  if (!isRamadan) return null;
-
-  // Generate random positions for stars
-  const stars = Array.from({ length: 30 }, (_, i) => ({
+function generateStars(count: number): Star[] {
+  return Array.from({ length: count }, (_, i) => ({
     id: i,
-    top: `${Math.random() * 100}%`, // Full height coverage
+    top: `${Math.random() * 100}%`,
     left: `${Math.random() * 100}%`,
     size: Math.random() > 0.7 ? 3 : 2,
     delay: Math.random() * 5,
     duration: 3 + Math.random() * 3,
   }));
+}
+
+export const RamadanDecorations = () => {
+  const { isRamadan } = useRamadan();
+  const [stars, setStars] = useState<Star[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!isRamadan) return;
+    if (isMounted) {
+      setStars(generateStars(30));
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [isRamadan]);
+
+  if (!isRamadan || stars.length === 0) return null;
 
   return (
     <>
       {/* Background Layer - Stars & Gradient (Behind Content) */}
-      <div className="pointer-events-none fixed inset-0 z-[1] overflow-hidden">
+      <div className="pointer-events-none fixed inset-0 z-1 overflow-hidden">
         {/* Background Gradient Overlay */}
         <div
           className="absolute inset-0 opacity-[0.02] transition-opacity duration-1000"

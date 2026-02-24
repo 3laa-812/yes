@@ -16,14 +16,22 @@ export const RamadanProvider = ({
   const [isRamadan, setIsRamadan] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     const isRamadanMode = process.env.NEXT_PUBLIC_RAMADAN_MODE === "true";
-    setIsRamadan(isRamadanMode);
+
+    if (isMounted) {
+      setIsRamadan(isRamadanMode);
+    }
 
     if (isRamadanMode) {
       document.documentElement.classList.add("ramadan");
     } else {
       document.documentElement.classList.remove("ramadan");
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (

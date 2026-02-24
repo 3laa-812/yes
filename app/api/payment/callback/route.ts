@@ -24,53 +24,28 @@ export async function GET(req: NextRequest) {
   }
 
   // Paymob HMAC Calculation
-  // Extract all query params
-  const { 
-    amount_cents, 
-    created_at, 
-    currency, 
-    error_occured, 
-    has_parent_transaction, 
-    id, 
-    integration_id, 
-    is_auth, 
-    is_capture, 
-    is_refunded, 
-    is_standalone_payment, 
-    is_voided, 
-    order, 
-    owner, 
-    pending, 
-    source_data_pan, 
-    source_data_sub_type, 
-    source_data_type, 
-    success: successParam
-  } = Object.fromEntries(searchParams.entries());
+  const paramsData = Object.fromEntries(searchParams.entries());
 
-  // Note: searchParams.get() returns null if not found, but we need empty string for concatenation 
-  // or the exact value Paymob sent. Paymob usually sends all these.
-  // We need to match the lexical order of keys specified in docs.
-  
   const connectedString = [
-      amount_cents,
-      created_at,
-      currency,
-      error_occured,
-      has_parent_transaction,
-      id,
-      integration_id,
-      is_auth,
-      is_capture,
-      is_refunded,
-      is_standalone_payment,
-      is_voided,
-      order,
-      owner,
-      pending,
-      source_data_pan,
-      source_data_sub_type,
-      source_data_type,
-      successParam
+      paramsData.amount_cents,
+      paramsData.created_at,
+      paramsData.currency,
+      paramsData.error_occured,
+      paramsData.has_parent_transaction,
+      paramsData.id,
+      paramsData.integration_id,
+      paramsData.is_auth,
+      paramsData.is_capture,
+      paramsData.is_refunded,
+      paramsData.is_standalone_payment,
+      paramsData.is_voided,
+      paramsData.order,
+      paramsData.owner,
+      paramsData.pending,
+      paramsData["source_data.pan"],
+      paramsData["source_data.sub_type"],
+      paramsData["source_data.type"],
+      paramsData.success
   ].map(val => val ?? "").join("");
 
   const calculatedHmac = crypto

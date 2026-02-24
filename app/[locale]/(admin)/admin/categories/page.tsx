@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { DeleteCategoryButton } from "./_components/DeleteCategoryButton";
 import { CategoryList } from "@/components/admin/CategoryList";
+import { AdminShell } from "../_components/AdminShell";
 
 async function getCategories() {
   return db.category.findMany({
@@ -36,12 +37,16 @@ async function getCategories() {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminCategoriesPage() {
+export default async function AdminCategoriesPage({
+  params,
+}: {
+  params: { locale: string };
+}) {
   const categories = await getCategories();
   // const t = await getTranslations("Admin.Categories"); // Todo: Add translations
 
   return (
-    <>
+    <AdminShell locale={params.locale} titleKey="categories">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold md:text-2xl">Categories</h1>
         <Button size="sm" asChild>
@@ -52,6 +57,6 @@ export default async function AdminCategoriesPage() {
         </Button>
       </div>
       <CategoryList initialCategories={categories as any} />
-    </>
+    </AdminShell>
   );
 }

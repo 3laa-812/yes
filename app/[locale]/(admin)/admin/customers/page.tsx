@@ -28,13 +28,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getTranslations } from "next-intl/server";
+import { AdminShell } from "../_components/AdminShell";
 
-export default async function CustomersPage() {
+export default async function CustomersPage({
+  params,
+}: {
+  params: { locale: string };
+}) {
   const data = await getCustomers();
   const t = await getTranslations("Admin.Customers");
 
   return (
-    <div className="flex flex-col gap-8 p-4 md:p-8">
+    <AdminShell locale={params.locale} titleKey="customers">
+      <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
@@ -133,6 +139,7 @@ export default async function CustomersPage() {
           </Table>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </AdminShell>
   );
 }

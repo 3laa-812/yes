@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { AdminShell } from "../_components/AdminShell";
 import { ar, enUS } from "date-fns/locale";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import db from "@/lib/db";
@@ -6,6 +7,7 @@ import { Banknote, Package, ShoppingBag, Users } from "lucide-react";
 import { StatsCard } from "@/components/admin/dashboard/StatsCard";
 import dynamic from "next/dynamic";
 import { formatCurrency } from "@/lib/utils";
+import { Suspense } from "react";
 
 async function getStats(locale: string) {
   const dateLocale = locale === "ar" ? ar : enUS;
@@ -135,10 +137,6 @@ async function getStats(locale: string) {
   };
 }
 
-interface DashboardPageProps {
-  params: Promise<{ locale: string }>;
-}
-
 const RevenueChart = dynamic(() =>
   import("@/components/admin/dashboard/ChartComponents").then(
     (mod) => mod.RevenueChart,
@@ -157,13 +155,18 @@ const StatusChart = dynamic(() =>
   ),
 );
 
-export default async function DashboardPage({ params }: DashboardPageProps) {
-  const { locale } = await params;
+export default async function DashboardPage({
+  params,
+}: {
+  params: { locale: string };
+}) {
+  const { locale } = params;
   const stats = await getStats(locale);
   const t = await getTranslations("Admin");
 
   return (
-    <div className="flex flex-col gap-8 p-4 md:p-8">
+    <AdminShell locale={locale} titleKey="dashboard">
+      <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">{t("dashboard")}</h1>
         <p className="text-muted-foreground">{t("overview")}</p>
@@ -204,11 +207,22 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <RevenueChart data={stats.chartData.revenue} />
-        <OrdersChart data={stats.chartData.orders} />
-        <StatusChart data={stats.chartData.status} />
+      <Suspense
+        fallback={
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="col-span-1 lg:col-span-2 h-[400px] rounded-xl border border-border bg-card/60 animate-pulse" />
+            <div className="h-[400px] rounded-xl border border-border bg-card/60 animate-pulse" />
+            <div className="h-[400px] rounded-xl border border-border bg-card/60 animate-pulse" />
+          </div>
+        }
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <RevenueChart data={stats.chartData.revenue} />
+          <OrdersChart data={stats.chartData.orders} />
+          <StatusChart data={stats.chartData.status} />
+        </div>
+      </Suspense>
       </div>
-    </div>
+    </AdminShell>
   );
 }

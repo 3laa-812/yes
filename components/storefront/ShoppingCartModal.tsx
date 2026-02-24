@@ -27,7 +27,13 @@ export function ShoppingCartModal({
   // Hydration handling
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    setMounted(true);
+    let isMounted = true;
+    if (isMounted) {
+      setMounted(true);
+    }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const onCheckout = () => {

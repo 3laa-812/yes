@@ -1,16 +1,20 @@
 "use client";
 
-import {useEffect, useState} from "react";
-import {Analytics} from "@vercel/analytics/next";
-import {PublicSpeedInsights} from "@/components/global/PublicSpeedInsights";
+import { useEffect, useState } from "react";
+import { Analytics } from "@vercel/analytics/next";
+import { PublicSpeedInsights } from "@/components/global/PublicSpeedInsights";
 
 export function AnalyticsClient() {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    if (process.env.NODE_ENV === "production") {
+    let isMounted = true;
+    if (process.env.NODE_ENV === "production" && isMounted) {
       setEnabled(true);
     }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (!enabled) return null;
@@ -22,4 +26,3 @@ export function AnalyticsClient() {
     </>
   );
 }
-

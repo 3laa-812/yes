@@ -9,6 +9,7 @@ import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
 import { format } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
+import { AdminShell } from "../_components/AdminShell";
 
 async function getProducts() {
   return db.product.findMany({
@@ -23,14 +24,18 @@ async function getProducts() {
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminProductsPage() {
+export default async function AdminProductsPage({
+  params,
+}: {
+  params: { locale: string };
+}) {
   const products = await getProducts();
   const t = await getTranslations("Admin.Products");
   const locale = await getLocale();
   const dateLocale = locale === "ar" ? ar : enUS;
 
   return (
-    <>
+    <AdminShell locale={params.locale} titleKey="products">
       <div className="flex items-center">
         <h1 className="text-lg font-semibold md:text-2xl">{t("title")}</h1>
         <Button className="ml-auto" size="sm" asChild>
@@ -130,6 +135,6 @@ export default async function AdminProductsPage() {
           </table>
         </div>
       </div>
-    </>
+    </AdminShell>
   );
 }

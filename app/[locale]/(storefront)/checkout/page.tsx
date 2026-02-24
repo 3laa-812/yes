@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useCartStore } from "@/lib/store";
+import { memo, useState, useEffect } from "react";
+import { useCartStore, CartItem } from "@/lib/store";
 import { createOrder } from "@/app/actions";
 import { useRouter } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,96 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+
+interface CheckoutSummaryProps {
+  items: CartItem[];
+  total: number;
+  t: ReturnType<typeof useTranslations<"Checkout">>;
+  isSubmitting: boolean;
+  onSubmit: (e: React.FormEvent) => void;
+}
+
+const CheckoutSummary = memo(function CheckoutSummary({
+  items,
+  total,
+  t,
+  isSubmitting,
+  onSubmit,
+}: CheckoutSummaryProps) {
+  return (
+    <Card className="sticky top-20">
+      <CardHeader>
+        <CardTitle>{t("orderSummary")}</CardTitle>
+        <CardDescription>
+          {t("itemsInCart", { count: items.length })}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+          {items.map((item: any) => (
+            <div
+              key={item.id}
+              className="flex gap-4 py-2 border-b border-border last:border-0"
+            >
+              <div className="relative h-16 w-16 bg-muted rounded overflow-hidden shrink-0 border border-border">
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  className="object-cover"
+                  sizes="64px"
+                />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium line-clamp-1 text-foreground">
+                  {item.name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {item.size} / {item.color}
+                </p>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-sm text-muted-foreground">
+                    {t("qty")}: {item.quantity}
+                  </span>
+                  <span className="font-medium text-foreground">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 space-y-2 border-t border-border pt-4">
+          <div className="flex justify-between text-muted-foreground">
+            <span>{t("shipping")}</span>
+            <span>{t("free")}</span>
+          </div>
+          <div className="flex justify-between font-bold text-xl pt-2 border-t border-border mt-2 text-foreground">
+            <span>{t("total")}</span>
+            <span>${total.toFixed(2)}</span>
+          </div>
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Button
+          onClick={onSubmit}
+          className="w-full text-lg py-6 font-bold shadow-lg"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              {t("processing")}
+            </>
+          ) : (
+            `${t("completeOrder")} - $${total.toFixed(2)}`
+          )}
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+});
 
 export default function CheckoutPage() {
   const t = useTranslations("Checkout");
@@ -291,77 +381,13 @@ export default function CheckoutPage() {
 
         {/* Right Column: Order Summary */}
         <div>
-          <Card className="sticky top-20">
-            <CardHeader>
-              <CardTitle>{t("orderSummary")}</CardTitle>
-              <CardDescription>
-                {t("itemsInCart", { count: items.length })}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-                {items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex gap-4 py-2 border-b border-border last:border-0"
-                  >
-                    <div className="relative h-16 w-16 bg-muted rounded overflow-hidden flex-shrink-0 border border-border">
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium line-clamp-1 text-foreground">
-                        {item.name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {item.size} / {item.color}
-                      </p>
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-sm text-muted-foreground">
-                          {t("qty")}: {item.quantity}
-                        </span>
-                        <span className="font-medium text-foreground">
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 space-y-2 border-t border-border pt-4">
-                <div className="flex justify-between text-muted-foreground">
-                  <span>{t("shipping")}</span>
-                  <span>{t("free")}</span>
-                </div>
-                <div className="flex justify-between font-bold text-xl pt-2 border-t border-border mt-2 text-foreground">
-                  <span>{t("total")}</span>
-                  <span>${getTotal().toFixed(2)}</span>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button
-                onClick={handleSubmit}
-                className="w-full text-lg py-6 font-bold shadow-lg"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    {t("processing")}
-                  </>
-                ) : (
-                  `${t("completeOrder")} - $${getTotal().toFixed(2)}`
-                )}
-              </Button>
-            </CardFooter>
-          </Card>
+          <CheckoutSummary
+            items={items}
+            total={getTotal()}
+            t={t}
+            isSubmitting={isSubmitting}
+            onSubmit={handleSubmit}
+          />
         </div>
       </div>
     </div>

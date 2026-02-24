@@ -25,6 +25,7 @@ export async function StorefrontProviders({
         "Footer",
         "Cart",
         "Checkout",
+        "Auth",
         "Storefront",
         "Common",
         "LanguageSwitcher",
