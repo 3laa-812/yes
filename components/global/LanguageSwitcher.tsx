@@ -37,16 +37,10 @@ export default function LanguageSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          onClick={() => onSelectChange("en")}
-          className={locale === "en" ? "bg-accent" : ""}
-        >
+        <DropdownMenuItem onClick={() => onSelectChange("en")}>
           {t("english")}
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => onSelectChange("ar")}
-          className={locale === "ar" ? "bg-accent" : ""}
-        >
+        <DropdownMenuItem onClick={() => onSelectChange("ar")}>
           {t("arabic")}
         </DropdownMenuItem>
       </DropdownMenuContent>

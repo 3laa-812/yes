@@ -15,9 +15,9 @@ export const revalidate = 60;
 export default async function Home({
   params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = params;
+  await params;
   const t = await getTranslations("HomePage");
 
   return (

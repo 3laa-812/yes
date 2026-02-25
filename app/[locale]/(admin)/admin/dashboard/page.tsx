@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { AdminShell } from "../_components/AdminShell";
 import { ar, enUS } from "date-fns/locale";
-import { format, subDays, startOfDay, endOfDay } from "date-fns";
+import { format, subDays } from "date-fns";
 import db from "@/lib/db";
 import { Banknote, Package, ShoppingBag, Users } from "lucide-react";
 import { StatsCard } from "@/components/admin/dashboard/StatsCard";
@@ -14,8 +14,6 @@ async function getStats(locale: string) {
 
   // Calculate date ranges
   const today = new Date();
-  const startOfToday = startOfDay(today);
-  const endOfToday = endOfDay(today);
   const sevenDaysAgo = subDays(today, 7);
 
   // Parallel data fetching
@@ -158,70 +156,72 @@ const StatusChart = dynamic(() =>
 export default async function DashboardPage({
   params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = params;
+  const { locale } = await params;
   const stats = await getStats(locale);
   const t = await getTranslations("Admin");
 
   return (
     <AdminShell locale={locale} titleKey="dashboard">
       <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">{t("dashboard")}</h1>
-        <p className="text-muted-foreground">{t("overview")}</p>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatsCard
-          title={t("totalRevenue")}
-          value={formatCurrency(Number(stats.revenue), locale)}
-          description={t("lifetime")}
-          icon={<Banknote className="h-4 w-4 text-muted-foreground" />}
-          index={0}
-          trend="up"
-        />
-        <StatsCard
-          title={t("totalOrders")}
-          value={`+${stats.orders}`}
-          description={t("lifetime")}
-          icon={<ShoppingBag className="h-4 w-4 text-muted-foreground" />}
-          index={1}
-          trend="up"
-        />
-        <StatsCard
-          title={t("products")}
-          value={`+${stats.products}`}
-          description={t("active")}
-          icon={<Package className="h-4 w-4 text-muted-foreground" />}
-          index={2}
-          trend="neutral"
-        />
-        <StatsCard
-          title={t("customers")}
-          value={`+${stats.users}`}
-          description={t("registered")}
-          icon={<Users className="h-4 w-4 text-muted-foreground" />}
-          index={3}
-          trend="up"
-        />
-      </div>
-
-      <Suspense
-        fallback={
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <div className="col-span-1 lg:col-span-2 h-[400px] rounded-xl border border-border bg-card/60 animate-pulse" />
-            <div className="h-[400px] rounded-xl border border-border bg-card/60 animate-pulse" />
-            <div className="h-[400px] rounded-xl border border-border bg-card/60 animate-pulse" />
-          </div>
-        }
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <RevenueChart data={stats.chartData.revenue} />
-          <OrdersChart data={stats.chartData.orders} />
-          <StatusChart data={stats.chartData.status} />
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight">
+            {t("dashboard")}
+          </h1>
+          <p className="text-muted-foreground">{t("overview")}</p>
         </div>
-      </Suspense>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <StatsCard
+            title={t("totalRevenue")}
+            value={formatCurrency(Number(stats.revenue), locale)}
+            description={t("lifetime")}
+            icon={<Banknote className="h-4 w-4 text-muted-foreground" />}
+            index={0}
+            trend="up"
+          />
+          <StatsCard
+            title={t("totalOrders")}
+            value={`+${stats.orders}`}
+            description={t("lifetime")}
+            icon={<ShoppingBag className="h-4 w-4 text-muted-foreground" />}
+            index={1}
+            trend="up"
+          />
+          <StatsCard
+            title={t("products")}
+            value={`+${stats.products}`}
+            description={t("active")}
+            icon={<Package className="h-4 w-4 text-muted-foreground" />}
+            index={2}
+            trend="neutral"
+          />
+          <StatsCard
+            title={t("customers")}
+            value={`+${stats.users}`}
+            description={t("registered")}
+            icon={<Users className="h-4 w-4 text-muted-foreground" />}
+            index={3}
+            trend="up"
+          />
+        </div>
+
+        <Suspense
+          fallback={
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              <div className="col-span-1 lg:col-span-2 h-[400px] rounded-xl border border-border bg-card/60 animate-pulse" />
+              <div className="h-[400px] rounded-xl border border-border bg-card/60 animate-pulse" />
+              <div className="h-[400px] rounded-xl border border-border bg-card/60 animate-pulse" />
+            </div>
+          }
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <RevenueChart data={stats.chartData.revenue} />
+            <OrdersChart data={stats.chartData.orders} />
+            <StatusChart data={stats.chartData.status} />
+          </div>
+        </Suspense>
       </div>
     </AdminShell>
   );

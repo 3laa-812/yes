@@ -1,11 +1,13 @@
-import type {Metadata} from "next";
-import {Plus_Jakarta_Sans, Cairo} from "next/font/google";
+import type { Metadata } from "next";
+import { Plus_Jakarta_Sans, Cairo } from "next/font/google";
 import "../globals.css";
-import {notFound} from "next/navigation";
-import {routing} from "@/i18n/routing";
+import { notFound } from "next/navigation";
+import { routing } from "@/i18n/routing";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
-const plusJakartaSans = Plus_Jakarta_Sans({subsets: ["latin"]});
-const cairo = Cairo({subsets: ["arabic"]});
+const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"] });
+const cairo = Cairo({ subsets: ["arabic"] });
 
 export const metadata: Metadata = {
   title: "YES",
@@ -29,10 +31,14 @@ export default async function RootLayout({
   const fontClass =
     locale === "ar" ? cairo.className : plusJakartaSans.className;
 
+  const messages = await getMessages();
+
   return (
     <html lang={locale} dir={dir}>
       <body className={`${fontClass} antialiased`}>
-        {children}
+        <NextIntlClientProvider messages={messages}>
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );

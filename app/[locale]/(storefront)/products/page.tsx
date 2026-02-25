@@ -9,9 +9,9 @@ export const revalidate = 60;
 export default async function ProductsPage({
   params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = params;
+  const { locale } = await params;
   const products = await getAllProducts();
   const categories = await getCategories();
 

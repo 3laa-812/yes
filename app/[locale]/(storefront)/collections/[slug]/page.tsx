@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
@@ -11,11 +10,11 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: {
-  params: { slug: string; locale: string };
-  searchParams: { subCategoryId?: string };
+  params: Promise<{ slug: string; locale: string }>;
+  searchParams: Promise<{ subCategoryId?: string }>;
 }) {
-  const { slug, locale } = params;
-  const { subCategoryId } = searchParams;
+  const { slug, locale } = await params;
+  const { subCategoryId } = await searchParams;
   const category = await getCategoryWithProducts(slug, subCategoryId);
 
   if (!category) {

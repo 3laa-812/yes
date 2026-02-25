@@ -1,10 +1,9 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { ShoppingBag, User, Search, Menu, Package } from "lucide-react"; // Added Package icon
+import { ShoppingBag, User, Menu, Package } from "lucide-react"; // Added Package icon
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/lib/store";
 import { useState, useEffect } from "react";
@@ -289,15 +288,6 @@ export function Navbar({
             <div>
               <LanguageSwitcher />
             </div>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded-full"
-            >
-              <Search className="h-5 w-5" />
-            </Button>
-
             {/* My Orders Icon - Visible directly for quick access */}
             {user && (
               <Button
