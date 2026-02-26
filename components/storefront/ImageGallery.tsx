@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Maximize2, X, Loader2 } from "lucide-react";
@@ -14,6 +15,11 @@ export function ImageGallery({ images }: ImageGalleryProps) {
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomImageLoaded, setZoomImageLoaded] = useState(false);
   const [zoomPending, setZoomPending] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const [pinchState, setPinchState] = useState({
     scale: 1,
     translateX: 0,
@@ -22,7 +28,11 @@ export function ImageGallery({ images }: ImageGalleryProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const zoomImgRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const lastPinchRef = useRef<{ distance: number; x: number; y: number } | null>(null);
+  const lastPinchRef = useRef<{
+    distance: number;
+    x: number;
+    y: number;
+  } | null>(null);
   const lastPanRef = useRef<{ x: number; y: number } | null>(null);
   const lastTapRef = useRef(0);
   const scaleRef = useRef(1);
@@ -78,6 +88,8 @@ export function ImageGallery({ images }: ImageGalleryProps) {
     setZoomPending(false);
     setPinchState({ scale: 1, translateX: 0, translateY: 0 });
     document.body.style.overflow = "";
+    document.body.style.position = "";
+    document.body.style.width = "";
   }, []);
 
   useEffect(() => {
@@ -99,10 +111,25 @@ export function ImageGallery({ images }: ImageGalleryProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeZoom();
     };
+
+    // Calculate current scroll position to maintain it
+    const scrollY = window.scrollY;
+
+    // Apply lock
     document.body.style.overflow = "hidden";
+    // For iOS Safari - prevent scrolling on body when modal is open
+    document.body.style.position = "fixed";
+    document.body.style.width = "100%";
+    document.body.style.top = `-${scrollY}px`;
+
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+      document.body.style.top = "";
+      // Restore scroll position
+      window.scrollTo(0, scrollY);
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isZoomed, closeZoom]);
@@ -117,7 +144,10 @@ export function ImageGallery({ images }: ImageGalleryProps) {
       y: (touches[0].clientY + touches[1].clientY) / 2,
     });
     const getDistance = (touches: TouchList) =>
-      Math.hypot(touches[1].clientX - touches[0].clientX, touches[1].clientY - touches[0].clientY);
+      Math.hypot(
+        touches[1].clientX - touches[0].clientX,
+        touches[1].clientY - touches[0].clientY,
+      );
 
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 2) {
@@ -126,7 +156,10 @@ export function ImageGallery({ images }: ImageGalleryProps) {
           ...getTouchCenter(e.touches),
         };
       } else if (e.touches.length === 1) {
-        lastPanRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        lastPanRef.current = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+        };
         touchStartYRef.current = e.touches[0].clientY;
         const now = Date.now();
         if (now - lastTapRef.current < 300) {
@@ -154,12 +187,18 @@ export function ImageGallery({ images }: ImageGalleryProps) {
           return {
             ...prev,
             scale: newScale,
-            translateX: prev.translateX + (center.x - lastPinchRef.current!.x) * 0.5,
-            translateY: prev.translateY + (center.y - lastPinchRef.current!.y) * 0.5,
+            translateX:
+              prev.translateX + (center.x - lastPinchRef.current!.x) * 0.5,
+            translateY:
+              prev.translateY + (center.y - lastPinchRef.current!.y) * 0.5,
           };
         });
         lastPinchRef.current = { distance: dist, ...center };
-      } else if (e.touches.length === 1 && lastPanRef.current && scaleRef.current > 1) {
+      } else if (
+        e.touches.length === 1 &&
+        lastPanRef.current &&
+        scaleRef.current > 1
+      ) {
         e.preventDefault();
         const dx = e.touches[0].clientX - lastPanRef.current.x;
         const dy = e.touches[0].clientY - lastPanRef.current.y;
@@ -168,7 +207,10 @@ export function ImageGallery({ images }: ImageGalleryProps) {
           translateX: prev.translateX + dx,
           translateY: prev.translateY + dy,
         }));
-        lastPanRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        lastPanRef.current = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+        };
       } else if (e.touches.length === 1) {
         const dy = e.touches[0].clientY - touchStartYRef.current;
         if (dy > 80) closeZoom();
@@ -266,7 +308,9 @@ export function ImageGallery({ images }: ImageGalleryProps) {
               key={idx}
               className={cn(
                 "h-1.5 rounded-full transition-all duration-300",
-                currentIndex === idx ? "w-4 bg-primary" : "w-1.5 bg-primary/40 backdrop-blur-sm",
+                currentIndex === idx
+                  ? "w-4 bg-primary"
+                  : "w-1.5 bg-primary/40 backdrop-blur-sm",
               )}
             />
           ))}
@@ -280,57 +324,64 @@ export function ImageGallery({ images }: ImageGalleryProps) {
           aria-live="polite"
           aria-busy="true"
         >
-          <Loader2 className="w-10 h-10 text-white/80 animate-spin" aria-hidden="true" />
+          <Loader2
+            className="w-10 h-10 text-white/80 animate-spin"
+            aria-hidden="true"
+          />
         </div>
       )}
 
-      {/* Zoom Modal - only shown after image loaded */}
-      {isZoomed && zoomImageLoaded && (
-        <div
-          ref={containerRef}
-          className="fixed inset-0 z-50 bg-black/95 flex flex-col min-h-screen min-w-full"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Zoomed product image"
-        >
-          <div className="flex justify-end p-4 lg:p-6 absolute top-0 right-0 z-60 shrink-0">
-            <button
-              onClick={closeZoom}
-              className="text-white/70 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-3 rounded-full touch-manipulation"
-              aria-label="Close zoom"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
+      {/* Zoom Modal - only shown after image loaded via React Portal */}
+      {isZoomed &&
+        zoomImageLoaded &&
+        mounted &&
+        createPortal(
           <div
-            className="flex-1 min-h-0 overflow-auto flex items-center justify-center p-4 lg:p-12 touch-pan-y touch-pan-x"
-            onClick={closeZoom}
-            style={{ WebkitOverflowScrolling: "touch" }}
+            ref={containerRef}
+            className="fixed inset-0 z-99999 bg-black/95 flex flex-col w-screen h-screen m-0 p-0 overscroll-none touch-none"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Zoomed product image"
           >
-            <div
-              className="relative flex items-center justify-center min-h-[50vh] w-full max-w-7xl"
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                transform: `scale(${pinchState.scale}) translate(${pinchState.translateX}px, ${pinchState.translateY}px)`,
-                transformOrigin: "center center",
-                transition: "transform 0.1s ease-out",
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element -- Intentional: native img for zoom modal to ensure image loads before display and support pinch/pan gestures */}
-            <img
-                ref={zoomImgRef}
-                src={images[currentIndex]}
-                alt="Zoomed product"
-                className="max-w-full max-h-[85vh] w-auto h-auto object-contain select-none"
-                style={{ touchAction: "none" }}
-                draggable={false}
-                loading="eager"
-                decoding="async"
-              />
+            <div className="flex justify-end p-4 lg:p-6 absolute top-0 right-0 z-100000 shrink-0">
+              <button
+                onClick={closeZoom}
+                className="text-white/70 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-3 rounded-full touch-manipulation"
+                aria-label="Close zoom"
+              >
+                <X className="w-6 h-6" />
+              </button>
             </div>
-          </div>
-        </div>
-      )}
+            <div
+              className="flex-1 w-full h-full min-h-0 overflow-auto flex items-center justify-center p-0 touch-pan-y touch-pan-x"
+              onClick={closeZoom}
+              style={{ WebkitOverflowScrolling: "touch" }}
+            >
+              <div
+                className="relative flex items-center justify-center w-full h-full"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  transform: `scale(${pinchState.scale}) translate(${pinchState.translateX}px, ${pinchState.translateY}px)`,
+                  transformOrigin: "center center",
+                  transition: "transform 0.1s ease-out",
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element -- Intentional: native img for zoom modal to ensure image loads before display and support pinch/pan gestures */}
+                <img
+                  ref={zoomImgRef}
+                  src={images[currentIndex]}
+                  alt="Zoomed product"
+                  className="max-w-full max-h-screen w-auto h-auto object-contain select-none"
+                  style={{ touchAction: "none" }}
+                  draggable={false}
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
