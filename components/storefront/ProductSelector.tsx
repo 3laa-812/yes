@@ -68,10 +68,28 @@ export function ProductSelector({
       return;
     }
 
-    const effectivePrice =
-      discountPrice && discountPrice < price ? discountPrice : price;
-    const originalPrice =
-      discountPrice && discountPrice < price ? price : undefined;
+    const basePrice = Number(price);
+    const hasSecondaryPrice =
+      discountPrice !== null && discountPrice !== undefined;
+    const secondaryPrice = hasSecondaryPrice
+      ? Number(discountPrice)
+      : basePrice;
+
+    let originalPrice = basePrice;
+    let effectivePrice = basePrice;
+
+    if (
+      hasSecondaryPrice &&
+      basePrice > 0 &&
+      secondaryPrice > 0 &&
+      basePrice !== secondaryPrice
+    ) {
+      originalPrice = Math.max(basePrice, secondaryPrice);
+      effectivePrice = Math.min(basePrice, secondaryPrice);
+    }
+
+    const oldPrice =
+      effectivePrice < originalPrice ? originalPrice : undefined;
 
     addItem({
       id: `${id}-${selectedSize}-${selectedColor}`,
@@ -80,7 +98,7 @@ export function ProductSelector({
       name_en,
       name_ar,
       price: effectivePrice,
-      originalPrice: originalPrice,
+      originalPrice: oldPrice,
       image,
       category,
       category_en,
@@ -109,7 +127,7 @@ export function ProductSelector({
                 key={color}
                 type="button"
                 onClick={() => setSelectedColor(color)}
-                className="flex flex-col items-center gap-1"
+                className="flex flex-col items-center gap-1 p-1 min-w-[44px] min-h-[44px] group"
               >
                 <span
                   className={cn(

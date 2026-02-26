@@ -30,16 +30,31 @@ export function ProductCard({
   discountPrice,
 }: ProductCardProps) {
   const locale = useLocale();
-  const isDiscounted =
-    discountPrice && discountPrice > 0 && discountPrice < Number(price);
-  const currentPrice = isDiscounted ? discountPrice : Number(price);
-  const originalPrice = Number(price);
+  const basePrice = Number(price);
+  const hasSecondaryPrice =
+    discountPrice !== null && discountPrice !== undefined;
+  const secondaryPrice = hasSecondaryPrice
+    ? Number(discountPrice)
+    : basePrice;
 
-  // Calculate discount percentage
+  let originalPrice = basePrice;
+  let currentPrice = basePrice;
+  let isDiscounted = false;
+
+  if (
+    hasSecondaryPrice &&
+    basePrice > 0 &&
+    secondaryPrice > 0 &&
+    basePrice !== secondaryPrice
+  ) {
+    // Treat the higher value as the original price and the lower as the discounted price
+    originalPrice = Math.max(basePrice, secondaryPrice);
+    currentPrice = Math.min(basePrice, secondaryPrice);
+    isDiscounted = currentPrice < originalPrice;
+  }
+
   const discountPercentage = isDiscounted
-    ? Math.round(
-        ((originalPrice - (discountPrice as number)) / originalPrice) * 100,
-      )
+    ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
     : 0;
 
   return (
@@ -53,11 +68,11 @@ export function ProductCard({
             className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
           />
-          {isDiscounted && (
+          {isDiscounted ? (
             <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider">
               -{discountPercentage}%
             </div>
-          )}
+          ) : null}
         </div>
         <div className="p-3 space-y-1">
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
@@ -70,15 +85,15 @@ export function ProductCard({
           </h3>
           <div className="flex items-center gap-2">
             <p
-              className={`text-sm font-bold ${isDiscounted ? "text-red-600" : "text-foreground"}`}
+              className={`text-sm font-bold ${isDiscounted ? "text-primary" : "text-foreground"}`}
             >
-              {formatCurrency(currentPrice as number, locale)}
+              {formatCurrency(currentPrice, locale)}
             </p>
-            {isDiscounted && (
-              <p className="text-xs text-muted-foreground line-through">
+            {isDiscounted ? (
+              <p className="text-xs text-muted-foreground line-through decoration-muted-foreground/50">
                 {formatCurrency(originalPrice, locale)}
               </p>
-            )}
+            ) : null}
           </div>
         </div>
       </ScaleHover>

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import db from "@/lib/db";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, cn } from "@/lib/utils";
 import { ImageGallery } from "@/components/storefront/ImageGallery";
 import { ProductSelector } from "@/components/storefront/ProductSelector";
 
@@ -40,10 +40,27 @@ export default async function ProductPage({ params }: ProductPageProps) {
     return notFound();
   }
 
-  const effectivePrice =
-    product.discountPrice && (product.discountPrice as any) < product.price
-      ? (product.discountPrice as any)
-      : (product.price as any);
+  const basePrice = Number(product.price);
+  const hasSecondaryPrice =
+    product.discountPrice !== null && product.discountPrice !== undefined;
+  const secondaryPrice = hasSecondaryPrice
+    ? Number(product.discountPrice)
+    : basePrice;
+
+  let originalPrice = basePrice;
+  let effectivePrice = basePrice;
+  let isDiscounted = false;
+
+  if (
+    hasSecondaryPrice &&
+    basePrice > 0 &&
+    secondaryPrice > 0 &&
+    basePrice !== secondaryPrice
+  ) {
+    originalPrice = Math.max(basePrice, secondaryPrice);
+    effectivePrice = Math.min(basePrice, secondaryPrice);
+    isDiscounted = effectivePrice < originalPrice;
+  }
 
   return (
     <div className="bg-background">
@@ -60,24 +77,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             <div className="mt-3">
               <h2 className="sr-only">{t("productInfo")}</h2>
-              <div className="flex items-end gap-4">
+              <div className="flex items-end gap-3">
                 <p
-                  className={`text-3xl tracking-tight ${product.discountPrice && (product.discountPrice as any) < product.price ? "text-destructive font-bold" : "text-foreground"}`}
+                  className={cn(
+                    "text-3xl tracking-tight font-bold",
+                    isDiscounted ? "text-primary" : "text-foreground",
+                  )}
                 >
-                  {formatCurrency(
-                    product.discountPrice &&
-                      (product.discountPrice as any) < product.price
-                      ? (product.discountPrice as any)
-                      : (product.price as any),
-                    locale,
-                  )}
+                  {formatCurrency(effectivePrice, locale)}
                 </p>
-                {product.discountPrice &&
-                  (product.discountPrice as any) < product.price && (
-                    <p className="text-xl tracking-tight text-muted-foreground line-through mb-1">
-                      {formatCurrency(product.price as any, locale)}
-                    </p>
-                  )}
+                {isDiscounted ? (
+                  <p className="text-xl tracking-tight text-muted-foreground line-through decoration-muted-foreground/50 mb-1">
+                    {formatCurrency(originalPrice, locale)}
+                  </p>
+                ) : null}
               </div>
             </div>
 
@@ -99,8 +112,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
               name={locale === "ar" ? product.name_ar : product.name_en}
               name_en={product.name_en}
               name_ar={product.name_ar}
-              price={Number(product.price)}
-              discountPrice={Number(product.discountPrice)}
+              price={basePrice}
+              discountPrice={
+                hasSecondaryPrice ? Number(product.discountPrice) : null
+              }
               image={JSON.parse(product.images as string)[0]}
               category={
                 locale === "ar"
