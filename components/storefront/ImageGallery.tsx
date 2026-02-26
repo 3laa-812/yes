@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
-import { Maximize2, X } from "lucide-react";
+import { Maximize2, X, Loader2 } from "lucide-react";
 
 interface ImageGalleryProps {
   images: string[];
@@ -13,18 +12,33 @@ interface ImageGalleryProps {
 export function ImageGallery({ images }: ImageGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
-  const t = useTranslations("Storefront.ProductDetails");
+  const [zoomImageLoaded, setZoomImageLoaded] = useState(false);
+  const [zoomPending, setZoomPending] = useState(false);
+  const [pinchState, setPinchState] = useState({
+    scale: 1,
+    translateX: 0,
+    translateY: 0,
+  });
   const scrollRef = useRef<HTMLDivElement>(null);
+  const zoomImgRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lastPinchRef = useRef<{ distance: number; x: number; y: number } | null>(null);
+  const lastPanRef = useRef<{ x: number; y: number } | null>(null);
+  const lastTapRef = useRef(0);
+  const scaleRef = useRef(1);
+  const touchStartYRef = useRef(0);
 
-  const handleScroll = () => {
+  useEffect(() => {
+    scaleRef.current = pinchState.scale;
+  }, [pinchState.scale]);
+
+  const handleScroll = useCallback(() => {
     if (!scrollRef.current) return;
     const scrollPosition = scrollRef.current.scrollLeft;
     const width = scrollRef.current.offsetWidth;
     const newIndex = Math.round(scrollPosition / width);
-    if (newIndex !== currentIndex) {
-      setCurrentIndex(newIndex);
-    }
-  };
+    if (newIndex !== currentIndex) setCurrentIndex(newIndex);
+  }, [currentIndex]);
 
   const scrollTo = (index: number) => {
     setCurrentIndex(index);
@@ -36,21 +50,146 @@ export function ImageGallery({ images }: ImageGalleryProps) {
     }
   };
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsZoomed(false);
+  const preloadAndZoom = useCallback(() => {
+    const src = images[currentIndex];
+    if (!src) return;
+
+    setZoomPending(true);
+    setZoomImageLoaded(false);
+    setPinchState({ scale: 1, translateX: 0, translateY: 0 });
+
+    const img = new window.Image();
+    img.onload = () => {
+      setZoomImageLoaded(true);
+      setZoomPending(false);
+      setIsZoomed(true);
     };
-    if (isZoomed) {
-      document.body.style.overflow = "hidden";
-      window.addEventListener("keydown", handleKeyDown);
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    img.onerror = () => {
+      setZoomPending(false);
+      setZoomImageLoaded(true);
+      setIsZoomed(true);
+    };
+    img.src = src;
+  }, [images, currentIndex]);
+
+  const closeZoom = useCallback(() => {
+    setIsZoomed(false);
+    setZoomImageLoaded(false);
+    setZoomPending(false);
+    setPinchState({ scale: 1, translateX: 0, translateY: 0 });
+    document.body.style.overflow = "";
+  }, []);
+
+  useEffect(() => {
+    const img = images[currentIndex];
+    if (!img) return;
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = img;
+    document.head.appendChild(link);
     return () => {
-      document.body.style.overflow = "unset";
+      document.head.removeChild(link);
+    };
+  }, [images, currentIndex]);
+
+  useEffect(() => {
+    if (!isZoomed) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeZoom();
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = "";
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isZoomed]);
+  }, [isZoomed, closeZoom]);
+
+  useEffect(() => {
+    if (!isZoomed || !containerRef.current) return;
+
+    const el = containerRef.current;
+
+    const getTouchCenter = (touches: TouchList) => ({
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2,
+    });
+    const getDistance = (touches: TouchList) =>
+      Math.hypot(touches[1].clientX - touches[0].clientX, touches[1].clientY - touches[0].clientY);
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        lastPinchRef.current = {
+          distance: getDistance(e.touches),
+          ...getTouchCenter(e.touches),
+        };
+      } else if (e.touches.length === 1) {
+        lastPanRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        touchStartYRef.current = e.touches[0].clientY;
+        const now = Date.now();
+        if (now - lastTapRef.current < 300) {
+          setPinchState((prev) => ({
+            ...prev,
+            scale: prev.scale > 1 ? 1 : 2,
+            translateX: prev.scale > 1 ? 0 : prev.translateX,
+            translateY: prev.scale > 1 ? 0 : prev.translateY,
+          }));
+          lastTapRef.current = 0;
+          return;
+        }
+        lastTapRef.current = now;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && lastPinchRef.current) {
+        e.preventDefault();
+        const dist = getDistance(e.touches);
+        const center = getTouchCenter(e.touches);
+        const delta = dist / lastPinchRef.current.distance;
+        setPinchState((prev) => {
+          const newScale = Math.min(4, Math.max(0.5, prev.scale * delta));
+          return {
+            ...prev,
+            scale: newScale,
+            translateX: prev.translateX + (center.x - lastPinchRef.current!.x) * 0.5,
+            translateY: prev.translateY + (center.y - lastPinchRef.current!.y) * 0.5,
+          };
+        });
+        lastPinchRef.current = { distance: dist, ...center };
+      } else if (e.touches.length === 1 && lastPanRef.current && scaleRef.current > 1) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - lastPanRef.current.x;
+        const dy = e.touches[0].clientY - lastPanRef.current.y;
+        setPinchState((prev) => ({
+          ...prev,
+          translateX: prev.translateX + dx,
+          translateY: prev.translateY + dy,
+        }));
+        lastPanRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 1) {
+        const dy = e.touches[0].clientY - touchStartYRef.current;
+        if (dy > 80) closeZoom();
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (e.touches.length < 2) lastPinchRef.current = null;
+      if (e.touches.length < 1) lastPanRef.current = null;
+    };
+
+    el.addEventListener("touchstart", handleTouchStart, { passive: true });
+    el.addEventListener("touchmove", handleTouchMove, { passive: false });
+    el.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener("touchstart", handleTouchStart);
+      el.removeEventListener("touchmove", handleTouchMove);
+      el.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [isZoomed, closeZoom]);
 
   if (!images || images.length === 0) return null;
 
@@ -63,7 +202,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
             key={idx}
             onClick={() => scrollTo(idx)}
             className={cn(
-              "relative aspect-[4/5] lg:aspect-square w-20 lg:w-full shrink-0 overflow-hidden rounded-lg bg-muted transition-all",
+              "relative aspect-4/5 lg:aspect-square w-20 lg:w-full shrink-0 overflow-hidden rounded-lg bg-muted transition-all",
               currentIndex === idx
                 ? "ring-2 ring-primary ring-offset-2"
                 : "ring-1 ring-border hover:ring-primary/50",
@@ -76,6 +215,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
               fill
               sizes="80px"
               className="object-cover object-center"
+              loading="lazy"
             />
           </button>
         ))}
@@ -92,73 +232,100 @@ export function ImageGallery({ images }: ImageGalleryProps) {
           {images.map((image, idx) => (
             <div
               key={idx}
-              className="relative w-full shrink-0 snap-center aspect-[4/5] sm:aspect-square cursor-zoom-in"
-              onClick={() => setIsZoomed(true)}
+              className="relative w-full shrink-0 snap-center aspect-4/5 sm:aspect-square cursor-zoom-in active:opacity-95"
+              onClick={preloadAndZoom}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && preloadAndZoom()}
+              aria-label="Zoom image"
             >
               <Image
                 src={image}
                 alt={`Main Product Image ${idx + 1}`}
                 fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
                 className="object-cover object-center"
                 priority={idx === 0}
+                loading={idx === 0 ? "eager" : "lazy"}
               />
             </div>
           ))}
         </div>
 
-        {/* Zoom Button overlay (explicit click) */}
         <button
-          onClick={() => setIsZoomed(true)}
-          className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/80 dark:bg-black/50 backdrop-blur text-foreground flex items-center justify-center rounded-full opacity-0 lg:group-hover:opacity-100 transition-opacity"
-          aria-label="Zoom Image"
+          onClick={preloadAndZoom}
+          className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/80 dark:bg-black/50 backdrop-blur text-foreground flex items-center justify-center rounded-full opacity-0 lg:group-hover:opacity-100 transition-opacity touch-manipulation"
+          aria-label="Zoom image"
         >
           <Maximize2 className="w-5 h-5" />
         </button>
 
-        {/* Pagination Dots (Mobile) */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 lg:hidden z-10">
           {images.map((_, idx) => (
             <div
               key={idx}
               className={cn(
                 "h-1.5 rounded-full transition-all duration-300",
-                currentIndex === idx
-                  ? "w-4 bg-primary"
-                  : "w-1.5 bg-primary/40 backdrop-blur-sm",
+                currentIndex === idx ? "w-4 bg-primary" : "w-1.5 bg-primary/40 backdrop-blur-sm",
               )}
             />
           ))}
         </div>
       </div>
 
-      {/* Zoom Modal - Full Screen Custom */}
-      {isZoomed && (
-        <div className="fixed inset-0 z-50 bg-black/95 flex flex-col animate-in fade-in duration-200 backdrop-blur-sm">
-          <div className="flex justify-end p-4 lg:p-6 absolute top-0 right-0 z-[60]">
+      {/* Zoom pending overlay - shows until image is ready */}
+      {zoomPending && (
+        <div
+          className="fixed inset-0 z-55 bg-black/90 flex items-center justify-center animate-in fade-in duration-150"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <Loader2 className="w-10 h-10 text-white/80 animate-spin" aria-hidden="true" />
+        </div>
+      )}
+
+      {/* Zoom Modal - only shown after image loaded */}
+      {isZoomed && zoomImageLoaded && (
+        <div
+          ref={containerRef}
+          className="fixed inset-0 z-50 bg-black/95 flex flex-col min-h-screen min-w-full"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Zoomed product image"
+        >
+          <div className="flex justify-end p-4 lg:p-6 absolute top-0 right-0 z-60 shrink-0">
             <button
-              onClick={() => setIsZoomed(false)}
-              className="text-white/70 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-3 rounded-full"
-              aria-label="Close Zoom"
+              onClick={closeZoom}
+              className="text-white/70 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-3 rounded-full touch-manipulation"
+              aria-label="Close zoom"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
           <div
-            className="flex-1 relative overflow-auto cursor-zoom-out flex items-center justify-center p-4 lg:p-12 w-full h-full"
-            onClick={() => setIsZoomed(false)}
+            className="flex-1 min-h-0 overflow-auto flex items-center justify-center p-4 lg:p-12 touch-pan-y touch-pan-x"
+            onClick={closeZoom}
+            style={{ WebkitOverflowScrolling: "touch" }}
           >
             <div
-              className="relative w-full h-full max-w-7xl"
+              className="relative flex items-center justify-center min-h-[50vh] w-full max-w-7xl"
               onClick={(e) => e.stopPropagation()}
+              style={{
+                transform: `scale(${pinchState.scale}) translate(${pinchState.translateX}px, ${pinchState.translateY}px)`,
+                transformOrigin: "center center",
+                transition: "transform 0.1s ease-out",
+              }}
             >
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element -- Intentional: native img for zoom modal to ensure image loads before display and support pinch/pan gestures */}
+            <img
+                ref={zoomImgRef}
                 src={images[currentIndex]}
-                alt="Zoomed Product Image"
-                fill
-                className="object-contain"
-                quality={100}
-                priority
+                alt="Zoomed product"
+                className="max-w-full max-h-[85vh] w-auto h-auto object-contain select-none"
+                style={{ touchAction: "none" }}
+                draggable={false}
+                loading="eager"
+                decoding="async"
               />
             </div>
           </div>
