@@ -1,10 +1,52 @@
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
-
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { getAllProducts, getCategories } from "@/lib/data/storefront";
+import { languageAlternates, localizedUrl } from "@/lib/seo";
 
 export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+
+  const title =
+    locale === "ar"
+      ? "تسوق جميع منتجات YES الرجالية | ملابس وإطلالات كاملة"
+      : "All YES Men’s Wear Products | Shop the Full Collection";
+
+  const description =
+    locale === "ar"
+      ? "استعرض جميع منتجات YES من القمصان والبناطيل والتيشيرتات وأكثر. فرز حسب الفئة واكتشف أفضل الإطلالات الرجالية بتصاميم عصرية وجودة عالية."
+      : "Browse all YES men’s wear products including shirts, pants, t‑shirts and more. Explore every collection in one place with modern cuts, bold details and easy on‑site navigation.";
+
+  const path = "/products";
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: localizedUrl(locale as any, path),
+      languages: languageAlternates(path),
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: localizedUrl(locale as any, path),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
 export default async function ProductsPage({
   params,
@@ -12,6 +54,7 @@ export default async function ProductsPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const t = await getTranslations("Storefront.Products");
   const products = await getAllProducts();
   const categories = await getCategories();
 
@@ -20,17 +63,17 @@ export default async function ProductsPage({
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <h2 className="text-3xl font-bold tracking-tight text-foreground">
-            All Products
+            {t("allProducts")}
           </h2>
           <span className="text-muted-foreground">
-            {products.length} Products
+            {t("productsCount", { count: products.length })}
           </span>
         </div>
 
         {/* Category Pills */}
         <div className="mt-6 flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-hide">
           <Button variant="default" size="sm" asChild className="rounded-full">
-            <Link href="/products">All</Link>
+            <Link href="/products">{t("all")}</Link>
           </Button>
           {categories.map((cat: any) => (
             <Button

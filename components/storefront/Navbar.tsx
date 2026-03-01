@@ -56,6 +56,7 @@ export function Navbar({
   categories?: Category[];
 }) {
   const t = useTranslations("Navbar");
+  const tCommon = useTranslations("Common");
   const locale = useLocale();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -318,7 +319,7 @@ export function Navbar({
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      {user?.name || "Guest"}
+                      {user?.name || tCommon("guest")}
                     </p>
                     {user?.email && (
                       <p className="text-xs leading-none text-muted-foreground">
@@ -336,12 +337,12 @@ export function Navbar({
                         className="flex w-full items-center"
                       >
                         <Package className="mr-2 h-4 w-4" />
-                        My Orders
+                        {t("myOrders")}
                       </Link>
                     </DropdownMenuItem>
                     {user.role !== "USER" && (
                       <DropdownMenuItem asChild className="cursor-pointer">
-                        <Link href="/admin/dashboard">Admin Dashboard</Link>
+                        <Link href="/admin/dashboard">{t("adminDashboard")}</Link>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
@@ -349,16 +350,16 @@ export function Navbar({
                       asChild
                       className="cursor-pointer text-destructive focus:text-destructive"
                     >
-                      <Link href="/signout">Sign Out</Link>
+                      <Link href="/signout">{t("signOut")}</Link>
                     </DropdownMenuItem>
                   </>
                 ) : (
                   <>
                     <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link href="/login">Sign In</Link>
+                      <Link href="/login">{t("signIn")}</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link href="/register">Register</Link>
+                      <Link href="/register">{t("register")}</Link>
                     </DropdownMenuItem>
                   </>
                 )}

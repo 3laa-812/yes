@@ -1,10 +1,59 @@
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { SubCategoryFilter } from "@/components/storefront/SubCategoryFilter";
 import { getCategoryWithProducts } from "@/lib/data/storefront";
+import { languageAlternates, localizedUrl } from "@/lib/seo";
 
 export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string; locale: string }>;
+}): Promise<Metadata> {
+  const { slug, locale } = await params;
+  const category = await getCategoryWithProducts(slug);
+  const t = await getTranslations("Storefront.Collections");
+
+  const categoryName =
+    category && locale === "ar" ? category.name_ar : category?.name_en;
+
+  const title = categoryName
+    ? t("collection", { name: categoryName })
+    : locale === "ar"
+      ? t("collection", { name: slug }) + " | YES"
+      : t("collection", { name: slug }) + " | YES";
+
+  const description =
+    locale === "ar"
+      ? `اكتشف مجموعة ${categoryName || slug} من YES للملابس الرجالية. تصفح تشكيلة مختارة من القطع المتناسقة لإطلالات عصرية كاملة لكل مناسبة.`
+      : `Explore the YES ${categoryName || slug} collection for modern men’s wear. Browse curated pieces designed to build complete, confident looks for every occasion.`;
+
+  const path = `/collections/${slug}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: localizedUrl(locale as any, path),
+      languages: languageAlternates(path),
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: localizedUrl(locale as any, path),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
 export default async function CategoryPage({
   params,
@@ -17,28 +66,32 @@ export default async function CategoryPage({
   const { subCategoryId } = await searchParams;
   const category = await getCategoryWithProducts(slug, subCategoryId);
 
+  const t = await getTranslations("Storefront.Collections");
+
   if (!category) {
     return (
       <div className="bg-white">
         <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900 capitalize">
-            {slug} Collection
+            {t("collection", { name: slug })}
           </h2>
-          <p className="mt-4 text-gray-500">Category not found.</p>
+          <p className="mt-4 text-gray-500">{t("categoryNotFound")}</p>
         </div>
       </div>
     );
   }
+
+  const categoryName = locale === "ar" ? category.name_ar : category.name_en;
 
   return (
     <div className="bg-background">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <h2 className="text-3xl font-bold tracking-tight text-foreground capitalize">
-            {locale === "ar" ? category.name_ar : category.name_en} Collection
+            {t("collection", { name: categoryName })}
           </h2>
           <span className="text-muted-foreground">
-            {category.products.length} Products
+            {t("productsCount", { count: category.products.length })}
           </span>
         </div>
 
@@ -54,14 +107,14 @@ export default async function CategoryPage({
         {category.products.length === 0 ? (
           <div className="mt-10 text-center py-20 border-2 border-dashed rounded-lg bg-muted/30">
             <h3 className="text-lg font-semibold text-muted-foreground">
-              No products found
+              {t("noProductsFound")}
             </h3>
             <p className="text-sm text-muted-foreground mt-2">
-              Try clearing the filters or check back later.
+              {t("tryClearingFilters")}
             </p>
             {subCategoryId && (
               <Button variant="link" asChild className="mt-4">
-                <Link href={`/collections/${slug}`}>Clear Filters</Link>
+                <Link href={`/collections/${slug}`}>{t("clearFilters")}</Link>
               </Button>
             )}
           </div>

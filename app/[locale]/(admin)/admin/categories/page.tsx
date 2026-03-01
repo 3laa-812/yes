@@ -43,16 +43,16 @@ export default async function AdminCategoriesPage({
   params: { locale: string };
 }) {
   const categories = await getCategories();
-  // const t = await getTranslations("Admin.Categories"); // Todo: Add translations
+  const t = await getTranslations("Admin.Categories");
 
   return (
     <AdminShell locale={params.locale} titleKey="categories">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold md:text-2xl">Categories</h1>
+        <h1 className="text-lg font-semibold md:text-2xl">{t("pageTitle")}</h1>
         <Button size="sm" asChild>
           <Link href="/admin/categories/new">
             <PlusCircle className="mr-2 h-4 w-4" />
-            Add Category
+            {t("addCategory")}
           </Link>
         </Button>
       </div>

@@ -7,7 +7,7 @@ import { ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { toast } from "sonner";
 import { useTranslations, useLocale } from "next-intl";
-import { getColorDisplayName, getColorValue } from "@/lib/colors";
+import { getColorDisplayNameDefault, getColorValueDefault } from "@/lib/colors";
 
 interface ProductSelectorProps {
   id: string;
@@ -23,6 +23,8 @@ interface ProductSelectorProps {
   sizes: string[];
   colors: string[];
   variants: any[]; // Using any to avoid importing prisma types client-side if complex, but ideally should be typed
+  /** Pass from server to avoid hydration mismatch (useLocale() can differ on first paint) */
+  locale?: "en" | "ar";
 }
 
 export function ProductSelector({
@@ -39,12 +41,14 @@ export function ProductSelector({
   sizes,
   colors,
   variants,
+  locale: localeProp,
 }: ProductSelectorProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const addItem = useCartStore((state) => state.addItem);
   const t = useTranslations("Storefront.Product");
-  const locale = useLocale() as "en" | "ar";
+  const clientLocale = useLocale() as "en" | "ar";
+  const locale = localeProp ?? clientLocale;
 
   // Helper to check stock
   const getVariantStock = (size: string, color: string) => {
@@ -117,10 +121,10 @@ export function ProductSelector({
       <div>
         <h3 className="text-sm font-medium text-foreground">{t("color")}</h3>
         <div className="mt-4 flex flex-wrap gap-3">
-          {colors.map((color) => {
+          {colors.filter(Boolean).map((color) => {
             const isSelected = selectedColor === color;
-            const displayName = getColorDisplayName(color, locale);
-            const value = getColorValue(color);
+            const displayName = getColorDisplayNameDefault(color, locale);
+            const value = getColorValueDefault(color) || "#cccccc";
 
             return (
               <button

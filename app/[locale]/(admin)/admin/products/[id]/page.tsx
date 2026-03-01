@@ -1,4 +1,5 @@
 import db from "@/lib/db";
+import { getTranslations } from "next-intl/server";
 import { ProductForm } from "../_components/ProductForm";
 
 export default async function EditProductPage({
@@ -15,7 +16,8 @@ export default async function EditProductPage({
   })) as any;
 
   if (!product) {
-    return <div>Product not found</div>;
+    const t = await getTranslations("Common");
+    return <div>{t("productNotFound")}</div>;
   }
 
   const categories = await db.category.findMany({

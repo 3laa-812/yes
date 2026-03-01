@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +27,7 @@ import { toast } from "sonner";
 import { Loader2, Plus } from "lucide-react";
 
 export function AddAdminDialog() {
+  const t = useTranslations("Admin.Admins");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -34,9 +36,9 @@ export function AddAdminDialog() {
     try {
       await createAdmin(formData);
       setOpen(false);
-      toast.success("Admin created successfully");
+      toast.success(t("adminCreated"));
     } catch (error) {
-      toast.error("Failed to create admin");
+      toast.error(t("createAdminFailed"));
       console.error(error);
     } finally {
       setLoading(false);
@@ -53,41 +55,41 @@ export function AddAdminDialog() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New Admin</DialogTitle>
+          <DialogTitle>{t("addNewAdmin")}</DialogTitle>
           <DialogDescription>
-            Create a new admin account with specific role and permissions.
+            {t("createDesc")}
           </DialogDescription>
         </DialogHeader>
         <form action={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" name="name" placeholder="John Doe" required />
+              <Label htmlFor="name">{t("nameLabel")}</Label>
+              <Input id="name" name="name" placeholder={t("namePlaceholder")} required />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("emailLabel")}</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="john@example.com"
+                placeholder={t("emailPlaceholder")}
                 required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("passwordLabel")}</Label>
               <Input id="password" name="password" type="password" required />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="role">Role</Label>
+              <Label htmlFor="role">{t("roleLabel")}</Label>
               <Select name="role" defaultValue={Role.STAFF} required>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a role" />
+                  <SelectValue placeholder={t("selectRole")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={Role.OWNER}>Owner</SelectItem>
-                  <SelectItem value={Role.MANAGER}>Manager</SelectItem>
-                  <SelectItem value={Role.STAFF}>Staff</SelectItem>
+                  <SelectItem value={Role.OWNER}>{t("owner")}</SelectItem>
+                  <SelectItem value={Role.MANAGER}>{t("manager")}</SelectItem>
+                  <SelectItem value={Role.STAFF}>{t("staff")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -95,7 +97,7 @@ export function AddAdminDialog() {
           <DialogFooter>
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Admin
+              {t("createAdmin")}
             </Button>
           </DialogFooter>
         </form>

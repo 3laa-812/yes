@@ -3,13 +3,20 @@ import db from "@/lib/db";
 import { Role } from "@prisma/client";
 import { redirect } from "next/navigation";
 import dynamic from "next/dynamic";
+import { getTranslations } from "next-intl/server";
 import { AdminTable } from "./_components/AdminTable";
 import { Metadata } from "next";
 import { AdminShell } from "../_components/AdminShell";
 
-export const metadata: Metadata = {
-  title: "Admin Management",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Admin.Admins" });
+  return { title: t("adminManagement") };
+}
 
 const AddAdminDialog = dynamic(() =>
   import("./_components/AddAdminDialog").then((mod) => mod.AddAdminDialog),
@@ -18,8 +25,10 @@ const AddAdminDialog = dynamic(() =>
 export default async function AdminsPage({
   params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+  const t = await getTranslations("Admin.Admins");
   const session = await auth();
 
   if (!session?.user || session.user.role !== Role.OWNER) {
@@ -38,10 +47,10 @@ export default async function AdminsPage({
   });
 
   return (
-    <AdminShell locale={params.locale} titleKey="admins">
+    <AdminShell locale={locale} titleKey="admins">
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight">Admin Management</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t("adminManagement")}</h1>
           <AddAdminDialog />
         </div>
         <AdminTable

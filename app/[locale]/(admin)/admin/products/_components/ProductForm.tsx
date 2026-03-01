@@ -256,7 +256,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                       className="h-6 text-xs text-blue-500"
                       onClick={() => handleAutoTranslate("name")}
                     >
-                      Auto-Generate
+                      {t("autoGenerate")}
                     </Button>
                   </div>
                   <Input
@@ -297,7 +297,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                       className="h-6 text-xs text-blue-500"
                       onClick={() => handleAutoTranslate("description")}
                     >
-                      Auto-Generate
+                      {t("autoGenerate")}
                     </Button>
                   </div>
                   <textarea
@@ -338,7 +338,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Sub-Category</label>
+                    <label className="text-sm font-medium">{t("subCategory")}</label>
                   <Select
                     name="subCategoryId" // will be picked up by formData if set
                     value={selectedSubCategoryId}
@@ -351,8 +351,8 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                       <SelectValue
                         placeholder={
                           availableSubCategories.length === 0
-                            ? "No Sub-Categories"
-                            : "Select Sub-Category"
+                            ? t("noSubCategories")
+                            : t("selectSubCategory")
                         }
                       />
                     </SelectTrigger>
@@ -371,8 +371,8 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
 
           <Card>
             <CardHeader>
-              <CardTitle>Media</CardTitle>
-              <CardDescription>Upload high quality images</CardDescription>
+              <CardTitle>{t("media")}</CardTitle>
+              <CardDescription>{t("uploadImages")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="bg-muted/30 p-4 rounded-lg border border-dashed">
@@ -395,18 +395,15 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           {/* Variants Section */}
           <Card>
             <CardHeader>
-              <CardTitle>Variants & Stock</CardTitle>
-              <CardDescription>
-                Manage available sizes, colors and stock levels. Use Bulk
-                Generate to quickly add multiple variants.
-              </CardDescription>
+              <CardTitle>{t("variantsAndStock")}</CardTitle>
+              <CardDescription>{t("manageVariantsDesc")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Bulk Generation UI */}
               <div className="border p-4 rounded-lg bg-gray-50 space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-sm">
-                    Bulk Generate Variants
+                    {t("bulkGenerateVariants")}
                   </h3>
                   <Button
                     type="button"
@@ -417,7 +414,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                         selectedSizes.length === 0 ||
                         selectedColors.length === 0
                       ) {
-                        toast.error("Select at least one size and one color");
+                        toast.error(t("selectAtLeastOneSizeAndColor"));
                         return;
                       }
                       const newVariants: any[] = [];
@@ -435,17 +432,17 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                       setVariants([...variants, ...newVariants]);
                       setSelectedSizes([]);
                       setSelectedColors([]);
-                      toast.success(`Generated ${newVariants.length} variants`);
+                      toast.success(t("generatedVariants", { count: newVariants.length }));
                     }}
                   >
-                    Generate Selected
+                    {t("generateSelected")}
                   </Button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Sizes */}
                   <div className="space-y-3">
-                    <label className="text-sm font-medium">Select Sizes</label>
+                    <label className="text-sm font-medium">{t("selectSizes")}</label>
                     <div className="flex flex-wrap gap-2">
                       {PREDEFINED_SIZES.map((size) => {
                         const isSelected = selectedSizes.includes(size);
@@ -489,10 +486,10 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Size</TableHead>
-                        <TableHead>Color</TableHead>
-                        <TableHead>Stock</TableHead>
-                        <TableHead className="text-right">Action</TableHead>
+                        <TableHead>{t("size")}</TableHead>
+                        <TableHead>{t("color")}</TableHead>
+                        <TableHead>{t("stock")}</TableHead>
+                        <TableHead className="text-right">{t("action")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -553,11 +550,11 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
         <div className="space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle>Pricing</CardTitle>
+              <CardTitle>{t("pricing")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Base Price (EGP)</label>
+                <label className="text-sm font-medium">{t("basePrice")}</label>
                 <Input
                   name="price"
                   type="number"

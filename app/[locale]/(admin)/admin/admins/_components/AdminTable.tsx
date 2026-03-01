@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   Table,
   TableBody,
@@ -51,15 +52,16 @@ export function AdminTable({
   currentUserRole,
   currentUserId,
 }: AdminTableProps) {
+  const t = useTranslations("Admin.Admins");
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleRoleChange = async (userId: string, newRole: Role) => {
     try {
       setLoading(userId);
       await updateAdminRole(userId, newRole);
-      toast.success("Role updated successfully");
+      toast.success(t("roleUpdated"));
     } catch (error) {
-      toast.error("Failed to update role");
+      toast.error(t("roleUpdateFailed"));
     } finally {
       setLoading(null);
     }
@@ -69,9 +71,9 @@ export function AdminTable({
     try {
       setLoading(userId);
       await toggleAdminStatus(userId, !currentStatus);
-      toast.success(`Admin ${!currentStatus ? "activated" : "deactivated"}`);
+      toast.success(!currentStatus ? t("adminActivated") : t("adminDeactivated"));
     } catch (error) {
-      toast.error("Failed to update status");
+      toast.error(t("statusUpdateFailed"));
     } finally {
       setLoading(null);
     }
@@ -90,9 +92,9 @@ export function AdminTable({
     try {
       setLoading(userId);
       await resetAdminPassword(userId, newPassword);
-      toast.success(`Password reset to: ${newPassword}`, { duration: 10000 });
+      toast.success(`${t("passwordReset")}: ${newPassword}`, { duration: 10000 });
     } catch (error) {
-      toast.error("Failed to reset password");
+      toast.error(t("passwordResetFailed"));
     } finally {
       setLoading(null);
     }
@@ -103,10 +105,10 @@ export function AdminTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead>{t("name")}</TableHead>
+            <TableHead>{t("email")}</TableHead>
+            <TableHead>{t("role")}</TableHead>
+            <TableHead>{t("status")}</TableHead>
             <TableHead className="w-[70px]"></TableHead>
           </TableRow>
         </TableHeader>
@@ -128,19 +130,19 @@ export function AdminTable({
                   {admin.role === Role.STAFF && (
                     <UserIcon className="h-4 w-4 text-gray-500" />
                   )}
-                  {admin.role}
+                  {t(admin.role.toLowerCase() as "owner" | "manager" | "staff")}
                 </div>
               </TableCell>
               <TableCell>
                 {admin.isActive ? (
-                  <Badge
-                    variant="default"
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    Active
-                  </Badge>
-                ) : (
-                  <Badge variant="destructive">Inactive</Badge>
+                <Badge
+                  variant="default"
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {t("active")}
+                </Badge>
+              ) : (
+                <Badge variant="destructive">{t("inactive")}</Badge>
                 )}
               </TableCell>
               <TableCell>
@@ -152,11 +154,11 @@ export function AdminTable({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuLabel>{t("actions")}</DropdownMenuLabel>
                     <DropdownMenuItem
                       onClick={() => navigator.clipboard.writeText(admin.id)}
                     >
-                      Copy ID
+                      {t("copyId")}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
 
@@ -165,7 +167,7 @@ export function AdminTable({
                         <>
                           <DropdownMenuSub>
                             <DropdownMenuSubTrigger>
-                              Change Role
+                              {t("changeRole")}
                             </DropdownMenuSubTrigger>
                             <DropdownMenuSubContent>
                               <DropdownMenuRadioGroup
@@ -174,15 +176,15 @@ export function AdminTable({
                                   handleRoleChange(admin.id, val as Role)
                                 }
                               >
-                                <DropdownMenuRadioItem value={Role.OWNER}>
-                                  Owner
-                                </DropdownMenuRadioItem>
-                                <DropdownMenuRadioItem value={Role.MANAGER}>
-                                  Manager
-                                </DropdownMenuRadioItem>
-                                <DropdownMenuRadioItem value={Role.STAFF}>
-                                  Staff
-                                </DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem value={Role.OWNER}>
+                                {t("owner")}
+                              </DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem value={Role.MANAGER}>
+                                {t("manager")}
+                              </DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem value={Role.STAFF}>
+                                {t("staff")}
+                              </DropdownMenuRadioItem>
                               </DropdownMenuRadioGroup>
                             </DropdownMenuSubContent>
                           </DropdownMenuSub>
@@ -197,14 +199,14 @@ export function AdminTable({
                             ) : (
                               <CheckCircle className="mr-2 h-4 w-4" />
                             )}
-                            {admin.isActive ? "Deactivate" : "Activate"}
+                            {admin.isActive ? t("deactivate") : t("activate")}
                           </DropdownMenuItem>
 
                           <DropdownMenuItem
                             onClick={() => handlePasswordReset(admin.id)}
                           >
                             <Key className="mr-2 h-4 w-4" />
-                            Reset Password
+                            {t("resetPassword")}
                           </DropdownMenuItem>
                         </>
                       )}

@@ -1,6 +1,7 @@
 import db from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,16 @@ async function getOrders(userId: string) {
 interface OrdersPageProps {
   params: Promise<{ locale: string }>;
 }
+
+export const metadata: Metadata = {
+  title: "My Orders | YES",
+  description:
+    "Private order history page for the signed-in YES customer.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function OrdersPage({ params }: OrdersPageProps) {
   const session = await auth();

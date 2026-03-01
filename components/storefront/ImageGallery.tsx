@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useSyncExternalStore,
+} from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -8,9 +14,10 @@ import { Maximize2, X, Loader2 } from "lucide-react";
 
 interface ImageGalleryProps {
   images: string[];
+  altPrefix?: string;
 }
 
-export function ImageGallery({ images }: ImageGalleryProps) {
+export function ImageGallery({ images, altPrefix }: ImageGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomImageLoaded, setZoomImageLoaded] = useState(false);
@@ -44,7 +51,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
 
   const handleScroll = useCallback(() => {
     if (!scrollRef.current) return;
-    const scrollPosition = scrollRef.current.scrollLeft;
+    const scrollPosition = Math.abs(scrollRef.current.scrollLeft);
     const width = scrollRef.current.offsetWidth;
     const newIndex = Math.round(scrollPosition / width);
     if (newIndex !== currentIndex) setCurrentIndex(newIndex);
@@ -53,8 +60,11 @@ export function ImageGallery({ images }: ImageGalleryProps) {
   const scrollTo = (index: number) => {
     setCurrentIndex(index);
     if (scrollRef.current) {
+      const isRTL =
+        window.getComputedStyle(scrollRef.current).direction === "rtl";
+      const scrollValue = index * scrollRef.current.offsetWidth;
       scrollRef.current.scrollTo({
-        left: index * scrollRef.current.offsetWidth,
+        left: isRTL ? -scrollValue : scrollValue,
         behavior: "smooth",
       });
     }
@@ -236,73 +246,90 @@ export function ImageGallery({ images }: ImageGalleryProps) {
   if (!images || images.length === 0) return null;
 
   return (
-    <div className="flex flex-col-reverse lg:grid lg:grid-cols-5 gap-4">
+    <div className="flex flex-col-reverse lg:flex-row gap-4 lg:gap-6">
       {/* Thumbnails */}
-      <div className="flex lg:flex-col gap-3 overflow-x-auto lg:col-span-1 pb-2 lg:pb-0 scrollbar-hide">
-        {images.map((image, idx) => (
-          <button
-            key={idx}
-            onClick={() => scrollTo(idx)}
-            className={cn(
-              "relative aspect-4/5 lg:aspect-square w-20 lg:w-full shrink-0 overflow-hidden rounded-lg bg-muted transition-all",
-              currentIndex === idx
-                ? "ring-2 ring-primary ring-offset-2"
-                : "ring-1 ring-border hover:ring-primary/50",
-            )}
-            aria-label={`Select product image ${idx + 1}`}
-          >
-            <Image
-              src={image}
-              alt={`Thumbnail ${idx + 1}`}
-              fill
-              sizes="80px"
-              className="object-cover object-center"
-              loading="lazy"
-            />
-          </button>
-        ))}
+      <div className="flex lg:flex-col gap-3 overflow-x-auto py-2 lg:py-0 scrollbar-hide shrink-0 lg:w-20 items-center justify-center">
+        {images.map((image, idx) => {
+          const isActive = currentIndex === idx;
+          return (
+            <button
+              key={idx}
+              onClick={() => scrollTo(idx)}
+              className={cn(
+                "relative shrink-0 overflow-hidden rounded-full transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                isActive
+                  ? "w-16 h-16 sm:w-20 sm:h-20 ring-2 ring-primary ring-offset-2 shadow-md opacity-100 scale-100"
+                  : "w-12 h-12 sm:w-16 sm:h-16 ring-1 ring-border/50 opacity-60 hover:opacity-100 hover:ring-border hover:scale-105",
+              )}
+              aria-label={`Select product image ${idx + 1}`}
+              aria-current={isActive ? "true" : "false"}
+            >
+              <div className="absolute inset-0 bg-muted/20" />
+              <Image
+                src={image}
+                alt={
+                  altPrefix
+                    ? `${altPrefix} – thumbnail ${idx + 1}`
+                    : `Product thumbnail ${idx + 1}`
+                }
+                fill
+                sizes="(max-width: 640px) 80px, 80px"
+                className="object-cover object-center"
+                loading="lazy"
+              />
+            </button>
+          );
+        })}
       </div>
 
       {/* Main Image Slider */}
-      <div className="relative lg:col-span-4 rounded-lg overflow-hidden bg-muted group border border-border">
+      <div className="relative flex-1 rounded-2xl overflow-hidden bg-muted/20 border border-border/50 group">
         <div
           ref={scrollRef}
           onScroll={handleScroll}
           className="flex overflow-x-auto snap-x snap-mandatory w-full h-full no-scrollbar"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {images.map((image, idx) => (
-            <div
-              key={idx}
-              className="relative w-full shrink-0 snap-center aspect-4/5 sm:aspect-square cursor-zoom-in active:opacity-95"
-              onClick={preloadAndZoom}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && preloadAndZoom()}
-              aria-label="Zoom image"
-            >
-              <Image
-                src={image}
-                alt={`Main Product Image ${idx + 1}`}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
-                className="object-cover object-center"
-                priority={idx === 0}
-                loading={idx === 0 ? "eager" : "lazy"}
-              />
-            </div>
-          ))}
+          {images.map((image, idx) => {
+            const isActive = currentIndex === idx;
+            return (
+              <div
+                key={idx}
+                className="relative w-full shrink-0 snap-center aspect-4/5 sm:aspect-square cursor-zoom-in active:opacity-95 overflow-hidden"
+                onClick={preloadAndZoom}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === "Enter" && preloadAndZoom()}
+                aria-label="Zoom image"
+              >
+                <div className="absolute inset-0 bg-muted/10 animate-pulse" />
+                <Image
+                  src={image}
+                  alt={
+                    altPrefix
+                      ? `${altPrefix} – image ${idx + 1}`
+                      : `Product image ${idx + 1}`
+                  }
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+                  className="object-cover object-center transition-all duration-500 ease-out relative z-10"
+                  priority={idx === 0}
+                  loading={idx === 0 ? "eager" : "lazy"}
+                />
+              </div>
+            );
+          })}
         </div>
 
         <button
           onClick={preloadAndZoom}
-          className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/80 dark:bg-black/50 backdrop-blur text-foreground flex items-center justify-center rounded-full opacity-0 lg:group-hover:opacity-100 transition-opacity touch-manipulation"
+          className="absolute top-4 right-4 z-20 w-10 h-10 bg-white/80 dark:bg-black/50 backdrop-blur text-foreground flex items-center justify-center rounded-full opacity-0 lg:group-hover:opacity-100 transition-opacity touch-manipulation shadow-sm"
           aria-label="Zoom image"
         >
           <Maximize2 className="w-5 h-5" />
         </button>
 
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 lg:hidden z-10">
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 lg:hidden z-20">
           {images.map((_, idx) => (
             <div
               key={idx}
@@ -370,7 +397,9 @@ export function ImageGallery({ images }: ImageGalleryProps) {
                 <img
                   ref={zoomImgRef}
                   src={images[currentIndex]}
-                  alt="Zoomed product"
+                  alt={
+                    altPrefix ? `${altPrefix} – zoomed` : "Zoomed product image"
+                  }
                   className="max-w-full max-h-screen w-auto h-auto object-contain select-none"
                   style={{ touchAction: "none" }}
                   draggable={false}

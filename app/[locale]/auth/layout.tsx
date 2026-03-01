@@ -1,4 +1,14 @@
-import {AuthProviders} from "@/components/providers/AuthProviders";
+import type { Metadata } from "next";
+import { AuthProviders } from "@/components/providers/AuthProviders";
+
+export const metadata: Metadata = {
+  title: "YES Auth",
+  description: "Authentication area for YES administrators.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function AuthLayout({
   children,

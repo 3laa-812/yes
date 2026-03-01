@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import db from "@/lib/db";
 import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +29,16 @@ const steps = [
   { id: "SHIPPED", label: "shipped", icon: Truck },
   { id: "DELIVERED", label: "delivered", icon: Package },
 ];
+
+export const metadata: Metadata = {
+  title: "Order Details | YES",
+  description:
+    "Order tracking details. This page is not intended to be indexed by search engines.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function OrderDetailsPage({ params }: Props) {
   const { id } = await params;
@@ -103,7 +114,7 @@ export default async function OrderDetailsPage({ params }: Props) {
                   key={item.id}
                   className="flex gap-4 py-2 border-b last:border-0 border-gray-100"
                 >
-                  <div className="relative h-20 w-20 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                  <div className="relative h-20 w-20 bg-gray-100 rounded overflow-hidden shrink-0">
                     {/* Assuming product images is a JSON string of URLs */}
                     <Image
                       src={JSON.parse(item.product.images)[0]}

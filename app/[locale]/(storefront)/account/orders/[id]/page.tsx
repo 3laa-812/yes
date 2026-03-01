@@ -1,6 +1,7 @@
 import db from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect, notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
@@ -27,6 +28,16 @@ async function getOrder(id: string, userId: string) {
 }
 
 const STEPS = ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED"];
+
+export const metadata: Metadata = {
+  title: "Order Details | YES",
+  description:
+    "Private order detail page for the signed-in YES customer.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function OrderDetailsPage({ params }: Props) {
   const session = await auth();
@@ -133,7 +144,7 @@ export default async function OrderDetailsPage({ params }: Props) {
                   key={item.id}
                   className="flex gap-4 border-b pb-4 last:border-0 last:pb-0"
                 >
-                  <div className="relative h-24 w-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
+                  <div className="relative h-24 w-24 bg-gray-100 rounded-md overflow-hidden shrink-0">
                     {item.product.images && (
                       <Image
                         src={JSON.parse(item.product.images)[0]}

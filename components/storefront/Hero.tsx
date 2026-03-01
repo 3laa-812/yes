@@ -20,9 +20,6 @@ export function Hero() {
       ref={heroRef}
       className="relative min-h-[85vh] w-full overflow-hidden flex items-center bg-gradient-to-br from-background via-background to-secondary/30"
     >
-      {/* Background Elements */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-secondary/20 -skew-x-12 transform origin-top-right z-0 hidden lg:block" />
-      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent z-10 lg:hidden" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-20 h-full flex flex-col justify-center">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center h-full">
@@ -147,7 +144,7 @@ export function Hero() {
           {/* Hero Image */}
           <motion.div
             style={{ y }}
-            className="lg:col-span-6 relative h-[500px] lg:h-[750px] w-full order-1 lg:order-2"
+            className="lg:col-span-6 relative h-125 lg:h-187.5 w-full order-1 lg:order-2"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20, rotate: -2 }}
@@ -155,7 +152,7 @@ export function Hero() {
               transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
               className="absolute inset-0 z-10"
             >
-              <div className="relative w-full h-full rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-black/5">
+              <div className="relative w-full h-full rounded-4xl overflow-hidden shadow-2xl ring-1 ring-black/5">
                 {/* Placeholder for Fashion Image */}
                 <div className="w-full h-full bg-secondary relative flex items-center justify-center">
                   <Image

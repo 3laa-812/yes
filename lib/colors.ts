@@ -86,6 +86,18 @@ export function deleteCustomColor(colorId: string): void {
 }
 
 /**
+ * Find color by name in DEFAULT_COLORS only (SSR-safe, no localStorage).
+ * Use this in components that must match server and client (e.g. ProductSelector).
+ */
+export function findColorByNameDefault(name: string): Color | undefined {
+  return DEFAULT_COLORS.find(
+    (c) => c.name_en.toLowerCase() === name.toLowerCase() ||
+           c.name_ar === name ||
+           c.value.toLowerCase() === name.toLowerCase()
+  );
+}
+
+/**
  * Find color by name (for backward compatibility with old string-based colors)
  */
 export function findColorByName(name: string): Color | undefined {
@@ -112,7 +124,8 @@ export function getColorDisplayName(color: string | Color, locale: "en" | "ar" =
 }
 
 /**
- * Get color value (hex) from color string or Color object
+ * Get color value (hex) from color string or Color object.
+ * SSR-safe: use getColorValueDefault in components that must match server/client.
  */
 export function getColorValue(color: string | Color): string {
   if (typeof color === "string") {
@@ -120,4 +133,29 @@ export function getColorValue(color: string | Color): string {
     return found?.value || color; // If it's already a hex, return it
   }
   return color.value;
+}
+
+/**
+ * Get color value using only DEFAULT_COLORS (no localStorage). Use in ProductSelector to avoid hydration mismatch.
+ */
+export function getColorValueDefault(color: string | Color): string {
+  if (typeof color === "string") {
+    const found = findColorByNameDefault(color);
+    return found?.value || color;
+  }
+  return color.value;
+}
+
+/**
+ * Get display name using only DEFAULT_COLORS (no localStorage). Use in ProductSelector to avoid hydration mismatch.
+ */
+export function getColorDisplayNameDefault(color: string | Color, locale: "en" | "ar" = "en"): string {
+  if (typeof color === "string") {
+    const found = findColorByNameDefault(color);
+    if (found) {
+      return locale === "ar" ? found.name_ar : found.name_en;
+    }
+    return color;
+  }
+  return locale === "ar" ? color.name_ar : color.name_en;
 }

@@ -1,17 +1,50 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Cairo } from "next/font/google";
 import "../globals.css";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
+import { getSiteUrl, localizedUrl } from "@/lib/seo";
 
 const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 const cairo = Cairo({ subsets: ["arabic"] });
 
-export const metadata: Metadata = {
-  title: "YES",
-  description: "For Men's Wear",
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const messages = (await import(`@/messages/${locale}.json`)).default;
+  const meta = messages.Metadata as { title: string; description: string };
+
+  const title = meta?.title ?? "YES";
+  const description = meta?.description ?? "For Men's Wear";
+  const pathname = "";
+
+  return {
+    metadataBase: new URL(getSiteUrl()),
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: localizedUrl(locale as any, pathname),
+      siteName: "YES",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default async function RootLayout({

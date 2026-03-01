@@ -2,19 +2,28 @@ import { auth } from "@/auth";
 import db from "@/lib/db";
 import { Role } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { ActivityLogTable } from "./_components/ActivityLogTable";
 import { Metadata } from "next";
 import { AdminShell } from "../_components/AdminShell";
 
-export const metadata: Metadata = {
-  title: "Activity Logs",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Admin.Activity" });
+  return { title: t("activityLogs") };
+}
 
 export default async function ActivityPage({
   params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+  const t = await getTranslations("Admin.Activity");
   const session = await auth();
 
   if (!session?.user || session.user.role !== Role.OWNER) {
@@ -38,10 +47,10 @@ export default async function ActivityPage({
   });
 
   return (
-    <AdminShell locale={params.locale} titleKey="activity">
+    <AdminShell locale={locale} titleKey="activity">
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight">Activity Logs</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t("activityLogs")}</h1>
         </div>
         <ActivityLogTable logs={logs} />
       </div>

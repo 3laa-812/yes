@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/routing";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,16 @@ async function getOrders() {
     take: 20,
   });
 }
+
+export const metadata: Metadata = {
+  title: "Recent Orders | YES",
+  description:
+    "Internal recent orders overview. This page is not intended to be indexed by search engines.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function OrdersPage() {
   const orders = await getOrders();

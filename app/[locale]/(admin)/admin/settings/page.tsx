@@ -1,20 +1,29 @@
 import { ChangePasswordForm } from "./_components/ChangePasswordForm";
+import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import { AdminShell } from "../_components/AdminShell";
 
-export const metadata: Metadata = {
-  title: "Settings",
-};
-
-export default function SettingsPage({
+export async function generateMetadata({
   params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Admin.Settings" });
+  return { title: t("pageTitle") };
+}
+
+export default async function SettingsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+  const t = await getTranslations("Admin.Settings");
   return (
-    <AdminShell locale={params.locale} titleKey="settings">
+    <AdminShell locale={locale} titleKey="settings">
       <div className="flex flex-col gap-6">
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("pageTitle")}</h1>
 
         <div className="max-w-2xl">
           <ChangePasswordForm />

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -36,6 +36,7 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
   const { id } = await params;
   const order = await getOrder(id);
   const locale = await getLocale();
+  const t = await getTranslations("Admin.Orders");
 
   if (!order) notFound();
 
@@ -47,7 +48,7 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
             <ArrowLeft className="h-4 w-4" />
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold">Order #{order.id}</h1>
+        <h1 className="text-2xl font-bold">{t("orderNumber", { id: order.id })}</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -55,7 +56,7 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
         <div className="md:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Order Items</CardTitle>
+              <CardTitle>{t("orderItems")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -93,7 +94,7 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
                   </div>
                 ))}
                 <div className="flex justify-between pt-4 font-bold text-lg border-t mt-4">
-                  <span>Total</span>
+                  <span>{t("total")}</span>
                   <span>{formatCurrency(Number(order.total), locale)}</span>
                 </div>
               </div>
@@ -102,21 +103,21 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
 
           <Card>
             <CardHeader>
-              <CardTitle>Shipping Info</CardTitle>
+              <CardTitle>{t("shippingInfo")}</CardTitle>
             </CardHeader>
             <CardContent>
               {order.shippingAddress ? (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">Name</p>
+                    <p className="text-sm text-gray-500">{t("name")}</p>
                     <p className="font-medium">{order.shippingAddress.name}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Phone</p>
+                    <p className="text-sm text-gray-500">{t("phone")}</p>
                     <p className="font-medium">{order.shippingAddress.phone}</p>
                   </div>
                   <div className="col-span-2">
-                    <p className="text-sm text-gray-500">Address</p>
+                    <p className="text-sm text-gray-500">{t("address")}</p>
                     <p className="font-medium">
                       {order.shippingAddress.street},{" "}
                       {order.shippingAddress.city}
@@ -124,7 +125,7 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
                   </div>
                 </div>
               ) : (
-                <p>No shipping info</p>
+                <p>{t("noShippingInfo")}</p>
               )}
             </CardContent>
           </Card>
@@ -134,11 +135,11 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Order Status</CardTitle>
+              <CardTitle>{t("orderStatus")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Current Status</span>
+                <span className="text-sm text-gray-500">{t("currentStatus")}</span>
                 <Badge>{order.status}</Badge>
               </div>
 
@@ -146,18 +147,18 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
                 <input type="hidden" name="orderId" value={order.id} />
                 <Select name="status" defaultValue={order.status}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Status" />
+                    <SelectValue placeholder={t("selectStatus")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="PENDING">Pending</SelectItem>
-                    <SelectItem value="CONFIRMED">Confirmed</SelectItem>
-                    <SelectItem value="SHIPPED">Shipped</SelectItem>
-                    <SelectItem value="DELIVERED">Delivered</SelectItem>
-                    <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                    <SelectItem value="PENDING">{t("PENDING")}</SelectItem>
+                    <SelectItem value="CONFIRMED">{t("CONFIRMED")}</SelectItem>
+                    <SelectItem value="SHIPPED">{t("SHIPPED")}</SelectItem>
+                    <SelectItem value="DELIVERED">{t("DELIVERED")}</SelectItem>
+                    <SelectItem value="CANCELLED">{t("CANCELLED")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <Button type="submit" className="w-full">
-                  Update Status
+                  {t("updateStatus")}
                 </Button>
               </form>
             </CardContent>
@@ -165,15 +166,15 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
 
           <Card>
             <CardHeader>
-              <CardTitle>Payment Info</CardTitle>
+              <CardTitle>{t("paymentInfo")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Method</span>
+                <span className="text-sm text-gray-500">{t("method")}</span>
                 <span className="font-medium">{order.paymentMethod}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Status</span>
+                <span className="text-sm text-gray-500">{t("status")}</span>
                 <Badge
                   variant={
                     order.paymentStatus === "PAID" ? "default" : "destructive"

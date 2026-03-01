@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   DndContext,
   closestCenter,
@@ -141,6 +142,7 @@ function SortableCategoryRow({
 
 export function CategoryList({ initialCategories }: CategoryListProps) {
   const [categories, setCategories] = useState(initialCategories);
+  const t = useTranslations("Admin.Categories");
   // We only support reordering top-level categories for now to keep it simple,
   // or we need nested SortableContexts.
   // As per requirement "Reorder categories visually", usually implies top level.
@@ -173,7 +175,7 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
         // Call server action (fire and forget or await)
         import("@/app/actions").then((mod) => {
           mod.updateCategoryOrder(updates).catch((err) => {
-            toast.error("Failed to save order");
+            toast.error(t("orderSaveFailed"));
             // Revert?
           });
         });
@@ -194,11 +196,11 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]"></TableHead>
-              <TableHead className="w-[100px]">Image</TableHead>
-              <TableHead>rub</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>Products</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-[100px]">{t("imageCol")}</TableHead>
+              <TableHead>{t("nameCol")}</TableHead>
+              <TableHead>{t("slugCol")}</TableHead>
+              <TableHead>{t("productsCol")}</TableHead>
+              <TableHead className="text-right">{t("actionsCol")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -233,7 +235,7 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
                             />
                           ) : (
                             <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center text-[10px]">
-                              No
+                              {t("noImage")}
                             </div>
                           )}
                         </div>
