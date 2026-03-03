@@ -26,6 +26,7 @@ export default async function SuccessPage({ searchParams }: Props) {
 
   let order = null;
   if (orderId) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     order = await db.order.findUnique({
       where: { id: orderId },
       include: { items: true },

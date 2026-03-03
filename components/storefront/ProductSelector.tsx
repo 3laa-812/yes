@@ -22,6 +22,7 @@ interface ProductSelectorProps {
   category_ar: string;
   sizes: string[];
   colors: string[];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
   variants: any[]; // Using any to avoid importing prisma types client-side if complex, but ideally should be typed
   /** Pass from server to avoid hydration mismatch (useLocale() can differ on first paint) */
   locale?: "en" | "ar";

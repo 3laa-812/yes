@@ -20,6 +20,8 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
+  PENDING_VERIFICATION
+  REJECTED
 }
 
 enum PaymentStatus {
@@ -31,6 +33,9 @@ enum PaymentStatus {
 enum PaymentMethod {
   COD
   ONLINE
+  VODAFONE_CASH
+  MEEZA
+  BANK_TRANSFER
 }
 
 model Account {
@@ -193,8 +198,9 @@ model Payment {
   orderId       String
   order         Order         @relation(fields: [orderId], references: [id])
   amount        Decimal
-  provider      String        // e.g., "PAYMOB"
-  transactionId String?       // Paymob Transaction ID
+  provider      String        // e.g., "PAYMOB", "VODAFONE_CASH"
+  transactionId String?       // Paymob Transaction ID or manual Reference ID
+  proofUrl      String?       // URL of uploaded payment screenshot
   status        PaymentStatus @default(PENDING)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt

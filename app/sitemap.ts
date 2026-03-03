@@ -3,6 +3,7 @@ import db from "@/lib/db";
 import { getSiteUrl, localizedUrl } from "@/lib/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const baseUrl = getSiteUrl();
 
   const [products, categories] = await Promise.all([

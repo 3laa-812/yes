@@ -1,6 +1,5 @@
 import { Navbar } from "@/components/storefront/Navbar";
 import { Footer } from "@/components/storefront/Footer";
-import { FadeIn } from "@/components/ui/motion";
 import { auth } from "@/auth";
 import db from "@/lib/db";
 import { unstable_cache } from "next/cache";
@@ -30,7 +29,7 @@ export async function StorefrontShell({
     <div className="flex min-h-screen flex-col">
       <FacebookPixel />
       <Navbar user={session?.user} categories={categories} />
-      <FadeIn className="flex-1">{children}</FadeIn>
+      <main className="flex-1">{children}</main>
       <Footer />
     </div>
   );

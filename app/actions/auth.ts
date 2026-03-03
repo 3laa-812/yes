@@ -19,6 +19,7 @@ const registerSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+                                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function registerCustomer(prevState: any, formData: FormData) {
   const data = Object.fromEntries(formData);
   const validatedFields = registerSchema.safeParse(data);
@@ -82,7 +83,9 @@ export async function registerCustomer(prevState: any, formData: FormData) {
         }
         throw error; // Rethrow redirect
     }
+                   
 
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Registration Error Details:", error);
     

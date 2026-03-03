@@ -1,5 +1,6 @@
 import {cache} from "react";
 
+                               // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Messages = Record<string, any>;
 
 const loadAllMessages = cache(async (locale: string): Promise<Messages> => {

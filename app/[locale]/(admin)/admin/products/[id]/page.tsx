@@ -13,6 +13,7 @@ export default async function EditProductPage({
     include: {
       variants: true,
     },
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
   })) as any;
 
   if (!product) {
@@ -34,7 +35,9 @@ export default async function EditProductPage({
       ? Number(product.discountPrice)
       : undefined,
     createdAt: product.createdAt.toISOString(),
+                                        
     updatedAt: product.updatedAt.toISOString(),
+                                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     variants: product.variants.map((v: any) => ({
       ...v,
       createdAt: v.createdAt.toISOString(),

@@ -291,6 +291,7 @@ export function ImageGallery({ images, altPrefix }: ImageGalleryProps) {
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {images.map((image, idx) => {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const isActive = currentIndex === idx;
             return (
               <div

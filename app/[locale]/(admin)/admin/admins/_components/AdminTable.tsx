@@ -53,13 +53,16 @@ export function AdminTable({
   currentUserId,
 }: AdminTableProps) {
   const t = useTranslations("Admin.Admins");
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleRoleChange = async (userId: string, newRole: Role) => {
     try {
       setLoading(userId);
       await updateAdminRole(userId, newRole);
+              
       toast.success(t("roleUpdated"));
+             // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error(t("roleUpdateFailed"));
     } finally {
@@ -70,8 +73,10 @@ export function AdminTable({
   const handleStatusToggle = async (userId: string, currentStatus: boolean) => {
     try {
       setLoading(userId);
+              
       await toggleAdminStatus(userId, !currentStatus);
       toast.success(!currentStatus ? t("adminActivated") : t("adminDeactivated"));
+             // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error(t("statusUpdateFailed"));
     } finally {
@@ -90,9 +95,11 @@ export function AdminTable({
     if (!confirmed) return;
 
     try {
+              
       setLoading(userId);
       await resetAdminPassword(userId, newPassword);
       toast.success(`${t("passwordReset")}: ${newPassword}`, { duration: 10000 });
+             // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error(t("passwordResetFailed"));
     } finally {

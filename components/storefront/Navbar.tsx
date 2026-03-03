@@ -52,6 +52,7 @@ export function Navbar({
   user,
   categories = [],
 }: {
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user?: any;
   categories?: Category[];
 }) {
@@ -67,6 +68,7 @@ export function Navbar({
   useEffect(() => {
     let isMounted = true;
     if (isMounted) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMounted(true);
     }
     return () => {

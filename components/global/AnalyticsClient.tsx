@@ -10,6 +10,7 @@ export function AnalyticsClient() {
   useEffect(() => {
     let isMounted = true;
     if (process.env.NODE_ENV === "production" && isMounted) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEnabled(true);
     }
     return () => {

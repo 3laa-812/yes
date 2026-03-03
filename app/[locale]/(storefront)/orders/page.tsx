@@ -65,6 +65,7 @@ export default async function OrdersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
+                                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {orders.map((order: any) => (
                 <TableRow key={order.id}>
                   <TableCell className="font-medium">

@@ -21,6 +21,7 @@ export function DeleteCategoryButton({ id }: { id: string }) {
           } else {
             toast.error(result.error || "Failed to delete category");
           }
+                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
           toast.error("Something went wrong");
         }

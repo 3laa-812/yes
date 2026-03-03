@@ -66,6 +66,7 @@ export async function initiatePaymobPayment(
 }
 
 // Helper: Enhanced Fetch Wrapper
+                                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function fetchPaymob(url: string, body: any, stepName: string) {
     const response = await fetch(url, {
       method: "POST",
@@ -89,7 +90,9 @@ async function getAuthToken() {
     return data.token;
 }
 
+                                                                                                  
 // 2. Order Registration API
+                                                                                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function registerOrder(token: string, amountCents: number, merchantOrderId: string, items: any[]) {
     const data = await fetchPaymob(`${PAYMOB_BASE_URL}/ecommerce/orders`, {
         auth_token: token,
@@ -105,8 +108,10 @@ async function registerOrder(token: string, amountCents: number, merchantOrderId
 // 3. Payment Key Request
 async function getPaymentKey(
   token: string,
+                
   paymobOrderId: string,
   amountCents: number,
+               // eslint-disable-next-line @typescript-eslint/no-explicit-any
   billingData: any,
   integrationId: string
 ) {

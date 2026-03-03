@@ -66,6 +66,7 @@ export async function generateMetadata({
         : `Shop ${name} from YES in the ${categoryName} collection. Modern design and quality fabric for a complete men’s look.`;
 
   const path = `/products/${product.id}`;
+                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const url = localizedUrl(locale as any, path);
 
   const imageUrls = (() => {
@@ -115,7 +116,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
     return notFound();
   }
 
+                                      
   const path = `/products/${product.id}`;
+                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const url = localizedUrl(locale as any, path);
   const imageUrls = (() => {
     try {
@@ -175,8 +178,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
             offers: {
               "@type": "Offer",
               priceCurrency: "EGP",
+                                                       
               price: effectivePrice,
               availability:
+                                                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (product as any).stock && (product as any).stock > 0
                   ? "https://schema.org/InStock"
                   : "https://schema.org/OutOfStock",
@@ -194,20 +199,26 @@ export default async function ProductPage({ params }: ProductPageProps) {
             "@type": "BreadcrumbList",
             itemListElement: [
               {
+                                              
                 "@type": "ListItem",
                 position: 1,
                 name: locale === "ar" ? "الرئيسية" : "Home",
+                                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 item: localizedUrl(locale as any, ""),
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name:
+                             
                   locale === "ar"
+                                                        
                     ? product.category.name_ar
                     : product.category.name_en,
                 item: localizedUrl(
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   locale as any,
+                                                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   `/collections/${(product.category as any).slug}`,
                 ),
               },

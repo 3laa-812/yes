@@ -2,6 +2,7 @@
 
 import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/routing";
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ChangeEvent, useTransition } from "react";
 import { Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";

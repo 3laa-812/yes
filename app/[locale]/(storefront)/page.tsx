@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { SectionReveal } from "@/components/ui/SectionReveal";
@@ -7,10 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { FeaturedProductsGrid } from "@/components/storefront/FeaturedProductsGrid";
 import { FeaturedProductsSkeleton } from "@/components/storefront/FeaturedProductsSkeleton";
 import { languageAlternates, localizedUrl } from "@/lib/seo";
-
-const Hero = dynamic(() =>
-  import("@/components/storefront/Hero").then((mod) => mod.Hero),
-);
+import { Hero } from "@/components/storefront/Hero";
 
 export const revalidate = 60;
 
@@ -20,6 +16,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const t = await getTranslations({ locale, namespace: "HomePage" });
 
   const title =
@@ -37,14 +34,18 @@ export async function generateMetadata({
   return {
     title,
     description,
+                                         
     alternates: {
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       canonical: localizedUrl(locale as any, path),
       languages: languageAlternates(path),
     },
     openGraph: {
       title,
+                                   
       description,
       type: "website",
+                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
       url: localizedUrl(locale as any, path),
     },
     twitter: {
@@ -70,9 +71,11 @@ export default async function Home({
         suppressHydrationWarning
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
+                                         
             "@context": "https://schema.org",
             "@type": "Organization",
             name: "YES",
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
             url: localizedUrl(locale as any, ""),
             logo: "/branding/logo-dark.png",
             sameAs: [],

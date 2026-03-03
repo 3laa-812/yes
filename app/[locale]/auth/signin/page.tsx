@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { FadeIn } from "@/components/ui/motion";
 import { useTranslations } from "next-intl";
 
 export default function SignInPage() {
@@ -32,7 +31,6 @@ export default function SignInPage() {
     setLoading(false);
 
     if (result?.error) {
-      // Let global error handling or UI patterns show error if desired
       return;
     }
 
@@ -42,7 +40,7 @@ export default function SignInPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <FadeIn className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-lg ring-1 ring-gray-900/5">
+      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-lg ring-1 ring-gray-900/5">
         <div className="text-center">
           <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-900">
             {t("adminAccess")}
@@ -100,7 +98,7 @@ export default function SignInPage() {
             <p>{t("defaultPassword")}</p>
           </div>
         </form>
-      </FadeIn>
+      </div>
     </div>
   );
 }

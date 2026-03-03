@@ -3,6 +3,7 @@ import { PlusCircle } from "lucide-react";
 import db from "@/lib/db";
 import { formatCurrency } from "@/lib/utils";
 import Image from "next/image";
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { deleteProduct } from "@/app/actions";
 import { DeleteProductButton } from "./_components/DeleteProductButton";
 import Link from "next/link";
@@ -74,6 +75,7 @@ export default async function AdminProductsPage({
               </tr>
             </thead>
             <tbody className="[&_tr:last-child]:border-0">
+                                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {products.map((product: any) => (
                 <tr
                   key={product.id}

@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useState, useEffect } from "react";
+import { memo, useState } from "react";
 import { useCartStore, CartItem } from "@/lib/store";
 import { createOrder } from "@/app/actions";
 import { useRouter } from "@/i18n/routing";
@@ -18,13 +18,15 @@ import {
 import { Loader2, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { cn, formatCurrency } from "@/lib/utils";
+import { useTranslations, useLocale } from "next-intl";
+import { UploadDropzone } from "@/lib/uploadthing";
 
 interface CheckoutSummaryProps {
   items: CartItem[];
   total: number;
   t: ReturnType<typeof useTranslations<"Checkout">>;
+  locale: string;
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
 }
@@ -33,6 +35,7 @@ const CheckoutSummary = memo(function CheckoutSummary({
   items,
   total,
   t,
+  locale,
   isSubmitting,
   onSubmit,
 }: CheckoutSummaryProps) {
@@ -46,7 +49,7 @@ const CheckoutSummary = memo(function CheckoutSummary({
       </CardHeader>
       <CardContent>
         <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-          {items.map((item: any) => (
+          {items.map((item: CartItem) => (
             <div
               key={item.id}
               className="flex gap-4 py-2 border-b border-border last:border-0"
@@ -72,7 +75,7 @@ const CheckoutSummary = memo(function CheckoutSummary({
                     {t("qty")}: {item.quantity}
                   </span>
                   <span className="font-medium text-foreground">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    {formatCurrency(item.price * item.quantity, locale)}
                   </span>
                 </div>
               </div>
@@ -87,7 +90,7 @@ const CheckoutSummary = memo(function CheckoutSummary({
           </div>
           <div className="flex justify-between font-bold text-xl pt-2 border-t border-border mt-2 text-foreground">
             <span>{t("total")}</span>
-            <span>${total.toFixed(2)}</span>
+            <span>{formatCurrency(total, locale)}</span>
           </div>
         </div>
       </CardContent>
@@ -103,7 +106,7 @@ const CheckoutSummary = memo(function CheckoutSummary({
               {t("processing")}
             </>
           ) : (
-            `${t("completeOrder")} - $${total.toFixed(2)}`
+            `${t("completeOrder")} - ${formatCurrency(total, locale)}`
           )}
         </Button>
       </CardFooter>
@@ -113,7 +116,9 @@ const CheckoutSummary = memo(function CheckoutSummary({
 
 export default function CheckoutPage() {
   const t = useTranslations("Checkout");
+  const locale = useLocale();
   const router = useRouter();
+                           // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { items, getTotal, removeItem, clearCart } = useCartStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -127,16 +132,12 @@ export default function CheckoutPage() {
     city: "",
   });
 
-  const [paymentMethod, setPaymentMethod] = useState<"COD" | "ONLINE">("COD");
+  const [paymentMethod, setPaymentMethod] = useState<
+    "COD" | "ONLINE" | "VODAFONE_CASH" | "MEEZA" | "BANK_TRANSFER"
+  >("COD");
+  const [referenceId, setReferenceId] = useState("");
+  const [proofUrl, setProofUrl] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // Protect empty cart
-  useEffect(() => {
-    if (items.length === 0) {
-      // Allow viewing if just cleared? No, redirect.
-      // But maybe delay to avoid flash if hydration delayed
-    }
-  }, [items]);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -148,6 +149,14 @@ export default function CheckoutPage() {
       newErrors.phone = t("validation.phone");
     if (!formData.address) newErrors.address = t("validation.address");
     if (!formData.city) newErrors.city = t("validation.city");
+
+    if (["VODAFONE_CASH", "MEEZA", "BANK_TRANSFER"].includes(paymentMethod)) {
+      if (!proofUrl && !referenceId) {
+        newErrors.proof = t("validation.proofRequired");
+        toast.error(t("validation.proofRequired"));
+      }
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -178,6 +187,8 @@ export default function CheckoutPage() {
       const orderData = {
         ...formData,
         paymentMethod,
+        referenceId,
+        proofUrl,
         items: items.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
@@ -359,22 +370,124 @@ export default function CheckoutPage() {
                 </div>
 
                 <div
-                  onClick={() => setPaymentMethod("ONLINE")}
+                  onClick={() => setPaymentMethod("VODAFONE_CASH")}
                   className={cn(
                     "cursor-pointer border-2 rounded-lg p-4 flex flex-col items-center justify-center transition-all bg-card hover:bg-muted/50",
-                    paymentMethod === "ONLINE"
+                    paymentMethod === "VODAFONE_CASH"
                       ? "border-primary bg-muted"
                       : "border-border hover:border-primary/50",
                   )}
                 >
                   <span className="font-bold text-lg text-center text-foreground">
-                    {t("online")}
+                    {t("vodafoneCash")}
                   </span>
                   <span className="text-sm text-muted-foreground text-center">
-                    {t("onlineDesc")}
+                    {t("vodafoneCashDesc")}
+                  </span>
+                </div>
+
+                <div
+                  onClick={() => setPaymentMethod("MEEZA")}
+                  className={cn(
+                    "cursor-pointer border-2 rounded-lg p-4 flex flex-col items-center justify-center transition-all bg-card hover:bg-muted/50",
+                    paymentMethod === "MEEZA"
+                      ? "border-primary bg-muted"
+                      : "border-border hover:border-primary/50",
+                  )}
+                >
+                  <span className="font-bold text-lg text-center text-foreground">
+                    {t("meeza")}
+                  </span>
+                  <span className="text-sm text-muted-foreground text-center">
+                    {t("meezaDesc")}
+                  </span>
+                </div>
+
+                <div
+                  onClick={() => setPaymentMethod("BANK_TRANSFER")}
+                  className={cn(
+                    "cursor-pointer border-2 rounded-lg p-4 flex flex-col items-center justify-center transition-all bg-card hover:bg-muted/50",
+                    paymentMethod === "BANK_TRANSFER"
+                      ? "border-primary bg-muted"
+                      : "border-border hover:border-primary/50",
+                  )}
+                >
+                  <span className="font-bold text-lg text-center text-foreground">
+                    {t("bankTransfer")}
+                  </span>
+                  <span className="text-sm text-muted-foreground text-center">
+                    {t("bankTransferDesc")}
                   </span>
                 </div>
               </div>
+
+              {["VODAFONE_CASH", "MEEZA", "BANK_TRANSFER"].includes(
+                paymentMethod,
+              ) && (
+                <div className="mt-6 p-4 border rounded-lg bg-muted/30">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {paymentMethod === "VODAFONE_CASH" &&
+                      t("vodafoneCashInstructions")}
+                    {paymentMethod === "MEEZA" && t("meezaInstructions")}
+                    {paymentMethod === "BANK_TRANSFER" &&
+                      t("bankTransferInstructions")}
+                  </p>
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>{t("uploadProof")}</Label>
+                      {proofUrl ? (
+                        <div className="relative h-32 w-full border rounded-lg overflow-hidden">
+                          <Image
+                            src={proofUrl}
+                            alt="Payment Proof"
+                            fill
+                            className="object-cover"
+                          />
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="absolute top-2 right-2"
+                            onClick={() => setProofUrl("")}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="border hover:border-primary/50 transition-colors rounded-lg overflow-hidden">
+                          <UploadDropzone
+                            endpoint="paymentProofUploader"
+                            config={{ mode: "auto" }}
+                            onClientUploadComplete={(res) => {
+                              if (res && res[0]) {
+                                setProofUrl(res[0].url);
+                                toast.success(t("messages.uploadedSuccessfully"));
+                              }
+                            }}
+                            onUploadError={(error: Error) => {
+                              toast.error(`Error: ${error.message}`);
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="referenceId">{t("referenceId")}</Label>
+                      <Input
+                        id="referenceId"
+                        name="referenceId"
+                        value={referenceId}
+                        onChange={(e) => setReferenceId(e.target.value)}
+                        placeholder="e.g. 1234567890"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-center text-muted-foreground mt-4 font-medium italic">
+                    {t("manualPaymentNote")}
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -385,6 +498,7 @@ export default function CheckoutPage() {
             items={items}
             total={getTotal()}
             t={t}
+            locale={locale}
             isSubmitting={isSubmitting}
             onSubmit={handleSubmit}
           />

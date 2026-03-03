@@ -8,7 +8,6 @@ export const authConfig = {
     callbacks: {
         async session({ session, token }) {
             if (token.role && session.user) {
-                // @ts-ignore
                 session.user.role = token.role as Role;
                 session.user.id = token.sub as string;
             }

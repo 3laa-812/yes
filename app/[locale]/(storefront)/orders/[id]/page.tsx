@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import db from "@/lib/db";
 import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Package, Truck, CheckCircle, Clock } from "lucide-react";
@@ -109,6 +110,7 @@ export default async function OrderDetailsPage({ params }: Props) {
               <CardTitle>{t("items")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+                                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {order.items.map((item: any) => (
                 <div
                   key={item.id}

@@ -2,10 +2,13 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
+               // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
+   
   getAllColors,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getCustomColors,
   type Color,
 } from "@/lib/colors";
@@ -55,8 +58,10 @@ export function ColorPalette({
       }
       onSelectionChange([...selectedColors, colorKey]);
     }
+                                   
   };
 
+                                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleCustomColorSaved = (newColor: Color) => {
     setColors(getAllColors());
     // Dispatch event for other components

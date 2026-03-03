@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { updateOrderStatus } from "@/app/[locale]/(admin)/actions";
+import {
+  updateOrderStatus,
+  managePayment,
+} from "@/app/[locale]/(admin)/actions";
 import { formatCurrency } from "@/lib/utils";
 import Image from "next/image";
 import {
@@ -28,6 +31,7 @@ async function getOrder(id: string) {
       items: { include: { product: true } },
       shippingAddress: true,
       user: true,
+      payments: { orderBy: { createdAt: "desc" } },
     },
   });
 }
@@ -48,7 +52,9 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
             <ArrowLeft className="h-4 w-4" />
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold">{t("orderNumber", { id: order.id })}</h1>
+        <h1 className="text-2xl font-bold">
+          {t("orderNumber", { id: order.id })}
+        </h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -60,6 +66,7 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {order.items.map((item: any) => (
                   <div
                     key={item.id}
@@ -139,7 +146,9 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">{t("currentStatus")}</span>
+                <span className="text-sm text-gray-500">
+                  {t("currentStatus")}
+                </span>
                 <Badge>{order.status}</Badge>
               </div>
 
@@ -151,9 +160,13 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="PENDING">{t("PENDING")}</SelectItem>
+                    <SelectItem value="PENDING_VERIFICATION">
+                      {t("PENDING_VERIFICATION")}
+                    </SelectItem>
                     <SelectItem value="CONFIRMED">{t("CONFIRMED")}</SelectItem>
                     <SelectItem value="SHIPPED">{t("SHIPPED")}</SelectItem>
                     <SelectItem value="DELIVERED">{t("DELIVERED")}</SelectItem>
+                    <SelectItem value="REJECTED">{t("REJECTED")}</SelectItem>
                     <SelectItem value="CANCELLED">{t("CANCELLED")}</SelectItem>
                   </SelectContent>
                 </Select>
@@ -183,7 +196,70 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
                   {order.paymentStatus}
                 </Badge>
               </div>
-              {/* Could add manual "Mark as Paid" button for COD here later */}
+
+              {["VODAFONE_CASH", "MEEZA", "BANK_TRANSFER"].includes(
+                order.paymentMethod,
+              ) && (
+                <div className="pt-4 border-t space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-500">
+                      {t("referenceId")}
+                    </span>
+                    <span className="font-medium">
+                      {order.payments?.[0]?.transactionId || "-"}
+                    </span>
+                  </div>
+                  {order.payments?.[0]?.proofUrl && (
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm text-gray-500">
+                        {t("paymentProof")}
+                      </span>
+                      <div className="relative h-40 w-full rounded-md overflow-hidden border">
+                        <a
+                          href={order.payments[0].proofUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <Image
+                            src={order.payments[0].proofUrl}
+                            alt={t("paymentProof")}
+                            fill
+                            className="object-contain"
+                          />
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  {order.status === "PENDING_VERIFICATION" && (
+                    <div className="flex flex-col gap-2 pt-2">
+                      <form
+                        action={managePayment.bind(null, order.id, "approve")}
+                        className="w-full"
+                      >
+                        <Button
+                          type="submit"
+                          className="w-full bg-green-600 hover:bg-green-700"
+                        >
+                          {t("approvePayment")}
+                        </Button>
+                      </form>
+                      <form
+                        action={managePayment.bind(null, order.id, "reject")}
+                        className="w-full"
+                      >
+                        <Button
+                          type="submit"
+                          variant="destructive"
+                          className="w-full"
+                        >
+                          {t("rejectPayment")}
+                        </Button>
+                      </form>
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

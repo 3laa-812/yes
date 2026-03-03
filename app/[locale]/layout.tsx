@@ -7,8 +7,17 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { getSiteUrl, localizedUrl } from "@/lib/seo";
 
-const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"] });
-const cairo = Cairo({ subsets: ["arabic"] });
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const cairo = Cairo({
+  subsets: ["arabic"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+});
 
 export async function generateMetadata({
   params,
@@ -31,6 +40,7 @@ export async function generateMetadata({
       title,
       description,
       type: "website",
+                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
       url: localizedUrl(locale as any, pathname),
       siteName: "YES",
     },
@@ -55,7 +65,9 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>;
 }>) {
   const { locale } = await params;
+                                           
 
+                                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (!routing.locales.includes(locale as any)) {
     notFound();
   }

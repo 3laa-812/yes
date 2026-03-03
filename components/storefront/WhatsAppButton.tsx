@@ -14,6 +14,7 @@ export function WhatsAppButton() {
   useEffect(() => {
     let isMounted = true;
     if (isMounted) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMounted(true);
     }
     return () => {

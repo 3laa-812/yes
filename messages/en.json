@@ -55,7 +55,8 @@
     "checkout": "Checkout",
     "continueShopping": "Continue Shopping",
     "remove": "Remove",
-    "closePanel": "Close panel"
+    "closePanel": "Close panel",
+    "or": "or"
   },
   "Checkout": {
     "title": "Checkout",
@@ -71,6 +72,18 @@
     "codDesc": "Pay when successful",
     "online": "Card / Wallet",
     "onlineDesc": "Pay securely online",
+    "vodafoneCash": "Vodafone Cash",
+    "vodafoneCashDesc": "Manual transfer",
+    "vodafoneCashInstructions": "Please transfer the total amount to Vodafone Cash number: 010xxxxxxxx. Upload the screenshot of the payment or enter the reference number below.",
+    "meeza": "Meeza / Bank Card",
+    "meezaDesc": "Manual card transfer",
+    "meezaInstructions": "Please transfer the total amount to Meeza card: xxxx-xxxx-xxxx-xxxx. Upload the screenshot of the payment or enter the reference number below.",
+    "bankTransfer": "Bank Transfer",
+    "bankTransferDesc": "Manual bank transfer",
+    "bankTransferInstructions": "Please transfer the total amount to our bank account. Upload the screenshot of the payment or enter the reference number below.",
+    "referenceId": "Reference Number",
+    "uploadProof": "Upload Payment Proof",
+    "manualPaymentNote": "The order will be confirmed after reviewing the payment.",
     "orderSummary": "Order Summary",
     "itemsInCart": "{count} items in cart",
     "shipping": "Shipping",
@@ -106,12 +119,14 @@
       "email": "Valid email is required",
       "phone": "Valid phone number is required",
       "address": "Address is required",
-      "city": "City is required"
+      "city": "City is required",
+      "proofRequired": "Please upload a payment proof or enter a reference number for manual payments."
     },
     "messages": {
       "success": "Order placed successfully!",
       "failed": "Failed to place order",
-      "error": "Something went wrong. Please try again."
+      "error": "Something went wrong. Please try again.",
+      "uploadedSuccessfully": "Uploaded successfully"
     }
   },
   "Storefront": {
@@ -193,6 +208,7 @@
     },
     "Status": {
       "PENDING": "Pending",
+      "PENDING_VERIFICATION": "Pending Verification",
       "PAYMENT_PENDING": "Payment Pending",
       "CONFIRMED": "Confirmed",
       "SHIPPED": "Shipped",
@@ -353,11 +369,17 @@
       "selectStatus": "Select Status",
       "updateStatus": "Update Status",
       "PENDING": "Pending",
+      "PENDING_VERIFICATION": "Pending Verification",
       "CONFIRMED": "Confirmed",
       "SHIPPED": "Shipped",
       "DELIVERED": "Delivered",
       "CANCELLED": "Cancelled",
-      "PAID": "Paid"
+      "REJECTED": "Rejected",
+      "PAID": "Paid",
+      "referenceId": "Reference ID",
+      "paymentProof": "Payment Proof",
+      "approvePayment": "Approve Payment",
+      "rejectPayment": "Reject Payment"
     },
     "Activity": {
       "activityLogs": "Activity Logs"

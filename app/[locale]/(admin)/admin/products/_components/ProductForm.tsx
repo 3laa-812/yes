@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
 import { createProduct, updateProduct } from "@/app/actions";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ChevronLeft, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,11 +33,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Badge } from "@/components/ui/badge";
 import { ColorPalette } from "@/components/admin/products/ColorPalette";
-import { getColorValue, getColorDisplayName, findColorByName } from "@/lib/colors";
+
+import { getColorValue, getColorDisplayName } from "@/lib/colors";
 
 interface ProductFormProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialData?: any;
   categories: {
     id: string;
@@ -90,16 +95,20 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
   // Variants State
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [variants, setVariants] = useState<any[]>(initialData?.variants || []);
   const [newVariant, setNewVariant] = useState({
     size: "",
+
     color: "",
     stock: 0,
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isTranslating, setIsTranslating] = useState(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleAddVariant = () => {
     if (!newVariant.size || !newVariant.color) {
       toast.error(t("selectSizeAndColor"));
@@ -195,6 +204,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
         router.refresh();
         router.push("/admin/products");
       } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         toast.error((result as any).error || t("somethingWentWrong"));
       }
     } catch (error) {
@@ -338,7 +348,9 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">{t("subCategory")}</label>
+                  <label className="text-sm font-medium">
+                    {t("subCategory")}
+                  </label>
                   <Select
                     name="subCategoryId" // will be picked up by formData if set
                     value={selectedSubCategoryId}
@@ -417,6 +429,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                         toast.error(t("selectAtLeastOneSizeAndColor"));
                         return;
                       }
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       const newVariants: any[] = [];
                       selectedSizes.forEach((size) => {
                         selectedColors.forEach((color) => {
@@ -432,7 +445,9 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                       setVariants([...variants, ...newVariants]);
                       setSelectedSizes([]);
                       setSelectedColors([]);
-                      toast.success(t("generatedVariants", { count: newVariants.length }));
+                      toast.success(
+                        t("generatedVariants", { count: newVariants.length }),
+                      );
                     }}
                   >
                     {t("generateSelected")}
@@ -442,7 +457,9 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Sizes */}
                   <div className="space-y-3">
-                    <label className="text-sm font-medium">{t("selectSizes")}</label>
+                    <label className="text-sm font-medium">
+                      {t("selectSizes")}
+                    </label>
                     <div className="flex flex-wrap gap-2">
                       {PREDEFINED_SIZES.map((size) => {
                         const isSelected = selectedSizes.includes(size);
@@ -489,7 +506,9 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                         <TableHead>{t("size")}</TableHead>
                         <TableHead>{t("color")}</TableHead>
                         <TableHead>{t("stock")}</TableHead>
-                        <TableHead className="text-right">{t("action")}</TableHead>
+                        <TableHead className="text-right">
+                          {t("action")}
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>

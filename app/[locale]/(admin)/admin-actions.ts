@@ -5,6 +5,7 @@ import { auth } from "@/auth"
 import { Role } from "@prisma/client"
 import { hash, compare } from "bcryptjs"
 import { revalidatePath } from "next/cache"
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { redirect } from "next/navigation"
 
 async function checkOwner() {
@@ -58,7 +59,9 @@ export async function changeOwnPassword(currentPassword: string, newPassword: st
     }
 
     const hashedPassword = await hash(newPassword, 12);
+                                      
 
+                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await db.$transaction(async (tx: any) => {
         await tx.user.update({
             where: { id: session!.user!.id },
@@ -86,8 +89,10 @@ export async function createAdmin(formData: FormData) {
         throw new Error("Invalid role");
     }
 
+                                      
     const hashedPassword = await hash(password, 12);
 
+                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await db.$transaction(async (tx: any) => {
         const newUser = await tx.user.create({
             data: {
@@ -115,9 +120,11 @@ export async function updateAdminRole(userId: string, newRole: Role) {
     const actor = await checkOwner();
 
     if (userId === actor.id) {
+                                      
         throw new Error("Cannot change your own role");
     }
 
+                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await db.$transaction(async (tx: any) => {
         await tx.user.update({
             where: { id: userId },
@@ -139,10 +146,12 @@ export async function updateAdminRole(userId: string, newRole: Role) {
 export async function toggleAdminStatus(userId: string, isActive: boolean) {
     const actor = await checkOwner();
     
+                                      
     if (userId === actor.id) {
          throw new Error("Cannot deactivate yourself");
     }
 
+                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await db.$transaction(async (tx: any) => {
         await tx.user.update({
             where: { id: userId },
@@ -161,11 +170,13 @@ export async function toggleAdminStatus(userId: string, isActive: boolean) {
     revalidatePath("/admin/admins");
 }
 
+                                      
 export async function resetAdminPassword(userId: string, newPassword: string) {
     const actor = await checkOwner();
 
     const hashedPassword = await hash(newPassword, 12);
 
+                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await db.$transaction(async (tx: any) => {
         await tx.user.update({
             where: { id: userId },

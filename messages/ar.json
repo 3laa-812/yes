@@ -55,7 +55,8 @@
     "checkout": "إتمام الشراء",
     "continueShopping": "متابعة التسوق",
     "remove": "إزالة",
-    "closePanel": "إغلاق اللوحة"
+    "closePanel": "إغلاق اللوحة",
+    "or": "أو"
   },
   "Checkout": {
     "title": "إتمام الشراء",
@@ -71,6 +72,18 @@
     "codDesc": "ادفع عند استلام الطلب",
     "online": "بطاقة / محفظة",
     "onlineDesc": "دفع آمن عبر الإنترنت",
+    "vodafoneCash": "فودافون كاش",
+    "vodafoneCashDesc": "تحويل يدوي",
+    "vodafoneCashInstructions": "يرجى تحويل القيمة الإجمالية إلى رقم فودافون كاش: 010xxxxxxxx. قم برفع صورة التحويل أو إدخال الرقم المرجعي بالأسفل.",
+    "meeza": "ميزة / بطاقة بنكية",
+    "meezaDesc": "تحويل بطاقة يدوي",
+    "meezaInstructions": "يرجى تحويل القيمة الإجمالية إلى بطاقة ميزة: xxxx-xxxx-xxxx-xxxx. قم برفع صورة التحويل أو إدخال الرقم المرجعي بالأسفل.",
+    "bankTransfer": "تحويل بنكي",
+    "bankTransferDesc": "تحويل بنكي يدوي",
+    "bankTransferInstructions": "يرجى تحويل القيمة الإجمالية إلى الحساب البنكي الخاص بنا. قم برفع صورة التحويل أو إدخال الرقم المرجعي بالأسفل.",
+    "referenceId": "الرقم المرجعي",
+    "uploadProof": "ارفع إثبات الدفع",
+    "manualPaymentNote": "سيتم تأكيد الطلب بعد مراجعة الدفع.",
     "orderSummary": "ملخص الطلب",
     "itemsInCart": "{count} منتجات في العربة",
     "shipping": "الشحن",
@@ -106,12 +119,14 @@
       "email": "البريد الإلكتروني مطلوب",
       "phone": "رقم الهاتف مطلوب",
       "address": "العنوان مطلوب",
-      "city": "المدينة مطلوبة"
+      "city": "المدينة مطلوبة",
+      "proofRequired": "يرجى رفع إثبات الدفع أو إدخال الرقم المرجعي للمدفوعات اليدوية."
     },
     "messages": {
       "success": "تم الطلب بنجاح!",
       "failed": "فشل في إتمام الطلب",
-      "error": "حدث خطأ ما. حاول مرة أخرى."
+      "error": "حدث خطأ ما. حاول مرة أخرى.",
+      "uploadedSuccessfully": "تم الرفع بنجاح"
     }
   },
   "Storefront": {
@@ -193,6 +208,7 @@
     },
     "Status": {
       "PENDING": "قيد الانتظار",
+      "PENDING_VERIFICATION": "بانتظار المراجعة",
       "PAYMENT_PENDING": "بانتظار الدفع",
       "CONFIRMED": "تم التأكيد",
       "SHIPPED": "تم الشحن",
@@ -353,11 +369,17 @@
       "selectStatus": "اختر الحالة",
       "updateStatus": "تحديث الحالة",
       "PENDING": "قيد الانتظار",
+      "PENDING_VERIFICATION": "بانتظار المراجعة",
       "CONFIRMED": "مؤكد",
       "SHIPPED": "تم الشحن",
       "DELIVERED": "تم التوصيل",
       "CANCELLED": "ملغى",
-      "PAID": "مدفوع"
+      "REJECTED": "مرفوض",
+      "PAID": "مدفوع",
+      "referenceId": "الرقم المرجعي",
+      "paymentProof": "إثبات الدفع",
+      "approvePayment": "الموافقة على الدفع",
+      "rejectPayment": "رفض الدفع"
     },
     "Activity": {
       "activityLogs": "سجلات النشاط"

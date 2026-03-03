@@ -14,4 +14,23 @@ export async function updateOrderStatus(formData: FormData) {
     });
     
     revalidatePath("/admin/orders");
+    revalidatePath(`/admin/orders/${orderId}`);
+}
+
+export async function managePayment(orderId: string, action: "approve" | "reject") {
+    const paymentStatus = action === "approve" ? "PAID" : "FAILED";
+    const orderStatus = action === "approve" ? "CONFIRMED" : "REJECTED";
+    
+    await db.payment.updateMany({
+        where: { orderId },
+        data: { status: paymentStatus }
+    });
+    
+    await db.order.update({
+        where: { id: orderId },
+        data: { status: orderStatus, paymentStatus: paymentStatus }
+    });
+    
+    revalidatePath("/admin/orders");
+    revalidatePath(`/admin/orders/${orderId}`);
 }

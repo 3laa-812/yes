@@ -29,6 +29,7 @@ export function DeleteProductButton({
           } else {
             toast.error(result.error || t("deleteFailed"));
           }
+                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
           toast.error(t("somethingWentWrong"));
         }

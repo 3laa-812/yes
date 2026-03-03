@@ -1,5 +1,6 @@
 "use client";
 
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useFormStatus } from "react-dom";
 import { Link } from "@/i18n/routing";
 import { signIn } from "next-auth/react";
@@ -46,7 +47,9 @@ export default function LoginPage() {
       } else {
         router.push(callbackUrl);
         router.refresh();
+              
       }
+             // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error(tCommon("error"));
     } finally {

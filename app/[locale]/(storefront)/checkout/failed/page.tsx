@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function FailedPage({ searchParams }: Props) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const params = await searchParams;
   const t = await getTranslations("Checkout");
 

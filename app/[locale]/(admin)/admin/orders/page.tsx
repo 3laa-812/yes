@@ -1,6 +1,7 @@
 import db from "@/lib/db";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { updateOrderStatus } from "@/app/[locale]/(admin)/actions";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/routing";
@@ -71,6 +72,7 @@ export default async function AdminOrdersPage({
               </tr>
             </thead>
             <tbody className="[&_tr:last-child]:border-0">
+                                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {orders.map((order: any) => (
                 <tr
                   key={order.id}

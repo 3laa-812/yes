@@ -29,6 +29,7 @@ export function ShoppingCartModal({
   useEffect(() => {
     let isMounted = true;
     if (isMounted) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMounted(true);
     }
     return () => {
@@ -83,8 +84,7 @@ export function ShoppingCartModal({
                             className="relative -m-2 p-2 text-muted-foreground hover:text-foreground transition-colors"
                             onClick={() => setIsOpen(false)}
                           >
-                            <span className="absolute -inset-0.5" />
-                            <span className="sr-only">Close panel</span>
+                            <span className="sr-only">{t("closePanel")}</span>
                             <X className="h-6 w-6" aria-hidden="true" />
                           </button>
                         </div>
@@ -134,6 +134,7 @@ export function ShoppingCartModal({
                                         <p>
                                           {formatPrice(
                                             item.price * item.quantity,
+                                            locale,
                                           )}
                                         </p>
                                         {item.originalPrice && (
@@ -141,6 +142,7 @@ export function ShoppingCartModal({
                                             {formatPrice(
                                               item.originalPrice *
                                                 item.quantity,
+                                              locale,
                                             )}
                                           </p>
                                         )}
@@ -212,7 +214,7 @@ export function ShoppingCartModal({
                       <div className="border-t border-border px-4 py-6 sm:px-6 bg-card">
                         <div className="flex justify-between text-base font-medium text-foreground">
                           <p>{t("subtotal")}</p>
-                          <p>{formatPrice(getTotal())}</p>
+                          <p>{formatPrice(getTotal(), locale)}</p>
                         </div>
                         <p className="mt-0.5 text-sm text-muted-foreground">
                           {t("shippingNote")}
@@ -227,7 +229,7 @@ export function ShoppingCartModal({
                         </div>
                         <div className="mt-6 flex justify-center text-center text-sm text-muted-foreground">
                           <p>
-                            or{" "}
+                            {t("or")}{" "}
                             <button
                               type="button"
                               className="font-medium text-primary hover:text-primary/80 transition-colors"

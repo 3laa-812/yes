@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+                                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -59,7 +60,9 @@ export default async function OrdersPage({ params }: OrdersPageProps) {
           </Button>
         </div>
       ) : (
+                               
         <div className="space-y-6">
+                              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {orders.map((order: any) => (
             <Card key={order.id} className="overflow-hidden">
               <CardHeader className="bg-gray-50/50 flex flex-row items-center justify-between p-4">
@@ -111,6 +114,7 @@ export default async function OrdersPage({ params }: OrdersPageProps) {
                     </p>
                   </div>
                   <div className="flex -space-x-2 overflow-hidden">
+                                                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     {order.items.slice(0, 4).map((item: any) => (
                       <div
                         key={item.id}

@@ -37,7 +37,10 @@ export function FacebookPixel() {
       return;
     }
 
+                           
+                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof (window as any).fbq === "function") {
+                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).fbq("track", "PageView");
     }
   }, [pathname, shouldLoad]);

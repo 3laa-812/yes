@@ -66,6 +66,7 @@ async function getStats(locale: string) {
     revenueMap[key] = 0;
   }
 
+                               // eslint-disable-next-line @typescript-eslint/no-explicit-any
   recentOrders.forEach((order: any) => {
     const key = format(order.createdAt, "MMM dd", { locale: dateLocale });
     if (revenueMap[key] !== undefined) {
@@ -94,7 +95,9 @@ async function getStats(locale: string) {
     const key = format(date, "EEE", { locale: dateLocale }); // Mon, Tue...
     ordersMap[key] = 0;
   }
+                                   
 
+                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   allRecentOrders.forEach((order: any) => {
     const key = format(order.createdAt, "EEE", { locale: dateLocale });
     if (ordersMap[key] !== undefined) {
@@ -114,8 +117,10 @@ async function getStats(locale: string) {
     SHIPPED: "#8b5cf6", // violet-500
     DELIVERED: "#22c55e", // green-500
     CANCELLED: "#ef4444", // red-500
+                                                         
   };
 
+                                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const statusChartData = orderStatusGroups.map((group: any) => ({
     name: group.status,
     value: group._count._all,

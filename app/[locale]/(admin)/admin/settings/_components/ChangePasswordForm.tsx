@@ -33,6 +33,7 @@ export function ChangePasswordForm() {
         "change-password-form",
       ) as HTMLFormElement;
       form?.reset();
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error.message || "Failed to change password");
     } finally {

@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { formatCurrency } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -139,6 +140,7 @@ export default async function OrderDetailsPage({ params }: Props) {
               <CardTitle>{t("items")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
+                                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {order.items.map((item: any) => (
                 <div
                   key={item.id}

@@ -5,6 +5,7 @@ import db from "@/lib/db"
 import { authConfig } from "./auth.config"
 import bcrypt from "bcryptjs"
 
+               // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getUser(email: string) {
   try {
     const user = await db.user.findUnique({

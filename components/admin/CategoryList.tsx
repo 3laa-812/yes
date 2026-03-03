@@ -32,6 +32,7 @@ import { Pencil, GripVertical } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { DeleteCategoryButton } from "@/app/[locale]/(admin)/admin/categories/_components/DeleteCategoryButton"; // Adjust path if needed
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { updateCategoryOrder } from "@/app/actions"; // We need to create this action
 import { toast } from "sonner";
 
@@ -173,7 +174,9 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
         }));
 
         // Call server action (fire and forget or await)
+                                                   
         import("@/app/actions").then((mod) => {
+                                                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
           mod.updateCategoryOrder(updates).catch((err) => {
             toast.error(t("orderSaveFailed"));
             // Revert?

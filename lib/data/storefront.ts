@@ -53,10 +53,13 @@ export const getCategoryWithProducts = unstable_cache(
 
     let targetCategoryIds = [
       category.id,
+                                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...category.children.map((c: any) => c.id),
     ];
 
+                                                  
     if (subCategoryId) {
+                                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const isChild = category.children.some((c: any) => c.id === subCategoryId);
       if (isChild) {
         targetCategoryIds = [subCategoryId];

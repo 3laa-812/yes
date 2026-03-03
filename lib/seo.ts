@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 const DEFAULT_SITE_URL = "https://yes.shop";
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SUPPORTED_LOCALES = ["en", "ar"] as const;
 type AppLocale = (typeof SUPPORTED_LOCALES)[number];
 

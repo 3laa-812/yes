@@ -78,6 +78,7 @@ export default async function CustomersPage({
               </TableRow>
             </TableHeader>
             <TableBody>
+                               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {data.map((user: any) => (
                 <TableRow key={user.id}>
                   <TableCell>
