@@ -15,7 +15,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, Trash2 } from "lucide-react";
+import {
+  Loader2,
+  Trash2,
+  Banknote,
+  Smartphone,
+  Zap,
+  CheckCircle2,
+  ShieldCheck,
+} from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -118,7 +126,7 @@ export default function CheckoutPage() {
   const t = useTranslations("Checkout");
   const locale = useLocale();
   const router = useRouter();
-                           // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { items, getTotal, removeItem, clearCart } = useCartStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -133,7 +141,7 @@ export default function CheckoutPage() {
   });
 
   const [paymentMethod, setPaymentMethod] = useState<
-    "COD" | "ONLINE" | "VODAFONE_CASH" | "MEEZA" | "BANK_TRANSFER"
+    "COD" | "ONLINE" | "VODAFONE_CASH" | "INSTAPAY"
   >("COD");
   const [referenceId, setReferenceId] = useState("");
   const [proofUrl, setProofUrl] = useState("");
@@ -150,7 +158,9 @@ export default function CheckoutPage() {
     if (!formData.address) newErrors.address = t("validation.address");
     if (!formData.city) newErrors.city = t("validation.city");
 
-    if (["VODAFONE_CASH", "MEEZA", "BANK_TRANSFER"].includes(paymentMethod)) {
+    if (
+      ["VODAFONE_CASH", "INSTAPAY", "BANK_TRANSFER"].includes(paymentMethod)
+    ) {
       if (!proofUrl && !referenceId) {
         newErrors.proof = t("validation.proofRequired");
         toast.error(t("validation.proofRequired"));
@@ -351,20 +361,40 @@ export default function CheckoutPage() {
               <CardTitle>{t("paymentMethod")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div
                   onClick={() => setPaymentMethod("COD")}
                   className={cn(
-                    "cursor-pointer border-2 rounded-lg p-4 flex flex-col items-center justify-center transition-all bg-card hover:bg-muted/50",
+                    "relative cursor-pointer rounded-xl p-5 flex flex-col items-center justify-center transition-all bg-card border-2 shadow-sm hover:shadow-md",
                     paymentMethod === "COD"
-                      ? "border-primary bg-muted"
-                      : "border-border hover:border-primary/50",
+                      ? "border-primary bg-primary/5 ring-1 ring-primary ring-offset-0"
+                      : "border-border hover:border-primary/40",
                   )}
                 >
-                  <span className="font-bold text-lg text-center text-foreground">
+                  {paymentMethod === "COD" && (
+                    <div className="absolute top-3 right-3 text-primary animate-in zoom-in-50 duration-200">
+                      <CheckCircle2 className="w-5 h-5" />
+                    </div>
+                  )}
+                  <div
+                    className={cn(
+                      "p-3 rounded-full mb-3",
+                      paymentMethod === "COD" ? "bg-primary/10" : "bg-muted",
+                    )}
+                  >
+                    <Banknote
+                      className={cn(
+                        "w-7 h-7",
+                        paymentMethod === "COD"
+                          ? "text-primary"
+                          : "text-muted-foreground",
+                      )}
+                    />
+                  </div>
+                  <span className="font-semibold text-base text-center text-foreground mb-1">
                     {t("cod")}
                   </span>
-                  <span className="text-sm text-muted-foreground text-center">
+                  <span className="text-xs text-muted-foreground text-center px-2">
                     {t("codDesc")}
                   </span>
                 </div>
@@ -372,65 +402,93 @@ export default function CheckoutPage() {
                 <div
                   onClick={() => setPaymentMethod("VODAFONE_CASH")}
                   className={cn(
-                    "cursor-pointer border-2 rounded-lg p-4 flex flex-col items-center justify-center transition-all bg-card hover:bg-muted/50",
+                    "relative cursor-pointer rounded-xl p-5 flex flex-col items-center justify-center transition-all bg-card border-2 shadow-sm hover:shadow-md group",
                     paymentMethod === "VODAFONE_CASH"
-                      ? "border-primary bg-muted"
-                      : "border-border hover:border-primary/50",
+                      ? "border-[#e60000] bg-[#e60000]/5 ring-1 ring-[#e60000] ring-offset-0"
+                      : "border-border hover:border-[#e60000]/40",
                   )}
                 >
-                  <span className="font-bold text-lg text-center text-foreground">
+                  {paymentMethod === "VODAFONE_CASH" && (
+                    <div className="absolute top-3 right-3 text-[#e60000] animate-in zoom-in-50 duration-200">
+                      <CheckCircle2 className="w-5 h-5" />
+                    </div>
+                  )}
+                  <div
+                    className={cn(
+                      "p-3 rounded-full mb-3 transition-colors",
+                      paymentMethod === "VODAFONE_CASH"
+                        ? "bg-[#e60000]/10"
+                        : "bg-muted group-hover:bg-[#e60000]/5",
+                    )}
+                  >
+                    <Smartphone
+                      className={cn(
+                        "w-7 h-7 transition-colors",
+                        paymentMethod === "VODAFONE_CASH"
+                          ? "text-[#e60000]"
+                          : "text-muted-foreground group-hover:text-[#e60000]",
+                      )}
+                    />
+                  </div>
+                  <span className="font-semibold text-base text-center text-foreground mb-1">
                     {t("vodafoneCash")}
                   </span>
-                  <span className="text-sm text-muted-foreground text-center">
+                  <span className="text-xs text-muted-foreground text-center px-2">
                     {t("vodafoneCashDesc")}
                   </span>
                 </div>
 
                 <div
-                  onClick={() => setPaymentMethod("MEEZA")}
+                  onClick={() => setPaymentMethod("INSTAPAY")}
                   className={cn(
-                    "cursor-pointer border-2 rounded-lg p-4 flex flex-col items-center justify-center transition-all bg-card hover:bg-muted/50",
-                    paymentMethod === "MEEZA"
-                      ? "border-primary bg-muted"
-                      : "border-border hover:border-primary/50",
+                    "relative cursor-pointer rounded-xl p-5 flex flex-col items-center justify-center transition-all bg-card border-2 shadow-sm hover:shadow-md group",
+                    paymentMethod === "INSTAPAY"
+                      ? "border-[#6A0DAD] bg-[#6A0DAD]/5 ring-1 ring-[#6A0DAD] ring-offset-0"
+                      : "border-border hover:border-[#6A0DAD]/40",
                   )}
                 >
-                  <span className="font-bold text-lg text-center text-foreground">
-                    {t("meeza")}
-                  </span>
-                  <span className="text-sm text-muted-foreground text-center">
-                    {t("meezaDesc")}
-                  </span>
-                </div>
-
-                <div
-                  onClick={() => setPaymentMethod("BANK_TRANSFER")}
-                  className={cn(
-                    "cursor-pointer border-2 rounded-lg p-4 flex flex-col items-center justify-center transition-all bg-card hover:bg-muted/50",
-                    paymentMethod === "BANK_TRANSFER"
-                      ? "border-primary bg-muted"
-                      : "border-border hover:border-primary/50",
+                  {paymentMethod === "INSTAPAY" && (
+                    <div className="absolute top-3 right-3 text-[#6A0DAD] animate-in zoom-in-50 duration-200">
+                      <CheckCircle2 className="w-5 h-5" />
+                    </div>
                   )}
-                >
-                  <span className="font-bold text-lg text-center text-foreground">
-                    {t("bankTransfer")}
+                  <div
+                    className={cn(
+                      "p-3 rounded-full mb-3 transition-colors",
+                      paymentMethod === "INSTAPAY"
+                        ? "bg-[#6A0DAD]/10"
+                        : "bg-muted group-hover:bg-[#6A0DAD]/5",
+                    )}
+                  >
+                    <Zap
+                      className={cn(
+                        "w-7 h-7 transition-colors",
+                        paymentMethod === "INSTAPAY"
+                          ? "text-[#6A0DAD]"
+                          : "text-muted-foreground group-hover:text-[#6A0DAD]",
+                      )}
+                    />
+                  </div>
+                  <span className="font-semibold text-base text-center text-foreground mb-1">
+                    {t("instapay")}
                   </span>
-                  <span className="text-sm text-muted-foreground text-center">
-                    {t("bankTransferDesc")}
+                  <span className="text-xs text-muted-foreground text-center px-2">
+                    {t("instapayDesc")}
                   </span>
                 </div>
               </div>
 
-              {["VODAFONE_CASH", "MEEZA", "BANK_TRANSFER"].includes(
-                paymentMethod,
-              ) && (
+              <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground bg-muted/30 py-3 px-4 rounded-lg border border-border/50">
+                <ShieldCheck className="w-4 h-4 text-green-600" />
+                <span>{t("securePayment")}</span>
+              </div>
+
+              {["VODAFONE_CASH", "INSTAPAY"].includes(paymentMethod) && (
                 <div className="mt-6 p-4 border rounded-lg bg-muted/30">
                   <p className="text-sm text-muted-foreground mb-4">
                     {paymentMethod === "VODAFONE_CASH" &&
                       t("vodafoneCashInstructions")}
-                    {paymentMethod === "MEEZA" && t("meezaInstructions")}
-                    {paymentMethod === "BANK_TRANSFER" &&
-                      t("bankTransferInstructions")}
+                    {paymentMethod === "INSTAPAY" && t("instapayInstructions")}
                   </p>
 
                   <div className="space-y-4">
@@ -461,7 +519,9 @@ export default function CheckoutPage() {
                             onClientUploadComplete={(res) => {
                               if (res && res[0]) {
                                 setProofUrl(res[0].url);
-                                toast.success(t("messages.uploadedSuccessfully"));
+                                toast.success(
+                                  t("messages.uploadedSuccessfully"),
+                                );
                               }
                             }}
                             onUploadError={(error: Error) => {

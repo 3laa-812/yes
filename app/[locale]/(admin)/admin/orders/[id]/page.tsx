@@ -197,9 +197,7 @@ export default async function AdminOrderDetailsPage({ params }: Props) {
                 </Badge>
               </div>
 
-              {["VODAFONE_CASH", "MEEZA", "BANK_TRANSFER"].includes(
-                order.paymentMethod,
-              ) && (
+              {["VODAFONE_CASH", "INSTAPAY"].includes(order.paymentMethod) && (
                 <div className="pt-4 border-t space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-500">

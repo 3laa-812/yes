@@ -26,7 +26,7 @@ const orderSchema = z.object({
   phone: z.string().min(10),
   address: z.string().min(1),
   city: z.string().min(1),
-  paymentMethod: z.enum(["COD", "ONLINE", "VODAFONE_CASH", "MEEZA", "BANK_TRANSFER"]),
+  paymentMethod: z.enum(["COD", "ONLINE", "VODAFONE_CASH", "INSTAPAY"]),
   referenceId: z.string().optional(),
   proofUrl: z.string().optional(),
   items: z.array(z.object({
@@ -263,7 +263,7 @@ export async function createOrder(data: any) {
   const { firstName, lastName, email, phone, address, city, paymentMethod, referenceId, proofUrl, items } = validatedFields.data;
 
   // Extra safety: manual payment methods must include either a proof image or a reference
-  if (["VODAFONE_CASH", "MEEZA", "BANK_TRANSFER"].includes(paymentMethod)) {
+  if (["VODAFONE_CASH", "INSTAPAY"].includes(paymentMethod)) {
     if (!proofUrl && !referenceId) {
       console.error("Manual payment missing proof or reference", {
         paymentMethod,
@@ -404,7 +404,7 @@ export async function createOrder(data: any) {
               data: {
                   userId,
                   total: total,
-                  status: ["VODAFONE_CASH", "MEEZA", "BANK_TRANSFER"].includes(paymentMethod) ? "PENDING_VERIFICATION" : "PENDING",
+                  status: ["VODAFONE_CASH", "INSTAPAY"].includes(paymentMethod) ? "PENDING_VERIFICATION" : "PENDING",
                   paymentMethod: paymentMethod,
                   paymentStatus: "PENDING",
                   addressId: newAddress.id,
@@ -432,7 +432,7 @@ export async function createOrder(data: any) {
 
   if (paymentMethod === "COD") {
       return { success: true, orderId: order.id, redirectUrl: `/checkout/success?orderId=${order.id}` };
-  } else if (["VODAFONE_CASH", "MEEZA", "BANK_TRANSFER"].includes(paymentMethod)) {
+  } else if (["VODAFONE_CASH", "INSTAPAY"].includes(paymentMethod)) {
       // Create manual payment record
       const payment = await db.payment.create({
         data: {
