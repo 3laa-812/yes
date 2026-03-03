@@ -7,10 +7,32 @@ import { FacebookPixel } from "@/components/FacebookPixel";
 
 const getCategories = unstable_cache(
   async () => {
-    return await db.category.findMany({
+    const categories = await db.category.findMany({
       where: { parentId: null },
-      include: { children: { orderBy: { displayOrder: "asc" } } },
+      include: {
+        children: {
+          orderBy: { displayOrder: "asc" },
+          include: {
+            _count: { select: { products: true } },
+          },
+        },
+        _count: { select: { products: true } },
+      },
       orderBy: { displayOrder: "asc" },
+    });
+
+    return categories.filter((category) => {
+      const activeChildren = category.children.filter(
+        (child) => child._count.products > 0,
+      );
+      const hasProducts =
+        category._count.products > 0 || activeChildren.length > 0;
+
+      if (hasProducts) {
+        category.children = activeChildren;
+        return true;
+      }
+      return false;
     });
   },
   ["storefront-categories"],
@@ -34,4 +56,3 @@ export async function StorefrontShell({
     </div>
   );
 }
-

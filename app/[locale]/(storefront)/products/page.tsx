@@ -4,6 +4,7 @@ import { Link } from "@/i18n/routing";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { getAllProducts, getCategories } from "@/lib/data/storefront";
+import { CategoryFilter } from "@/components/storefront/CategoryFilter";
 import { languageAlternates, localizedUrl } from "@/lib/seo";
 
 export const revalidate = 60;
@@ -31,16 +32,16 @@ export async function generateMetadata({
     title,
     description,
     alternates: {
-                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       canonical: localizedUrl(locale as any, path),
       languages: languageAlternates(path),
     },
     openGraph: {
       title,
       description,
-                                   
+
       type: "website",
-                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       url: localizedUrl(locale as any, path),
     },
     twitter: {
@@ -74,28 +75,16 @@ export default async function ProductsPage({
         </div>
 
         {/* Category Pills */}
-        <div className="mt-6 flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          <Button variant="default" size="sm" asChild className="rounded-full">
-            <Link href="/products">{t("all")}</Link>
-          </Button>
-                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          {categories.map((cat: any) => (
-            <Button
-              key={cat.id}
-              variant="outline"
-              size="sm"
-              asChild
-              className="rounded-full"
-            >
-              <Link href={`/collections/${cat.slug}`}>
-                {locale === "ar" ? cat.name_ar : cat.name_en}
-              </Link>
-            </Button>
-          ))}
+        <div className="mt-6">
+          <CategoryFilter
+            categories={categories as any}
+            locale={locale}
+            allLabel={t("all")}
+          />
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
-                                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {products.map((product: any) => (
             <ProductCard
               key={product.id}

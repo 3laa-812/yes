@@ -141,7 +141,8 @@
       "noProductsFound": "No products found",
       "productsCount": "{count} Products",
       "tryClearingFilters": "Try clearing the filters or check back later.",
-      "clearFilters": "Clear Filters"
+      "clearFilters": "Clear Filters",
+      "backToProducts": "Back to Products"
     },
     "Orders": {
       "title": "My Orders",
@@ -213,7 +214,8 @@
       "CONFIRMED": "Confirmed",
       "SHIPPED": "Shipped",
       "DELIVERED": "Delivered",
-      "CANCELLED": "Cancelled"
+      "CANCELLED": "Cancelled",
+      "REJECTED": "Rejected"
     }
   },
   "Admin": {

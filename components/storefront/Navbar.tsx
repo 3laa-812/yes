@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { ShoppingBag, User, Menu, Package } from "lucide-react"; // Added Package icon
+import { ShoppingBag, User, Menu, Package, ChevronDown } from "lucide-react"; // Added Package icon
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,8 @@ import { useCartStore } from "@/lib/store";
 import { useState, useEffect } from "react";
 import LanguageSwitcher from "@/components/global/LanguageSwitcher";
 import { useTranslations, useLocale } from "next-intl";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 import {
   Sheet,
@@ -52,16 +54,26 @@ export function Navbar({
   user,
   categories = [],
 }: {
-         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user?: any;
   categories?: Category[];
 }) {
   const t = useTranslations("Navbar");
   const tCommon = useTranslations("Common");
   const locale = useLocale();
+  const pathname = usePathname();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openMobileCategoryId, setOpenMobileCategoryId] = useState<
+    string | null
+  >(null);
   const cartItems = useCartStore((state) => state.items);
+
+  // Handle route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setOpenMobileCategoryId(null);
+  }, [pathname]);
 
   // Handle hydration mismatch
   const [mounted, setMounted] = useState(false);
@@ -155,34 +167,72 @@ export function Navbar({
                       className="object-contain object-left"
                     />
                   </Link>
-                  <div className="flex flex-col gap-6">
-                    {allLinks.map((link) => (
-                      <div key={link.href} className="flex flex-col gap-2">
-                        <Link
-                          href={link.href}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="text-xl font-medium text-foreground/80 hover:text-primary transition-colors hover:translate-x-2 duration-200"
+                  <div className="flex flex-col gap-2">
+                    {allLinks.map((link) => {
+                      const hasChildren =
+                        link.subCategories && link.subCategories.length > 0;
+                      const isOpen = openMobileCategoryId === link.categorySlug;
+
+                      return (
+                        <div
+                          key={link.href}
+                          className="flex flex-col border-b border-border/40 last:border-0 pb-2"
                         >
-                          {link.label}
-                        </Link>
-                        {/* Mobile Subcategories */}
-                        {link.subCategories &&
-                          link.subCategories.length > 0 && (
-                            <div className="pl-4 flex flex-col gap-2 border-l-2 border-muted ml-2">
-                              {link.subCategories.map((sub) => (
-                                <Link
-                                  key={sub.id}
-                                  href={`/collections/${link.categorySlug}?subCategoryId=${sub.id}`}
-                                  onClick={() => setIsMobileMenuOpen(false)}
-                                  className="text-base text-muted-foreground hover:text-foreground transition-colors"
-                                >
-                                  {sub.name}
-                                </Link>
-                              ))}
-                            </div>
-                          )}
-                      </div>
-                    ))}
+                          <div className="flex items-center justify-between">
+                            <Link
+                              href={link.href}
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className="text-lg font-medium text-foreground/90 hover:text-primary transition-colors py-2 flex-1"
+                            >
+                              {link.label}
+                            </Link>
+                            {hasChildren && (
+                              <button
+                                onClick={() =>
+                                  setOpenMobileCategoryId(
+                                    isOpen ? null : link.categorySlug,
+                                  )
+                                }
+                                className="p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center"
+                                aria-label="Toggle Subcategories"
+                              >
+                                <ChevronDown
+                                  className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                                />
+                              </button>
+                            )}
+                          </div>
+                          {/* Mobile Subcategories */}
+                          <AnimatePresence>
+                            {hasChildren && isOpen && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{
+                                  duration: 0.3,
+                                  ease: "easeInOut",
+                                }}
+                                className="overflow-hidden"
+                              >
+                                <div className="pl-4 py-2 flex flex-col gap-3 border-l-2 border-muted ml-2 mb-2 mt-1">
+                                  {link.subCategories.map((sub) => (
+                                    <Link
+                                      key={sub.id}
+                                      href={`/collections/${link.categorySlug}?subCategoryId=${sub.id}`}
+                                      onClick={() => setIsMobileMenuOpen(false)}
+                                      className="text-base text-muted-foreground hover:text-foreground transition-colors"
+                                    >
+                                      {sub.name}
+                                    </Link>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      );
+                    })}
                   </div>
                   {/* Mobile Auth Links */}
                   <div className="border-t border-border pt-8 space-y-4">
@@ -344,7 +394,9 @@ export function Navbar({
                     </DropdownMenuItem>
                     {user.role !== "USER" && (
                       <DropdownMenuItem asChild className="cursor-pointer">
-                        <Link href="/admin/dashboard">{t("adminDashboard")}</Link>
+                        <Link href="/admin/dashboard">
+                          {t("adminDashboard")}
+                        </Link>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />

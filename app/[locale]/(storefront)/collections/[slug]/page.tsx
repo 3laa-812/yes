@@ -4,6 +4,7 @@ import { Link } from "@/i18n/routing";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { SubCategoryFilter } from "@/components/storefront/SubCategoryFilter";
+import { ComingSoonCategory } from "@/components/storefront/ComingSoonCategory";
 import { getCategoryWithProducts } from "@/lib/data/storefront";
 import { languageAlternates, localizedUrl } from "@/lib/seo";
 
@@ -38,16 +39,16 @@ export async function generateMetadata({
     title,
     description,
     alternates: {
-                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       canonical: localizedUrl(locale as any, path),
       languages: languageAlternates(path),
     },
     openGraph: {
       title,
       description,
-                                   
+
       type: "website",
-                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       url: localizedUrl(locale as any, path),
     },
     twitter: {
@@ -101,7 +102,7 @@ export default async function CategoryPage({
         {/* SubCategory Pills */}
         <div className="mt-6">
           <SubCategoryFilter
-                                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             subCategories={category.subCategories as any}
             slug={slug}
             locale={locale}
@@ -109,22 +110,10 @@ export default async function CategoryPage({
         </div>
 
         {category.products.length === 0 ? (
-          <div className="mt-10 text-center py-20 border-2 border-dashed rounded-lg bg-muted/30">
-            <h3 className="text-lg font-semibold text-muted-foreground">
-              {t("noProductsFound")}
-            </h3>
-            <p className="text-sm text-muted-foreground mt-2">
-              {t("tryClearingFilters")}
-            </p>
-            {subCategoryId && (
-              <Button variant="link" asChild className="mt-4">
-                <Link href={`/collections/${slug}`}>{t("clearFilters")}</Link>
-              </Button>
-            )}
-          </div>
+          <ComingSoonCategory categoryName={categoryName} />
         ) : (
           <div className="mt-6 grid grid-cols-2 gap-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
-                                             {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
             {category.products.map((product: any) => (
               <ProductCard
                 key={product.id}

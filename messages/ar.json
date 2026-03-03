@@ -141,7 +141,8 @@
       "noProductsFound": "لا توجد منتجات",
       "productsCount": "{count} منتجات",
       "tryClearingFilters": "حاول إزالة الفلاتر أو تحقق لاحقاً.",
-      "clearFilters": "مسح الفلاتر"
+      "clearFilters": "مسح الفلاتر",
+      "backToProducts": "العودة للمنتجات"
     },
     "Orders": {
       "title": "طلباتي",
@@ -213,7 +214,8 @@
       "CONFIRMED": "تم التأكيد",
       "SHIPPED": "تم الشحن",
       "DELIVERED": "تم التوصيل",
-      "CANCELLED": "ملغى"
+      "CANCELLED": "ملغى",
+      "REJECTED": "مرفوض"
     }
   },
   "Admin": {

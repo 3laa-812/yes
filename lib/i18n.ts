@@ -4,6 +4,9 @@ import {cache} from "react";
 type Messages = Record<string, any>;
 
 const loadAllMessages = cache(async (locale: string): Promise<Messages> => {
+  if (locale === "favicon.ico" || !["en", "ar"].includes(locale)) {
+    return {};
+  }
   const messagesModule = await import(`../messages/${locale}.json`);
   return messagesModule.default;
 });
