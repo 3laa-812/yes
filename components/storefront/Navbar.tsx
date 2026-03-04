@@ -158,7 +158,7 @@ export function Navbar({
                   <Link
                     href="/"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="relative w-32 h-12"
+                    className="relative w-28 h-10 mb-2"
                   >
                     <Image
                       src="/branding/logo-dark.png"

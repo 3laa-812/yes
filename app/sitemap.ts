@@ -1,5 +1,9 @@
 import type { MetadataRoute } from "next";
 import db from "@/lib/db";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 3600; // cache for 1 hour
+
 import { getSiteUrl, localizedUrl } from "@/lib/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
