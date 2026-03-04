@@ -1,8 +1,6 @@
 import { ChangePasswordForm } from "./_components/ChangePasswordForm";
 import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
-import { AdminShell } from "../_components/AdminShell";
-
 export async function generateMetadata({
   params,
 }: {
@@ -21,14 +19,12 @@ export default async function SettingsPage({
   const { locale } = await params;
   const t = await getTranslations("Admin.Settings");
   return (
-    <AdminShell locale={locale} titleKey="settings">
-      <div className="flex flex-col gap-6">
-        <h1 className="text-2xl font-bold tracking-tight">{t("pageTitle")}</h1>
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold tracking-tight">{t("pageTitle")}</h1>
 
-        <div className="max-w-2xl">
-          <ChangePasswordForm />
-        </div>
+      <div className="max-w-2xl">
+        <ChangePasswordForm />
       </div>
-    </AdminShell>
+    </div>
   );
 }

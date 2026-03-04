@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminProviders } from "@/components/providers/AdminProviders";
+import { AdminShell } from "./_components/AdminShell";
 
 export const metadata: Metadata = {
   title: "YES Admin",
@@ -20,5 +21,9 @@ export default async function AdminLayout({
 }) {
   const { locale } = await params;
 
-  return <AdminProviders locale={locale}>{children}</AdminProviders>;
+  return (
+    <AdminProviders locale={locale}>
+      <AdminShell locale={locale}>{children}</AdminShell>
+    </AdminProviders>
+  );
 }

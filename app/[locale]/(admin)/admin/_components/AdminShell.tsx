@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MobileSidebar } from "./MobileSidebar";
+import { DynamicHeaderTitle } from "./DynamicHeaderTitle";
 import Image from "next/image";
 import { auth } from "@/auth";
 import { Role } from "@prisma/client";
@@ -20,14 +21,9 @@ import { getTranslations } from "next-intl/server";
 interface AdminShellProps {
   children: React.ReactNode;
   locale: string;
-  titleKey?: string;
 }
 
-export async function AdminShell({
-  children,
-  locale,
-  titleKey = "dashboard",
-}: AdminShellProps) {
+export async function AdminShell({ children, locale }: AdminShellProps) {
   const session = await auth();
   const role = session?.user?.role || Role.USER;
   const t = await getTranslations("Admin");
@@ -143,9 +139,7 @@ export async function AdminShell({
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6 lg:h-[60px]">
           <MobileSidebar role={role} />
           <div className="flex-1">
-            <h1 className="text-lg font-semibold md:text-2xl">
-              {t(titleKey)}
-            </h1>
+            <DynamicHeaderTitle />
           </div>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
@@ -169,4 +163,3 @@ export async function AdminShell({
     </div>
   );
 }
-

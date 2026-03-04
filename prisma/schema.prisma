@@ -35,6 +35,8 @@ enum PaymentMethod {
   ONLINE
   VODAFONE_CASH
   INSTAPAY
+  BANK_TRANSFER
+  MEEZA
 }
 
 model Account {

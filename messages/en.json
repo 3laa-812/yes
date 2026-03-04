@@ -221,7 +221,15 @@
     "overview": "Overview of your store's performance.",
     "totalRevenue": "Total Revenue",
     "totalOrders": "Total Orders",
+    "ordersToday": "Orders Today",
+    "ordersThisMonth": "Orders This Month",
+    "pendingPayments": "Pending Payments",
+    "conversionRate": "Conversion Rate",
     "lifetime": "Lifetime",
+    "today": "Today",
+    "thisMonth": "This month",
+    "requiresAction": "Requires action",
+    "fromOrders": "From orders",
     "registered": "Registered",
     "active": "Total active",
     "orders": "Orders",
@@ -437,7 +445,8 @@
     "Dashboard": {
       "revenueOverview": "Revenue Overview",
       "weeklyOrders": "Weekly Orders",
-      "orderStatus": "Order Status"
+      "orderStatus": "Order Status",
+      "paymentMethods": "Payment Methods"
     },
     "ChangePassword": {
       "changePassword": "Change Password",

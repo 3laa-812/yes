@@ -221,7 +221,15 @@
     "overview": "نظرة عامة على أداء متجرك.",
     "totalRevenue": "إجمالي الإيرادات",
     "totalOrders": "إجمالي الطلبات",
+    "ordersToday": "طلبات اليوم",
+    "ordersThisMonth": "طلبات هذا الشهر",
+    "pendingPayments": "مدفوعات معلقة",
+    "conversionRate": "معدل الإتمام",
     "lifetime": "طوال المدة",
+    "today": "اليوم",
+    "thisMonth": "هذا الشهر",
+    "requiresAction": "يتطلب إجراء",
+    "fromOrders": "من الطلبات",
     "registered": "المسجلين",
     "active": "إجمالي النشط",
     "orders": "الطلبات",
@@ -437,7 +445,8 @@
     "Dashboard": {
       "revenueOverview": "نظرة عامة على الإيرادات",
       "weeklyOrders": "الطلبات الأسبوعية",
-      "orderStatus": "حالة الطلبات"
+      "orderStatus": "حالة الطلبات",
+      "paymentMethods": "طرق الدفع"
     },
     "ChangePassword": {
       "changePassword": "تغيير كلمة المرور",

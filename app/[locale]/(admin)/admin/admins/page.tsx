@@ -6,7 +6,6 @@ import dynamic from "next/dynamic";
 import { getTranslations } from "next-intl/server";
 import { AdminTable } from "./_components/AdminTable";
 import { Metadata } from "next";
-import { AdminShell } from "../_components/AdminShell";
 
 export async function generateMetadata({
   params,
@@ -47,18 +46,18 @@ export default async function AdminsPage({
   });
 
   return (
-    <AdminShell locale={locale} titleKey="admins">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight">{t("adminManagement")}</h1>
-          <AddAdminDialog />
-        </div>
-        <AdminTable
-          admins={admins}
-          currentUserRole={session.user.role}
-          currentUserId={session.user.id || ""}
-        />
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold tracking-tight">
+          {t("adminManagement")}
+        </h1>
+        <AddAdminDialog />
       </div>
-    </AdminShell>
+      <AdminTable
+        admins={admins}
+        currentUserRole={session.user.role}
+        currentUserId={session.user.id || ""}
+      />
+    </div>
   );
 }

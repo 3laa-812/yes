@@ -1,19 +1,18 @@
 import { Button } from "@/components/ui/button";
-                             // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PlusCircle, Pencil, Trash2 } from "lucide-react";
-        
+
 import db from "@/lib/db";
-       // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Image from "next/image";
-         // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { deleteCategory } from "@/app/actions";
-   
+
 import { Link } from "@/i18n/routing";
-   
+
 import { getTranslations } from "next-intl/server";
-   
+
 import {
-   
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Table,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -27,11 +26,9 @@ import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   TableRow,
 } from "@/components/ui/table";
-         // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { DeleteCategoryButton } from "./_components/DeleteCategoryButton";
 import { CategoryList } from "@/components/admin/CategoryList";
-import { AdminShell } from "../_components/AdminShell";
-
 async function getCategories() {
   return db.category.findMany({
     where: { parentId: null },
@@ -61,8 +58,7 @@ export default async function AdminCategoriesPage({
   const t = await getTranslations("Admin.Categories");
 
   return (
-                                                      
-    <AdminShell locale={params.locale} titleKey="categories">
+    <>
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold md:text-2xl">{t("pageTitle")}</h1>
         <Button size="sm" asChild>
@@ -72,8 +68,8 @@ export default async function AdminCategoriesPage({
           </Link>
         </Button>
       </div>
-                                                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <CategoryList initialCategories={categories as any} />
-    </AdminShell>
+    </>
   );
 }

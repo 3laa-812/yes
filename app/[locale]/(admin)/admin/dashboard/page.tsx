@@ -1,76 +1,104 @@
 import { getTranslations } from "next-intl/server";
-import { AdminShell } from "../_components/AdminShell";
 import { ar, enUS } from "date-fns/locale";
-import { format, subDays } from "date-fns";
+import { format, subDays, startOfDay, startOfMonth } from "date-fns";
 import db from "@/lib/db";
-import { Banknote, Package, ShoppingBag, Users } from "lucide-react";
+import {
+  Banknote,
+  ShoppingBag,
+  Users,
+  Clock,
+  Activity,
+  CreditCard,
+} from "lucide-react";
 import { StatsCard } from "@/components/admin/dashboard/StatsCard";
 import dynamic from "next/dynamic";
 import { formatCurrency } from "@/lib/utils";
 import { Suspense } from "react";
+import { DashboardSkeleton } from "@/components/admin/dashboard/DashboardSkeleton";
 
 async function getStats(locale: string) {
   const dateLocale = locale === "ar" ? ar : enUS;
 
   // Calculate date ranges
   const today = new Date();
-  const sevenDaysAgo = subDays(today, 7);
+  const startOfTodayDate = startOfDay(today);
+  const startOfMonthDate = startOfMonth(today);
+  const sevenDaysAgo = subDays(today, 6); // 7 days including today
 
   // Parallel data fetching
   const [
     totalRevenueResult,
-    totalOrders,
-    totalProducts,
+    totalOrdersCount,
+    paidOrdersCount,
     totalUsers,
+    ordersTodayCount,
+    ordersThisMonthCount,
+    pendingPaymentsCount,
     recentOrders,
     orderStatusGroups,
+    paymentMethodGroups,
   ] = await Promise.all([
     db.order.aggregate({
       _sum: { total: true },
-      where: {
-        paymentStatus: "PAID",
-      },
+      where: { paymentStatus: "PAID" },
     }),
     db.order.count(),
-    db.product.count({ where: { stock: { gt: 0 } } }), // Active products
+    db.order.count({ where: { paymentStatus: "PAID" } }),
     db.user.count(),
+    db.order.count({ where: { createdAt: { gte: startOfTodayDate } } }),
+    db.order.count({ where: { createdAt: { gte: startOfMonthDate } } }),
+    db.order.count({ where: { paymentStatus: "PENDING" } }),
     db.order.findMany({
       where: {
-        createdAt: {
-          gte: sevenDaysAgo,
-        },
-        paymentStatus: "PAID", // Only count paid orders for revenue chart
+        createdAt: { gte: sevenDaysAgo },
       },
       select: {
         createdAt: true,
         total: true,
+        paymentStatus: true,
       },
     }),
     db.order.groupBy({
       by: ["status"],
-      _count: {
-        _all: true,
-      },
+      _count: { _all: true },
+    }),
+    db.order.groupBy({
+      by: ["paymentMethod"],
+      _count: { _all: true },
     }),
   ]);
 
   const revenue = totalRevenueResult._sum.total || 0;
+  const conversionRate =
+    totalOrdersCount > 0
+      ? ((paidOrdersCount / totalOrdersCount) * 100).toFixed(1)
+      : "0";
 
   // Process data for charts
-
-  // 1. Revenue Chart Data (Last 7 days)
   const revenueMap: Record<string, number> = {};
+  const ordersMap: Record<string, number> = {};
+
   for (let i = 6; i >= 0; i--) {
     const date = subDays(today, i);
-    const key = format(date, "MMM dd", { locale: dateLocale });
-    revenueMap[key] = 0;
+    const dateKey = format(date, "MMM dd", { locale: dateLocale });
+    const dayKey = format(date, "EEE", { locale: dateLocale });
+    revenueMap[dateKey] = 0;
+    ordersMap[dayKey] = 0;
   }
 
-                               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  recentOrders.forEach((order: any) => {
-    const key = format(order.createdAt, "MMM dd", { locale: dateLocale });
-    if (revenueMap[key] !== undefined) {
-      revenueMap[key] += Number(order.total);
+  recentOrders.forEach((order) => {
+    // Orders Chart (All orders)
+    const dayKey = format(order.createdAt, "EEE", { locale: dateLocale });
+    if (ordersMap[dayKey] !== undefined) {
+      ordersMap[dayKey]++;
+    }
+
+    // Revenue Chart (Only Paid)
+    if (order.paymentStatus === "PAID") {
+      const dateKey = format(order.createdAt, "MMM dd", { locale: dateLocale });
+      if (revenueMap[dateKey] !== undefined) {
+        revenueMap[dateKey] += Number(order.total);
+      }
     }
   });
 
@@ -78,64 +106,56 @@ async function getStats(locale: string) {
     name,
     total,
   }));
-
-  // 2. Orders Chart Data (Last 7 days count)
-  // Re-query or reuse recentOrders if we want to count all orders regardless of payment status
-  // For simplicity using recentOrders (paid) or we can do another query.
-  // Let's assume we want ALL orders for the orders chart, not just paid.
-  // We can just fetch all orders for the last 7 days.
-  const allRecentOrders = await db.order.findMany({
-    where: { createdAt: { gte: sevenDaysAgo } },
-    select: { createdAt: true },
-  });
-
-  const ordersMap: Record<string, number> = {};
-  for (let i = 6; i >= 0; i--) {
-    const date = subDays(today, i);
-    const key = format(date, "EEE", { locale: dateLocale }); // Mon, Tue...
-    ordersMap[key] = 0;
-  }
-                                   
-
-                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  allRecentOrders.forEach((order: any) => {
-    const key = format(order.createdAt, "EEE", { locale: dateLocale });
-    if (ordersMap[key] !== undefined) {
-      ordersMap[key]++;
-    }
-  });
-
   const ordersChartData = Object.entries(ordersMap).map(([name, orders]) => ({
     name,
     orders,
   }));
 
-  // 3. Status Chart Data
+  // Status Chart Data - Premium Colors (Muted)
   const statusColors: Record<string, string> = {
-    PENDING: "#fbbf24", // amber-400
-    CONFIRMED: "#3b82f6", // blue-500
-    SHIPPED: "#8b5cf6", // violet-500
-    DELIVERED: "#22c55e", // green-500
-    CANCELLED: "#ef4444", // red-500
-                                                         
+    PENDING: "#D97706", // Muted Amber
+    CONFIRMED: "#2563EB", // Muted Royal Blue
+    SHIPPED: "#6366F1", // Muted Indigo
+    DELIVERED: "#059669", // Muted Emerald
+    CANCELLED: "#DC2626", // Deep Red
+    PENDING_VERIFICATION: "#B45309", // Dark Amber
+    REJECTED: "#475569", // Slate Gray
   };
 
-                                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const statusChartData = orderStatusGroups.map((group: any) => ({
+  const statusChartData = orderStatusGroups.map((group) => ({
     name: group.status,
     value: group._count._all,
-    color: statusColors[group.status] || "#9ca3af", // gray-400 default
+    color: statusColors[group.status] || "#9ca3af",
+  }));
+
+  // Payment Methods Chart Data - Premium Colors (Muted Stripe/Shopify styling)
+  const paymentColors: Record<string, string> = {
+    COD: "#64748B", // Slate Gray
+    ONLINE: "#2563EB", // Muted Royal Blue
+    VODAFONE_CASH: "#DC2626", // Deep Red
+    INSTAPAY: "#7C3AED", // Muted Purple
+    BANK_TRANSFER: "#111827", // Primary Text Black
+    MEEZA: "#92400E", // Dark Amber / Bronze
+  };
+
+  const paymentChartData = paymentMethodGroups.map((group) => ({
+    name: group.paymentMethod,
+    value: group._count._all,
+    color: paymentColors[group.paymentMethod] || "#9ca3af",
   }));
 
   return {
     revenue,
-    orders: totalOrders,
-    products: totalProducts,
+    ordersToday: ordersTodayCount,
+    ordersThisMonth: ordersThisMonthCount,
     users: totalUsers,
+    pendingPayments: pendingPaymentsCount,
+    conversionRate,
     chartData: {
       revenue: revenueChartData,
       orders: ordersChartData,
       status: statusChartData,
+      paymentMethods: paymentChartData,
     },
   };
 }
@@ -145,18 +165,96 @@ const RevenueChart = dynamic(() =>
     (mod) => mod.RevenueChart,
   ),
 );
-
 const OrdersChart = dynamic(() =>
   import("@/components/admin/dashboard/ChartComponents").then(
     (mod) => mod.OrdersChart,
   ),
 );
-
 const StatusChart = dynamic(() =>
   import("@/components/admin/dashboard/ChartComponents").then(
     (mod) => mod.StatusChart,
   ),
 );
+const PaymentMethodsChart = dynamic(() =>
+  import("@/components/admin/dashboard/ChartComponents").then(
+    (mod) => mod.PaymentMethodsChart,
+  ),
+);
+
+// Removed outer flex gap as we are now wrapping in a padded div below
+async function DashboardContent({ locale }: { locale: string }) {
+  const stats = await getStats(locale);
+  const t = await getTranslations("Admin");
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* KPI Cards Grid */}
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+        <StatsCard
+          title={t("totalRevenue")}
+          value={formatCurrency(Number(stats.revenue), locale)}
+          description={t("lifetime")}
+          icon={<Banknote className="h-5 w-5" />}
+          index={0}
+          trend="up"
+        />
+        <StatsCard
+          title={t("ordersToday")}
+          value={stats.ordersToday}
+          description={t("today")}
+          icon={<ShoppingBag className="h-5 w-5" />}
+          index={1}
+          trend={stats.ordersToday > 0 ? "up" : "neutral"}
+        />
+        <StatsCard
+          title={t("ordersThisMonth")}
+          value={stats.ordersThisMonth}
+          description={t("thisMonth")}
+          icon={<Activity className="h-5 w-5" />}
+          index={2}
+          trend="up"
+        />
+        <StatsCard
+          title={t("customers")}
+          value={stats.users}
+          description={t("registered")}
+          icon={<Users className="h-5 w-5" />}
+          index={3}
+          trend="up"
+        />
+        <StatsCard
+          title={t("pendingPayments")}
+          value={stats.pendingPayments}
+          description={t("requiresAction")}
+          icon={<Clock className="h-5 w-5" />}
+          index={4}
+          trend={stats.pendingPayments > 0 ? "down" : "neutral"}
+        />
+        <StatsCard
+          title={t("conversionRate")}
+          value={`${stats.conversionRate}%`}
+          description={t("fromOrders")}
+          icon={<CreditCard className="h-5 w-5" />}
+          index={5}
+          trend={Number(stats.conversionRate) > 50 ? "up" : "neutral"}
+        />
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <RevenueChart data={stats.chartData.revenue} />
+        <OrdersChart data={stats.chartData.orders} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <PaymentMethodsChart data={stats.chartData.paymentMethods} />
+        <div className="col-span-1 lg:col-span-2">
+          <StatusChart data={stats.chartData.status} />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default async function DashboardPage({
   params,
@@ -164,70 +262,20 @@ export default async function DashboardPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const stats = await getStats(locale);
   const t = await getTranslations("Admin");
 
   return (
-    <AdminShell locale={locale} titleKey="dashboard">
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight">
-            {t("dashboard")}
-          </h1>
-          <p className="text-muted-foreground">{t("overview")}</p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatsCard
-            title={t("totalRevenue")}
-            value={formatCurrency(Number(stats.revenue), locale)}
-            description={t("lifetime")}
-            icon={<Banknote className="h-4 w-4 text-muted-foreground" />}
-            index={0}
-            trend="up"
-          />
-          <StatsCard
-            title={t("totalOrders")}
-            value={`+${stats.orders}`}
-            description={t("lifetime")}
-            icon={<ShoppingBag className="h-4 w-4 text-muted-foreground" />}
-            index={1}
-            trend="up"
-          />
-          <StatsCard
-            title={t("products")}
-            value={`+${stats.products}`}
-            description={t("active")}
-            icon={<Package className="h-4 w-4 text-muted-foreground" />}
-            index={2}
-            trend="neutral"
-          />
-          <StatsCard
-            title={t("customers")}
-            value={`+${stats.users}`}
-            description={t("registered")}
-            icon={<Users className="h-4 w-4 text-muted-foreground" />}
-            index={3}
-            trend="up"
-          />
-        </div>
-
-        <Suspense
-          fallback={
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="col-span-1 lg:col-span-2 h-[400px] rounded-xl border border-border bg-card/60 animate-pulse" />
-              <div className="h-[400px] rounded-xl border border-border bg-card/60 animate-pulse" />
-              <div className="h-[400px] rounded-xl border border-border bg-card/60 animate-pulse" />
-            </div>
-          }
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <RevenueChart data={stats.chartData.revenue} />
-            <OrdersChart data={stats.chartData.orders} />
-            <StatusChart data={stats.chartData.status} />
-          </div>
-        </Suspense>
+    <div className="flex flex-col gap-8 bg-background min-h-screen p-6 -m-4 md:-m-8 rounded-lg">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold tracking-tight text-[#111827]">
+          {t("dashboard")}
+        </h1>
+        <p className="text-[#6B7280]">{t("overview")}</p>
       </div>
-    </AdminShell>
+
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardContent locale={locale} />
+      </Suspense>
+    </div>
   );
 }

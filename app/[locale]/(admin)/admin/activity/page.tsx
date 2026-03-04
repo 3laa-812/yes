@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ActivityLogTable } from "./_components/ActivityLogTable";
 import { Metadata } from "next";
-import { AdminShell } from "../_components/AdminShell";
 
 export async function generateMetadata({
   params,
@@ -47,13 +46,13 @@ export default async function ActivityPage({
   });
 
   return (
-    <AdminShell locale={locale} titleKey="activity">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight">{t("activityLogs")}</h1>
-        </div>
-        <ActivityLogTable logs={logs} />
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold tracking-tight">
+          {t("activityLogs")}
+        </h1>
       </div>
-    </AdminShell>
+      <ActivityLogTable logs={logs} />
+    </div>
   );
 }

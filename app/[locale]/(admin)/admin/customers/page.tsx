@@ -28,7 +28,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getTranslations } from "next-intl/server";
-import { AdminShell } from "../_components/AdminShell";
 
 export default async function CustomersPage({
   params,
@@ -39,8 +38,7 @@ export default async function CustomersPage({
   const t = await getTranslations("Admin.Customers");
 
   return (
-    <AdminShell locale={params.locale} titleKey="customers">
-      <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
@@ -78,7 +76,7 @@ export default async function CustomersPage({
               </TableRow>
             </TableHeader>
             <TableBody>
-                               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {data.map((user: any) => (
                 <TableRow key={user.id}>
                   <TableCell>
@@ -140,7 +138,6 @@ export default async function CustomersPage({
           </Table>
         </CardContent>
       </Card>
-      </div>
-    </AdminShell>
+    </div>
   );
 }

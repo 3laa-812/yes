@@ -3,15 +3,13 @@ import { PlusCircle } from "lucide-react";
 import db from "@/lib/db";
 import { formatCurrency } from "@/lib/utils";
 import Image from "next/image";
-         // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { deleteProduct } from "@/app/actions";
 import { DeleteProductButton } from "./_components/DeleteProductButton";
 import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
 import { format } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
-import { AdminShell } from "../_components/AdminShell";
-
 async function getProducts() {
   return db.product.findMany({
     orderBy: {
@@ -36,7 +34,7 @@ export default async function AdminProductsPage({
   const dateLocale = locale === "ar" ? ar : enUS;
 
   return (
-    <AdminShell locale={params.locale} titleKey="products">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center">
         <h1 className="text-lg font-semibold md:text-2xl">{t("title")}</h1>
         <Button className="ml-auto" size="sm" asChild>
@@ -75,7 +73,7 @@ export default async function AdminProductsPage({
               </tr>
             </thead>
             <tbody className="[&_tr:last-child]:border-0">
-                                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {products.map((product: any) => (
                 <tr
                   key={product.id}
@@ -137,6 +135,6 @@ export default async function AdminProductsPage({
           </table>
         </div>
       </div>
-    </AdminShell>
+    </div>
   );
 }
