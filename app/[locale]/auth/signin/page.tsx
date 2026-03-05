@@ -39,8 +39,8 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-lg ring-1 ring-gray-900/5">
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="w-full max-w-md space-y-8 rounded-xl bg-background/70 p-10 shadow-lg ring-1 ring-gray-900/5">
         <div className="text-center">
           <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-900">
             {t("adminAccess")}
@@ -90,12 +90,6 @@ export default function SignInPage() {
             >
               {loading ? t("signingIn") : t("signin")}
             </Button>
-          </div>
-
-          <div className="text-center text-xs text-muted-foreground">
-            <p>{t("defaultCredentials")}</p>
-            <p>{t("defaultEmail")}</p>
-            <p>{t("defaultPassword")}</p>
           </div>
         </form>
       </div>

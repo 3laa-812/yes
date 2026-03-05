@@ -599,7 +599,7 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
                   placeholder={t("discountPricePlaceholder")}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Set to show previous price as struck-through.
+                  {t("discountPriceHelp")}
                 </p>
               </div>
             </CardContent>
