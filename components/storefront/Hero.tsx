@@ -59,7 +59,7 @@ export function Hero() {
               <div className="relative w-full h-full rounded-4xl overflow-hidden shadow-2xl ring-1 ring-black/5">
                 <div className="w-full h-full bg-secondary relative flex items-center justify-center">
                   <Image
-                    src="/her-v2.png"
+                    src="/final.jpg"
                     alt="Fashion Model"
                     fill
                     className="object-cover"
