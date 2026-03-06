@@ -59,7 +59,7 @@ export function Hero() {
               <div className="relative w-full h-full rounded-4xl overflow-hidden shadow-2xl ring-1 ring-black/5">
                 <div className="w-full h-full bg-secondary relative flex items-center justify-center">
                   <Image
-                    src="/hero.png"
+                    src="/her-v2.png"
                     alt="Fashion Model"
                     fill
                     className="object-cover"
@@ -70,10 +70,12 @@ export function Hero() {
                 </div>
               </div>
 
-              <div className="absolute bottom-8 left-8 glass-card p-6 rounded-2xl z-20 hidden md:block">
+              <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 glass-card p-4 md:p-6 rounded-2xl z-20">
                 <div className="flex flex-col">
-                  <span className="text-3xl font-black tabular-nums">2026</span>
-                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                  <span className="text-2xl md:text-3xl font-black tabular-nums">
+                    2026
+                  </span>
+                  <span className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest">
                     {useTranslations("Hero")("collection")}
                   </span>
                 </div>
