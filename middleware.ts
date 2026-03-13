@@ -11,7 +11,7 @@ export default auth((req) => {
     const { pathname } = req.nextUrl;
     
     const isUrlAdmin = pathname.includes('/admin');
-    const isUrlProtected = pathname.includes('/checkout') || pathname.includes('/account'); // Add other customer protected routes
+    const isUrlProtected = pathname.includes('/account'); // Checkout is now accessible to guests
     
     // console.log(`[Middleware] ${req.method} ${pathname} | Auth: ${isLoggedIn} | Admin: ${isUrlAdmin}`);
 

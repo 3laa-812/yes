@@ -61,6 +61,9 @@
   "Checkout": {
     "title": "Checkout",
     "shippingDetails": "Shipping Details",
+    "satisfactionGuarantee": "100% Satisfaction Guarantee",
+    "freeReturns": "Free 14-Day Returns",
+    "fullName": "Full Name",
     "firstName": "First Name",
     "lastName": "Last Name",
     "email": "Email",
@@ -101,6 +104,7 @@
     "qty": "Qty",
     "continueShopping": "Continue Shopping",
     "placeholders": {
+      "fullName": "John Doe",
       "firstName": "John",
       "lastName": "Doe",
       "email": "john@example.com",
@@ -108,10 +112,10 @@
       "address": "123 Street Name, Apt 4",
       "city": "Cairo",
       "phoneOrEmail": "01xxxxxxxxx or m@example.com",
-      "fullName": "John Doe",
       "emailOptional": "m@example.com"
     },
     "validation": {
+      "fullName": "Full name is required",
       "firstName": "First name is required",
       "lastName": "Last name is required",
       "email": "Valid email is required",
@@ -183,7 +187,11 @@
       "outOfStock": "Out of Stock",
       "selectOptions": "Please select both size and color",
       "addedToCart": "Added to cart",
-      "combinationOutOfStock": "This combination is out of stock"
+      "combinationOutOfStock": "This combination is out of stock",
+      "quickBuy": "Quick Buy",
+      "delivery": "Estimated Delivery: 2-4 Business Days",
+      "lowStock": "Only {stock} items left in stock - order soon!",
+      "socialProof": "🔥 {count} people bought this today"
     },
     "OrderDetails": {
       "title": "Order Details",

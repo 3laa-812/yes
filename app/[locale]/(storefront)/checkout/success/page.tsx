@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import db from "@/lib/db";
+import { GuestAccountForm } from "./GuestAccountForm";
 
 interface Props {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -33,8 +34,10 @@ export default async function SuccessPage({ searchParams }: Props) {
     });
   }
 
+  const isGuestOrder = order && !order.userId;
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
+    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 py-12 text-center">
       <CheckCircle className="h-16 w-16 text-green-500 mb-6" />
       <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
         {t("orderConfirmed")}
@@ -43,13 +46,20 @@ export default async function SuccessPage({ searchParams }: Props) {
         {t("thankYouPurchase")}
         {orderId ? ` #${orderId.slice(-6)}` : ""}
       </p>
+
+      {isGuestOrder && (
+        <div className="w-full max-w-sm mt-8">
+          <GuestAccountForm orderId={orderId} />
+        </div>
+      )}
+
       <div className="mt-8 flex gap-4">
-        {orderId && (
+        {orderId && !isGuestOrder && (
           <Button asChild>
             <Link href={`/orders/${orderId}`}>{t("viewOrder")}</Link>
           </Button>
         )}
-        <Button variant="outline" asChild>
+        <Button variant={isGuestOrder ? "default" : "outline"} asChild>
           <Link href="/">{t("continueShopping")}</Link>
         </Button>
       </div>

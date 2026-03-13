@@ -61,6 +61,9 @@
   "Checkout": {
     "title": "إتمام الشراء",
     "shippingDetails": "تفاصيل الشحن",
+    "satisfactionGuarantee": "ضمان الرضا 100%",
+    "freeReturns": "إرجاع مجاني خلال 14 يوماً",
+    "fullName": "الاسم بالكامل",
     "firstName": "الاسم الأول",
     "lastName": "اسم العائلة",
     "email": "البريد الإلكتروني",
@@ -101,6 +104,7 @@
     "qty": "الكمية",
     "continueShopping": "متابعة التسوق",
     "placeholders": {
+      "fullName": "محمد أحمد",
       "firstName": "محمد",
       "lastName": "أحمد",
       "email": "mohamed@example.com",
@@ -108,10 +112,10 @@
       "address": "123 اسم الشارع، شقة 4",
       "city": "القاهرة",
       "phoneOrEmail": "01xxxxxxxxx أو m@example.com",
-      "fullName": "محمد أحمد",
       "emailOptional": "m@example.com"
     },
     "validation": {
+      "fullName": "الاسم بالكامل مطلوب",
       "firstName": "الاسم الأول مطلوب",
       "lastName": "اسم العائلة مطلوب",
       "email": "البريد الإلكتروني مطلوب",
@@ -183,7 +187,11 @@
       "outOfStock": "نفدت الكمية",
       "selectOptions": "يرجى اختيار اللون والمقاس",
       "addedToCart": "تمت الإضافة للسلة",
-      "combinationOutOfStock": "هذا الخيار غير متوفر حالياً"
+      "combinationOutOfStock": "هذا الخيار غير متوفر حالياً",
+      "quickBuy": "شراء سريع",
+      "delivery": "التوصيل المتوقع: ٢-٤ أيام عمل",
+      "lowStock": "باقي {stock} قطع فقط في المخزون - اطلب قريباً!",
+      "socialProof": "🔥 {count} أشخاص اشتروا هذا اليوم"
     },
     "OrderDetails": {
       "title": "تفاصيل الطلب",

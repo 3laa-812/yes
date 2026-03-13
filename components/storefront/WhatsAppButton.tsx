@@ -39,7 +39,7 @@ export function WhatsAppButton() {
       )}
     >
       <MessageCircle className="h-8 w-8" />
-      <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-[#25D366] opacity-75 duration-1000" />
+      <span className="absolute inset-0 -z-10 rounded-full bg-[#25D366] opacity-75" />
     </a>,
     document.body,
   );

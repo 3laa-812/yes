@@ -22,7 +22,7 @@ export async function generateTranslation(text: string, targetLang: "ar" | "en")
 const orderSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  email: z.string().email(),
+  email: z.string().email().optional().or(z.literal("")),
   phone: z.string().min(10),
   address: z.string().min(1),
   city: z.string().min(1),
@@ -278,32 +278,34 @@ export async function createOrder(data: any) {
   }
 
   // 1. Manage Customer (User)
-  let userId: string | undefined;
+  let userId: string | undefined = undefined;
   const session = await auth();
 
   if (session?.user?.id) {
+    // Authenticated user checkout
     userId = session.user.id;
-  } else {
-      let user = await db.user.findUnique({ where: { email } });
+    
+    // Ensure phone is updated if it was missing
+    if (phone) {
+        const user = await db.user.findUnique({ where: { id: userId } });
+        if (user && !user.phone) {
+            await db.user.update({ where: { id: userId }, data: { phone } });
+        }
+    }
+  } else if (email) {
+      // Guest with an email provided - we'll check if a user exists with this email
+      const user = await db.user.findUnique({ where: { email } });
 
       if (user) {
           userId = user.id;
-          if (!user.phone) {
+          if (!user.phone && phone) {
               await db.user.update({ where: { id: user.id }, data: { phone } });
           }
-      } else {
-          user = await db.user.create({
-              data: {
-                  email,
-                  name: `${firstName} ${lastName}`,
-                  phone,
-                  role: "USER"
-              }
-          });
-          userId = user.id;
       }
-                         
+      // Note: We DO NOT auto-create a user here anymore. 
+      // This is a strict Guest Checkout. If they want an account, they create it post-checkout.
   }
+  // If no session and no matching email, userId remains undefined (Guest Order).
 
   // 2. Pre-fetch and Validate Products Outside Transaction
   let total = 0;
@@ -461,7 +463,7 @@ export async function createOrder(data: any) {
           {
               first_name: firstName,
               last_name: lastName,
-              email,
+              email: email || "guest@thekitchen.com",
               phone_number: phone,
               street: address,
               city
@@ -486,6 +488,122 @@ export async function createOrder(data: any) {
           return { success: false, error: "Payment initialization failed" };
       }
   }
+}
+
+export async function checkoutGetUserDetailsByPhone(phone: string) {
+    try {
+        // Find the most recent order with this phone number to extract address/name
+        const recentAddress = await db.address.findFirst({
+            where: { phone },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        // Also check if there is an actual User tied to this phone (optional, address is better)
+        const user = await db.user.findUnique({
+            where: { phone }
+        });
+
+        if (recentAddress) {
+            // Parse firstName and lastName from address name
+            const nameParts = recentAddress.name.split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+            
+            return {
+                success: true,
+                data: {
+                    firstName,
+                    lastName,
+                    email: user?.email || '',
+                    address: recentAddress.street,
+                    city: recentAddress.city,
+                }
+            };
+        } else if (user) {
+            const nameParts = (user.name || '').split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+            
+            return {
+                success: true,
+                data: {
+                    firstName,
+                    lastName,
+                    email: user.email || '',
+                    address: '',
+                    city: '',
+                }
+            };
+        }
+
+        return { success: false, error: "No details found for this number" };
+    } catch (error) {
+        console.error("Fetch user by phone error:", error);
+        return { success: false, error: "Failed to fetch user details" };
+    }
+}
+
+// --- Guest Account Creation ---
+import bcrypt from "bcryptjs";
+
+export async function createAccountFromGuestOrder(orderId: string, email: string, password: string) {
+    try {
+        const order = await db.order.findUnique({
+            where: { id: orderId },
+            include: { shippingAddress: true }
+        });
+
+        if (!order || order.userId) {
+            return { success: false, error: "Order not found or already linked to an account." };
+        }
+
+        if (!email || !password || password.length < 6) {
+            return { success: false, error: "Valid email and password (min 6 chars) are required." };
+        }
+
+        const existingUser = await db.user.findUnique({ where: { email } });
+        if (existingUser) {
+            return { success: false, error: "An account with this email already exists." };
+        }
+
+        let existingPhoneUser = null;
+        if (order.shippingAddress?.phone) {
+             existingPhoneUser = await db.user.findUnique({ where: { phone: order.shippingAddress.phone } });
+            if (existingPhoneUser) {
+               return { success: false, error: "An account with this phone number already exists. Please log in." };
+            }
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = await db.user.create({
+            data: {
+                name: order.shippingAddress?.name || "Guest User",
+                email: email,
+                password: hashedPassword,
+                phone: order.shippingAddress?.phone,
+                role: "USER"
+            }
+        });
+
+        // Link order and address to the new user
+        await db.order.update({
+            where: { id: orderId },
+            data: { userId: newUser.id }
+        });
+
+        if (order.addressId) {
+            await db.address.update({
+                where: { id: order.addressId },
+                data: { userId: newUser.id }
+            });
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error("Create account from order error:", error);
+        return { success: false, error: "Failed to create account" };
+    }
 }
 
 // --- Category Actions ---

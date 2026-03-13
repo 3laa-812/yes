@@ -1,8 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import { Link } from "@/i18n/routing";
 import { formatCurrency } from "@/lib/utils";
 import { ScaleHover } from "@/components/ui/motion";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useCartStore } from "@/lib/store";
+import { useRouter } from "@/i18n/routing";
 
 interface ProductCardProps {
   id: string;
@@ -30,12 +34,15 @@ export function ProductCard({
   discountPrice,
 }: ProductCardProps) {
   const locale = useLocale();
+  const t = useTranslations("Storefront.Product");
+  const router = useRouter();
+  const addItem = useCartStore((state) => state.addItem);
+  const clearCart = useCartStore((state) => state.clearCart);
+  
   const basePrice = Number(price);
   const hasSecondaryPrice =
     discountPrice !== null && discountPrice !== undefined;
-  const secondaryPrice = hasSecondaryPrice
-    ? Number(discountPrice)
-    : basePrice;
+  const secondaryPrice = hasSecondaryPrice ? Number(discountPrice) : basePrice;
 
   let originalPrice = basePrice;
   let currentPrice = basePrice;
@@ -73,6 +80,43 @@ export function ProductCard({
               -{discountPercentage}%
             </div>
           ) : null}
+          
+          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium px-2 py-1 rounded-sm flex items-center gap-1 group-hover:opacity-0 transition-opacity">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            {t("delivery", { fallback: "Fast Delivery" }).split(":")[0]}
+          </div>
+
+          <div className="absolute inset-x-0 bottom-0 p-2 md:p-4 opacity-100 md:opacity-0 translate-y-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out z-10">
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                clearCart();
+                addItem({
+                  id: `${id}-quickbuy`,
+                  productId: id,
+                  name: name,
+                  name_en: name_en || name,
+                  name_ar: name_ar || name,
+                  price: currentPrice,
+                  originalPrice: originalPrice > currentPrice ? originalPrice : undefined,
+                  image: image,
+                  category: category,
+                  category_en: category_en || category,
+                  category_ar: category_ar || category,
+                  size: "",
+                  color: "",
+                  quantity: 1,
+                });
+                
+                router.push("/checkout");
+              }}
+              className="w-full bg-black/80 backdrop-blur-sm text-white h-12 min-h-[48px] rounded-full text-sm font-semibold text-center hover:bg-black transition-colors shadow-lg flex items-center justify-center"
+            >
+              {t("quickBuy")}
+            </button>
+          </div>
         </div>
         <div className="p-3 space-y-1">
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">

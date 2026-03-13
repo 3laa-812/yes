@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Truck, Flame } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import { toast } from "sonner";
 import { useTranslations, useLocale } from "next-intl";
+import { useRouter } from "@/i18n/routing";
 import { getColorDisplayNameDefault, getColorValueDefault } from "@/lib/colors";
 
 interface ProductSelectorProps {
@@ -22,7 +23,7 @@ interface ProductSelectorProps {
   category_ar: string;
   sizes: string[];
   colors: string[];
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   variants: any[]; // Using any to avoid importing prisma types client-side if complex, but ideally should be typed
   /** Pass from server to avoid hydration mismatch (useLocale() can differ on first paint) */
   locale?: "en" | "ar";
@@ -47,6 +48,8 @@ export function ProductSelector({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const addItem = useCartStore((state) => state.addItem);
+  const clearCart = useCartStore((state) => state.clearCart);
+  const router = useRouter();
   const t = useTranslations("Storefront.Product");
   const clientLocale = useLocale() as "en" | "ar";
   const locale = localeProp ?? clientLocale;
@@ -57,10 +60,27 @@ export function ProductSelector({
     return variant ? variant.stock : 0;
   };
 
+  const currentVariantStock =
+    selectedSize && selectedColor
+      ? getVariantStock(selectedSize, selectedColor)
+      : null;
+
   const isOutOfStock =
     selectedSize && selectedColor
-      ? getVariantStock(selectedSize, selectedColor) <= 0
+      ? currentVariantStock !== null && currentVariantStock <= 0
       : false;
+
+  const isLowStock =
+    selectedSize && selectedColor
+      ? currentVariantStock !== null &&
+        currentVariantStock > 0 &&
+        currentVariantStock <= 5
+      : false;
+
+  // Simple deterministic random number based on product ID for social proof (12 to 48)
+  const socialProofCount =
+    (Array.from(id).reduce((acc, char) => acc + char.charCodeAt(0), 0) % 37) +
+    12;
 
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) {
@@ -93,8 +113,7 @@ export function ProductSelector({
       effectivePrice = Math.min(basePrice, secondaryPrice);
     }
 
-    const oldPrice =
-      effectivePrice < originalPrice ? originalPrice : undefined;
+    const oldPrice = effectivePrice < originalPrice ? originalPrice : undefined;
 
     addItem({
       id: `${id}-${selectedSize}-${selectedColor}`,
@@ -116,8 +135,31 @@ export function ProductSelector({
     toast.success(t("addedToCart"));
   };
 
+  const handleQuickBuy = () => {
+    if (!selectedSize || !selectedColor) {
+      toast.error(t("selectOptions"));
+      return;
+    }
+
+    if (isOutOfStock) {
+      toast.error(t("combinationOutOfStock"));
+      return;
+    }
+
+    // Clear cart, add to cart and immediately redirect
+    clearCart();
+    handleAddToCart();
+    router.push("/checkout");
+  };
+
   return (
     <div className="mt-10">
+      {/* Social Proof */}
+      <div className="mb-6 flex items-center gap-2 text-sm font-medium text-amber-600 bg-amber-50 w-fit px-3 py-1.5 rounded-full border border-amber-100">
+        <Flame className="w-4 h-4 animate-pulse" />
+        <span>{t("socialProof", { count: socialProofCount })}</span>
+      </div>
+
       {/* Colors */}
       <div>
         <h3 className="text-sm font-medium text-foreground">{t("color")}</h3>
@@ -198,15 +240,42 @@ export function ProductSelector({
         </div>
       </div>
 
-      <Button
-        onClick={handleAddToCart}
-        disabled={isOutOfStock || !selectedSize || !selectedColor}
-        size="lg"
-        className="w-full mt-10 rounded-full h-14 text-base font-bold shadow-lg"
-      >
-        <ShoppingBag className="mr-2 h-5 w-5" />
-        {isOutOfStock ? t("outOfStock") : t("addToCart")}
-      </Button>
+      <div className="mt-10 flex flex-col sm:flex-row gap-4">
+        <Button
+          onClick={handleAddToCart}
+          disabled={isOutOfStock || !selectedSize || !selectedColor}
+          size="lg"
+          variant="outline"
+          className="w-full sm:flex-1 rounded-full h-14 text-base font-bold shadow-sm border-2 border-primary hover:bg-primary/5 hover:text-primary transition-colors"
+        >
+          <ShoppingBag className="mr-2 h-5 w-5" />
+          {isOutOfStock ? t("outOfStock") : t("addToCart")}
+        </Button>
+        <Button
+          onClick={handleQuickBuy}
+          disabled={isOutOfStock || !selectedSize || !selectedColor}
+          size="lg"
+          className="w-full sm:flex-1 rounded-full h-14 text-base font-bold shadow-lg bg-black hover:bg-gray-800 text-white"
+        >
+          {t("quickBuy") || "Quick Buy"}
+        </Button>
+      </div>
+
+      <div className="mt-4 flex flex-col gap-3 min-h-[40px]">
+        {isLowStock && (
+          <div className="flex items-center gap-2 text-sm text-red-600 font-medium animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+            </span>
+            {t("lowStock", { stock: currentVariantStock })}
+          </div>
+        )}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2 border-t border-border/50 pt-4">
+          <Truck className="w-4 h-4" />
+          <span>{t("delivery")}</span>
+        </div>
+      </div>
     </div>
   );
 }

@@ -77,7 +77,7 @@ export default async function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={`${fontClass} antialiased`}>
+      <body className={`${fontClass} antialiased overflow-x-hidden`}>
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>

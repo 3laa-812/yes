@@ -171,11 +171,11 @@ export function ShoppingCartModal({
                                             Math.max(1, item.quantity - 1),
                                           )
                                         }
-                                        className="p-1 hover:bg-muted rounded transition-colors text-foreground"
+                                        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded transition-colors text-foreground"
                                       >
-                                        <Minus className="h-3 w-3" />
+                                        <Minus className="h-4 w-4" />
                                       </button>
-                                      <span className="w-4 text-center text-foreground font-medium">
+                                      <span className="w-6 text-center text-foreground font-medium">
                                         {item.quantity}
                                       </span>
                                       <button
@@ -185,9 +185,9 @@ export function ShoppingCartModal({
                                             item.quantity + 1,
                                           )
                                         }
-                                        className="p-1 hover:bg-muted rounded transition-colors text-foreground"
+                                        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-muted rounded transition-colors text-foreground"
                                       >
-                                        <Plus className="h-3 w-3" />
+                                        <Plus className="h-4 w-4" />
                                       </button>
                                     </div>
 
@@ -195,10 +195,10 @@ export function ShoppingCartModal({
                                       <button
                                         type="button"
                                         onClick={() => removeItem(item.id)}
-                                        className="font-medium text-destructive hover:text-destructive/80 flex items-center gap-1 transition-colors"
+                                        className="font-medium text-destructive hover:text-destructive/80 flex items-center gap-1.5 min-h-[44px] px-2 transition-colors"
                                       >
                                         <Trash2 className="h-4 w-4" />
-                                        {t("remove")}
+                                        <span>{t("remove")}</span>
                                       </button>
                                     </div>
                                   </div>
@@ -222,10 +222,13 @@ export function ShoppingCartModal({
                         <div className="mt-6">
                           <Button
                             onClick={onCheckout}
-                            className="w-full rounded-full py-6 text-base font-bold shadow-lg"
+                            className="w-full rounded-full h-14 text-base font-bold shadow-lg"
                           >
                             {t("checkout")}
                           </Button>
+                        </div>
+                        <div className="mt-4 flex items-center justify-center gap-2 text-xs text-green-700 bg-green-50/50 py-2 rounded-lg border border-green-200/50 mb-2">
+                          <span className="font-medium px-1">🔒 Secure Checkout</span>
                         </div>
                         <div className="mt-6 flex justify-center text-center text-sm text-muted-foreground">
                           <p>

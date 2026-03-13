@@ -22,6 +22,7 @@ import {
   Smartphone,
   Zap,
   CheckCircle2,
+  UserCheck,
   ShieldCheck,
 } from "lucide-react";
 import Image from "next/image";
@@ -117,6 +118,10 @@ const CheckoutSummary = memo(function CheckoutSummary({
             `${t("completeOrder")} - ${formatCurrency(total, locale)}`
           )}
         </Button>
+        <div className="w-full mt-4 flex items-center justify-center gap-2 text-xs sm:text-sm text-green-700 bg-green-50/50 py-3 rounded-lg border border-green-200/50">
+          <ShieldCheck className="w-4 h-4" />
+          <span className="font-medium px-1">{t("securePayment")}</span>
+        </div>
       </CardFooter>
     </Card>
   );
@@ -129,11 +134,11 @@ export default function CheckoutPage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { items, getTotal, removeItem, clearCart } = useCartStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    fullName: "",
     email: "",
     phone: "",
     address: "",
@@ -149,10 +154,15 @@ export default function CheckoutPage() {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.firstName) newErrors.firstName = t("validation.firstName");
-    if (!formData.lastName) newErrors.lastName = t("validation.lastName");
-    if (!formData.email || !/^\S+@\S+\.\S+$/.test(formData.email))
+    if (!formData.fullName.trim() || formData.fullName.trim().split(" ").length < 2) {
+      newErrors.fullName = t("validation.fullName");
+    }
+    
+    const emailToValidate = formData.email.trim();
+    if (emailToValidate && !/^\S+@\S+\.\S+$/.test(emailToValidate)) {
       newErrors.email = t("validation.email");
+    }
+
     if (!formData.phone || formData.phone.length < 10)
       newErrors.phone = t("validation.phone");
     if (!formData.address) newErrors.address = t("validation.address");
@@ -169,6 +179,37 @@ export default function CheckoutPage() {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handlePhoneBlur = async () => {
+    if (formData.phone && formData.phone.length >= 10) {
+      setIsLoadingDetails(true);
+      try {
+        // Import this action at the top of the file dynamically or normally
+        const { checkoutGetUserDetailsByPhone } = await import("@/app/actions");
+        const res = await checkoutGetUserDetailsByPhone(formData.phone);
+
+        if (res.success && res.data) {
+          const fetchedFullName = 
+            [res.data.firstName, res.data.lastName].filter(Boolean).join(" ");
+
+          setFormData((prev) => ({
+            ...prev,
+            fullName: prev.fullName || fetchedFullName || "",
+            email: prev.email || res.data.email || "",
+            address: prev.address || res.data.address || "",
+            city: prev.city || res.data.city || "",
+          }));
+          toast.success("Saved details found and applied", {
+            icon: <UserCheck className="w-4 h-4" />,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user details", error);
+      } finally {
+        setIsLoadingDetails(false);
+      }
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,8 +235,16 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
+      const nameParts = formData.fullName.trim().split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+
       const orderData = {
         ...formData,
+        firstName,
+        lastName,
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
         paymentMethod,
         referenceId,
         proofUrl,
@@ -257,43 +306,31 @@ export default function CheckoutPage() {
                 onSubmit={handleSubmit}
                 className="space-y-4"
               >
-                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">{t("firstName")}</Label>
+                    <Label htmlFor="fullName">{t("fullName")}</Label>
                     <Input
-                      id="firstName"
-                      name="firstName"
-                      value={formData.firstName}
+                      id="fullName"
+                      name="fullName"
+                      value={formData.fullName}
                       onChange={handleInputChange}
-                      placeholder={t("placeholders.firstName")}
-                      className="text-start"
+                      placeholder={t("placeholders.fullName")}
+                      className="text-start h-12 text-base md:text-lg"
+                      autoComplete="name"
                     />
-                    {errors.firstName && (
+                    {errors.fullName && (
                       <p className="text-sm text-destructive">
-                        {errors.firstName}
+                        {errors.fullName}
                       </p>
                     )}
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">{t("lastName")}</Label>
-                    <Input
-                      id="lastName"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      placeholder={t("placeholders.lastName")}
-                      className="text-start"
-                    />
-                    {errors.lastName && (
-                      <p className="text-sm text-destructive">
-                        {errors.lastName}
-                      </p>
-                    )}
-                  </div>
-                </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">{t("email")}</Label>
+                  <Label htmlFor="email">
+                    {t("email")}{" "}
+                    <span className="text-muted-foreground font-normal text-xs">
+                      (Optional)
+                    </span>
+                  </Label>
                   <Input
                     id="email"
                     type="email"
@@ -301,7 +338,8 @@ export default function CheckoutPage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder={t("placeholders.email")}
-                    className="text-start"
+                    className="text-start h-12 text-base md:text-lg"
+                    autoComplete="email"
                   />
                   {errors.email && (
                     <p className="text-sm text-destructive">{errors.email}</p>
@@ -309,14 +347,21 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">{t("phone")}</Label>
+                  <Label htmlFor="phone">
+                    {t("phone")}
+                    {isLoadingDetails && (
+                      <Loader2 className="w-3 h-3 animate-spin inline ml-2 text-muted-foreground" />
+                    )}
+                  </Label>
                   <Input
                     id="phone"
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
+                    onBlur={handlePhoneBlur}
                     placeholder={t("placeholders.phone")}
-                    className="text-start"
+                    className="text-start h-12 text-base md:text-lg"
+                    autoComplete="tel"
                   />
                   {errors.phone && (
                     <p className="text-sm text-destructive">{errors.phone}</p>
@@ -331,7 +376,8 @@ export default function CheckoutPage() {
                     value={formData.address}
                     onChange={handleInputChange}
                     placeholder={t("placeholders.address")}
-                    className="text-start"
+                    className="text-start h-12 text-base md:text-lg"
+                    autoComplete="street-address"
                   />
                   {errors.address && (
                     <p className="text-sm text-destructive">{errors.address}</p>
@@ -346,7 +392,8 @@ export default function CheckoutPage() {
                     value={formData.city}
                     onChange={handleInputChange}
                     placeholder={t("placeholders.city")}
-                    className="text-start"
+                    className="text-start h-12 text-base md:text-lg"
+                    autoComplete="address-level2"
                   />
                   {errors.city && (
                     <p className="text-sm text-destructive">{errors.city}</p>
@@ -476,11 +523,6 @@ export default function CheckoutPage() {
                     {t("instapayDesc")}
                   </span>
                 </div>
-              </div>
-
-              <div className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground bg-muted/30 py-3 px-4 rounded-lg border border-border/50">
-                <ShieldCheck className="w-4 h-4 text-green-600" />
-                <span>{t("securePayment")}</span>
               </div>
 
               {["VODAFONE_CASH", "INSTAPAY"].includes(paymentMethod) && (
