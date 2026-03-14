@@ -105,7 +105,8 @@ model Product {
   sizes         String   // JSON string (Keeping for backward compat/display)
   colors        String   // JSON string (Keeping for backward compat/display)
   stock         Int      @default(0) // Global stock or fallback
-  
+  isSoldOut     Boolean  @default(false) // Admin-controlled sold out flag
+
   variants      ProductVariant[] // Added for precise stock management
 
   createdAt     DateTime @default(now())

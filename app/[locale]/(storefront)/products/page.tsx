@@ -102,6 +102,7 @@ export default async function ProductsPage({
               category_en={product.category.name_en}
               category_ar={product.category.name_ar}
               image={JSON.parse(product.images as string)[0]}
+              isSoldOut={product.isSoldOut ?? false}
             />
           ))}
         </div>

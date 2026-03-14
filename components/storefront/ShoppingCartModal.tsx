@@ -2,7 +2,7 @@
 
 import { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { X, ShoppingBag, Plus, Minus, Trash2 } from "lucide-react";
+import { X, ShoppingBag, Plus, Minus, Trash2, AlertTriangle } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
@@ -23,6 +23,10 @@ export function ShoppingCartModal({
   const t = useTranslations("Cart");
   const router = useRouter();
   const locale = useLocale();
+
+  // Detect sold-out items in cart
+  const soldOutItems = items.filter((item) => item.isSoldOut);
+  const hasSoldOutItems = soldOutItems.length > 0;
 
   // Hydration handling
   const [mounted, setMounted] = useState(false);
@@ -212,6 +216,25 @@ export function ShoppingCartModal({
 
                     {items.length > 0 && (
                       <div className="border-t border-border px-4 py-6 sm:px-6 bg-card">
+                        {/* Sold Out Warning Banner */}
+                        {hasSoldOutItems && (
+                          <div className="mb-4 flex items-start gap-3 bg-red-50 border border-red-200 rounded-lg px-3 py-2.5">
+                            <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="text-xs font-semibold text-red-700">
+                                {t("soldOutWarningTitle")}
+                              </p>
+                              {soldOutItems.map((item) => (
+                                <p key={item.id} className="text-xs text-red-600 mt-0.5">
+                                  — {locale === "ar" ? item.name_ar || item.name : item.name_en || item.name}
+                                </p>
+                              ))}
+                              <p className="text-xs text-red-500 mt-1">
+                                {t("soldOutWarningDesc")}
+                              </p>
+                            </div>
+                          </div>
+                        )}
                         <div className="flex justify-between text-base font-medium text-foreground">
                           <p>{t("subtotal")}</p>
                           <p>{formatPrice(getTotal(), locale)}</p>
@@ -222,7 +245,8 @@ export function ShoppingCartModal({
                         <div className="mt-6">
                           <Button
                             onClick={onCheckout}
-                           className="w-full rounded-full h-14 text-base font-bold shadow-lg touch-manipulation"
+                            disabled={hasSoldOutItems}
+                           className={`w-full rounded-full h-14 text-base font-bold shadow-lg touch-manipulation ${hasSoldOutItems ? "opacity-50 cursor-not-allowed" : ""}`}
                           >
                             {t("checkout")}
                           </Button>

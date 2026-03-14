@@ -16,6 +16,7 @@ export interface CartItem {
   size: string;
   color: string;
   quantity: number;
+  isSoldOut?: boolean; // Tracks admin-marked sold out state
 }
 
 interface CartState {

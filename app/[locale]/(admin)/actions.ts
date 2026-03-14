@@ -16,6 +16,7 @@ export async function updateOrderStatus(formData: FormData) {
     
     revalidatePath("/admin/orders");
     revalidatePath(`/admin/orders/${orderId}`);
+    revalidatePath("/admin/dashboard");
 }
 
 export async function managePayment(orderId: string, action: "approve" | "reject") {
@@ -34,6 +35,7 @@ export async function managePayment(orderId: string, action: "approve" | "reject
     
     revalidatePath("/admin/orders");
     revalidatePath(`/admin/orders/${orderId}`);
+    revalidatePath("/admin/dashboard");
 }
 
 export async function deleteOrder(orderId: string) {

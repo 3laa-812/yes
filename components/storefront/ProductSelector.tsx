@@ -24,9 +24,11 @@ interface ProductSelectorProps {
   sizes: string[];
   colors: string[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  variants: any[]; // Using any to avoid importing prisma types client-side if complex, but ideally should be typed
+  variants: any[]; // Using any to avoid importing prisma types client-side if complex
   /** Pass from server to avoid hydration mismatch (useLocale() can differ on first paint) */
   locale?: "en" | "ar";
+  /** Admin-controlled sold out flag */
+  isSoldOut?: boolean;
 }
 
 export function ProductSelector({
@@ -44,6 +46,7 @@ export function ProductSelector({
   colors,
   variants,
   locale: localeProp,
+  isSoldOut = false,
 }: ProductSelectorProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -83,6 +86,8 @@ export function ProductSelector({
     12;
 
   const handleAddToCart = () => {
+    if (isSoldOut) return;
+
     if (!selectedSize || !selectedColor) {
       toast.error(t("selectOptions"));
       return;
@@ -136,6 +141,8 @@ export function ProductSelector({
   };
 
   const handleQuickBuy = () => {
+    if (isSoldOut) return;
+
     if (!selectedSize || !selectedColor) {
       toast.error(t("selectOptions"));
       return;
@@ -154,11 +161,30 @@ export function ProductSelector({
 
   return (
     <div className="mt-6 sm:mt-10">
+      {/* Sold Out Banner */}
+      {isSoldOut && (
+        <div className="mb-6 flex items-center gap-3 bg-gray-100 border border-gray-200 rounded-xl px-4 py-3">
+          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-800 text-white text-xs font-bold shrink-0">
+            ✕
+          </span>
+          <div>
+            <p className="font-semibold text-gray-900 text-sm">
+              {t("soldOutTitle")}
+            </p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {t("soldOutDesc")}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Social Proof */}
-      <div className="mb-4 flex items-center gap-2 text-sm font-medium text-amber-600 bg-amber-50 w-full sm:w-fit px-3 py-1.5 rounded-full border border-amber-100 overflow-hidden">
-        <Flame className="w-4 h-4 animate-pulse" />
-        <span>{t("socialProof", { count: socialProofCount })}</span>
-      </div>
+      {!isSoldOut && (
+        <div className="mb-4 flex items-center gap-2 text-sm font-medium text-amber-600 bg-amber-50 w-full sm:w-fit px-3 py-1.5 rounded-full border border-amber-100 overflow-hidden">
+          <Flame className="w-4 h-4 animate-pulse" />
+          <span>{t("socialProof", { count: socialProofCount })}</span>
+        </div>
+      )}
 
       {/* Colors */}
       <div>
@@ -173,8 +199,12 @@ export function ProductSelector({
               <button
                 key={color}
                 type="button"
-                onClick={() => setSelectedColor(color)}
-                className="flex flex-col items-center gap-1 p-1 min-w-[44px] min-h-[44px] group"
+                onClick={() => !isSoldOut && setSelectedColor(color)}
+                disabled={isSoldOut}
+                className={cn(
+                  "flex flex-col items-center gap-1 p-1 min-w-[44px] min-h-[44px] group",
+                  isSoldOut && "opacity-40 cursor-not-allowed",
+                )}
               >
                 <span
                   className={cn(
@@ -214,21 +244,21 @@ export function ProductSelector({
           {sizes.map((size) => {
             // Check if size is available for selected color (if color selected)
             let isAvailable = true;
-            if (selectedColor) {
+            if (selectedColor && !isSoldOut) {
               isAvailable = getVariantStock(size, selectedColor) > 0;
             }
 
             return (
               <button
                 key={size}
-                onClick={() => setSelectedSize(size)}
-                disabled={!isAvailable && !!selectedColor}
+                onClick={() => !isSoldOut && setSelectedSize(size)}
+                disabled={(!isAvailable && !!selectedColor) || isSoldOut}
                 className={cn(
                   "group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase focus:outline-none sm:flex-1 min-h-[44px] sm:py-6 transition-all",
                   selectedSize === size
                     ? "bg-primary text-primary-foreground shadow-sm border-primary hover:bg-primary/90"
                     : "bg-card text-foreground shadow-sm border-border hover:bg-muted font-normal",
-                  !isAvailable && !!selectedColor
+                  ((!isAvailable && !!selectedColor) || isSoldOut)
                     ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground decoration-muted-foreground/50 line-through"
                     : "",
                 )}
@@ -241,28 +271,36 @@ export function ProductSelector({
       </div>
 
       <div className="mt-10 flex flex-col sm:flex-row gap-4">
-        <Button
-          onClick={handleAddToCart}
-          disabled={isOutOfStock || !selectedSize || !selectedColor}
-          size="lg"
-          variant="outline"
-          className="w-full sm:flex-1 rounded-full h-14 text-base font-bold shadow-sm border-2 border-primary hover:bg-primary/5 hover:text-primary transition-colors"
-        >
-          <ShoppingBag className="mr-2 h-5 w-5" />
-          {isOutOfStock ? t("outOfStock") : t("addToCart")}
-        </Button>
-        <Button
-          onClick={handleQuickBuy}
-          disabled={isOutOfStock || !selectedSize || !selectedColor}
-          size="lg"
-          className="w-full sm:flex-1 rounded-full h-14 text-base font-bold shadow-lg bg-black hover:bg-gray-800 text-white"
-        >
-          {t("quickBuy") || "Quick Buy"}
-        </Button>
+        {isSoldOut ? (
+          <div className="w-full flex items-center justify-center h-14 rounded-full bg-gray-100 border-2 border-gray-200 text-gray-500 font-bold text-base">
+            {t("soldOutLabel")}
+          </div>
+        ) : (
+          <>
+            <Button
+              onClick={handleAddToCart}
+              disabled={isOutOfStock || !selectedSize || !selectedColor}
+              size="lg"
+              variant="outline"
+              className="w-full sm:flex-1 rounded-full h-14 text-base font-bold shadow-sm border-2 border-primary hover:bg-primary/5 hover:text-primary transition-colors"
+            >
+              <ShoppingBag className="mr-2 h-5 w-5" />
+              {isOutOfStock ? t("outOfStock") : t("addToCart")}
+            </Button>
+            <Button
+              onClick={handleQuickBuy}
+              disabled={isOutOfStock || !selectedSize || !selectedColor}
+              size="lg"
+              className="w-full sm:flex-1 rounded-full h-14 text-base font-bold shadow-lg bg-black hover:bg-gray-800 text-white"
+            >
+              {t("quickBuy") || "Quick Buy"}
+            </Button>
+          </>
+        )}
       </div>
 
       <div className="mt-4 flex flex-col gap-3 min-h-[40px]">
-        {isLowStock && (
+        {isLowStock && !isSoldOut && (
           <div className="flex items-center gap-2 text-sm text-red-600 font-medium animate-in fade-in slide-in-from-bottom-2 duration-300">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>

@@ -6,10 +6,13 @@ import Image from "next/image";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { deleteProduct } from "@/app/actions";
 import { DeleteProductButton } from "./_components/DeleteProductButton";
+import { SoldOutButton } from "./_components/SoldOutButton";
 import Link from "next/link";
 import { getTranslations, getLocale } from "next-intl/server";
 import { format } from "date-fns";
 import { ar, enUS } from "date-fns/locale";
+import { Badge } from "@/components/ui/badge";
+
 async function getProducts() {
   return db.product.findMany({
     orderBy: {
@@ -91,21 +94,45 @@ export default async function AdminProductsPage({
                         console.error("Failed to parse product images", e);
                       }
                       return (
-                        <Image
-                          src={imageUrl}
-                          alt={product.name}
-                          width={64}
-                          height={64}
-                          className="aspect-square rounded-md object-cover"
-                        />
+                        <div className="relative">
+                          <Image
+                            src={imageUrl}
+                            alt={product.name}
+                            width={64}
+                            height={64}
+                            className="aspect-square rounded-md object-cover"
+                          />
+                          {product.isSoldOut && (
+                            <span className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
+                              <span className="text-white text-[9px] font-bold uppercase tracking-wider">
+                                {t("soldOut")}
+                              </span>
+                            </span>
+                          )}
+                        </div>
                       );
                     })()}
                   </td>
                   <td className="p-4 align-middle font-medium">
-                    {product.name}
+                    {locale === "ar" ? product.name_ar : product.name_en}
                   </td>
                   <td className="p-4 align-middle">
-                    {product.stock > 0 ? t("active") : t("draft")}
+                    {product.isSoldOut ? (
+                      <Badge variant="destructive" className="text-xs">
+                        {t("soldOut")}
+                      </Badge>
+                    ) : product.stock > 0 ? (
+                      <Badge
+                        variant="outline"
+                        className="text-xs border-emerald-500 text-emerald-600 bg-emerald-50"
+                      >
+                        {t("available")}
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="text-xs">
+                        {t("draft")}
+                      </Badge>
+                    )}
                   </td>
                   <td className="p-4 align-middle">
                     {formatCurrency(Number(product.price), locale)}
@@ -117,12 +144,18 @@ export default async function AdminProductsPage({
                     })}
                   </td>
                   <td className="p-4 align-middle">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 flex-wrap">
                       <Button variant="ghost" size="sm" asChild>
                         <Link href={`/admin/products/${product.id}`}>
                           {t("edit")}
                         </Link>
                       </Button>
+                      <SoldOutButton
+                        id={product.id}
+                        isSoldOut={product.isSoldOut}
+                        labelMarkSoldOut={t("markAsSoldOut")}
+                        labelMarkAvailable={t("markAsAvailable")}
+                      />
                       <DeleteProductButton
                         id={product.id}
                         label={t("delete")}

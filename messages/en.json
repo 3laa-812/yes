@@ -58,7 +58,9 @@
     "closePanel": "Close panel",
     "or": "or",
     "secureCheckout": "Secure Checkout",
-    "paymentDataNote": "100% secure – We never store your payment data"
+    "paymentDataNote": "100% secure – We never store your payment data",
+    "soldOutWarningTitle": "Some items in your cart are sold out",
+    "soldOutWarningDesc": "Please remove sold-out items to proceed to checkout."
   },
   "Checkout": {
     "title": "Checkout",
@@ -193,7 +195,10 @@
       "quickBuy": "Quick Buy",
       "delivery": "Estimated Delivery: 2-4 Business Days",
       "lowStock": "Only {stock} items left in stock - order soon!",
-      "socialProof": "🔥 {count} people bought this today"
+      "socialProof": "🔥 {count} people bought this today",
+      "soldOutTitle": "This product is currently sold out",
+      "soldOutDesc": "We're working hard to restock this item. Follow our social channels for updates.",
+      "soldOutLabel": "Sold Out"
     },
     "OrderDetails": {
       "title": "Order Details",
@@ -231,6 +236,8 @@
     "overview": "Overview of your store's performance.",
     "totalRevenue": "Total Revenue",
     "totalOrders": "Total Orders",
+    "todayRevenue": "Today's Revenue",
+    "confirmedOrders": "Confirmed Orders",
     "ordersToday": "Orders Today",
     "ordersThisMonth": "Orders This Month",
     "pendingPayments": "Pending Payments",
@@ -238,6 +245,8 @@
     "lifetime": "Lifetime",
     "today": "Today",
     "thisMonth": "This month",
+    "confirmed": "Confirmed",
+    "confirmedOnly": "Confirmed only",
     "requiresAction": "Requires action",
     "fromOrders": "From orders",
     "registered": "Registered",
@@ -258,6 +267,8 @@
       "image": "Image",
       "name": "Name",
       "status": "Status",
+      "available": "Available",
+      "soldOut": "Sold Out",
       "price": "Price",
       "totalSales": "Total Sales",
       "createdAt": "Created at",
@@ -290,6 +301,8 @@
       "productCreated": "Product created successfully!",
       "productDeleted": "Product deleted successfully",
       "deleteFailed": "Failed to delete product",
+      "markAsSoldOut": "Mark as Sold Out",
+      "markAsAvailable": "Mark as Available",
       "selectSizeAndColor": "Please select both size and color",
       "variantExists": "This variant already exists",
       "somethingWentWrong": "Something went wrong.",

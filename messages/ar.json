@@ -58,7 +58,9 @@
     "closePanel": "إغلاق اللوحة",
     "or": "أو",
     "secureCheckout": "دفع آمن",
-    "paymentDataNote": "100% آمن – لا نحتفظ ببيانات دفعك"
+    "paymentDataNote": "100% آمن – لا نحتفظ ببيانات دفعك",
+    "soldOutWarningTitle": "بعض المنتجات في سلتك نفدت من المخزون",
+    "soldOutWarningDesc": "يرجى إزالة المنتجات غير المتوفرة لإتمام الشراء."
   },
   "Checkout": {
     "title": "إتمام الشراء",
@@ -193,7 +195,10 @@
       "quickBuy": "شراء سريع",
       "delivery": "التوصيل المتوقع: ٢-٤ أيام عمل",
       "lowStock": "باقي {stock} قطع فقط في المخزون - اطلب قريباً!",
-      "socialProof": "🔥 {count} أشخاص اشتروا هذا اليوم"
+      "socialProof": "🔥 {count} أشخاص اشتروا هذا اليوم",
+      "soldOutTitle": "هذا المنتج غير متوفر حالياً",
+      "soldOutDesc": "نعمل على إعادة توفير هذا المنتج قريباً. تابعنا لمعرفة آخر التحديثات.",
+      "soldOutLabel": "نفد المخزون"
     },
     "OrderDetails": {
       "title": "تفاصيل الطلب",
@@ -231,6 +236,8 @@
     "overview": "نظرة عامة على أداء متجرك.",
     "totalRevenue": "إجمالي الإيرادات",
     "totalOrders": "إجمالي الطلبات",
+    "todayRevenue": "إيرادات اليوم",
+    "confirmedOrders": "الطلبات المؤكدة",
     "ordersToday": "طلبات اليوم",
     "ordersThisMonth": "طلبات هذا الشهر",
     "pendingPayments": "مدفوعات معلقة",
@@ -238,6 +245,8 @@
     "lifetime": "طوال المدة",
     "today": "اليوم",
     "thisMonth": "هذا الشهر",
+    "confirmed": "مؤكد",
+    "confirmedOnly": "المؤكدة فقط",
     "requiresAction": "يتطلب إجراء",
     "fromOrders": "من الطلبات",
     "registered": "المسجلين",
@@ -258,6 +267,8 @@
       "image": "صورة",
       "name": "الاسم",
       "status": "الحالة",
+      "available": "متاح",
+      "soldOut": "نفد المخزون",
       "price": "السعر",
       "totalSales": "إجمالي المبيعات",
       "createdAt": "تاريخ الإنشاء",
@@ -290,6 +301,8 @@
       "productCreated": "تم إنشاء المنتج بنجاح!",
       "productDeleted": "تم حذف المنتج بنجاح",
       "deleteFailed": "فشل حذف المنتج",
+      "markAsSoldOut": "تعيين كنفد المخزون",
+      "markAsAvailable": "تعيين كمتاح",
       "selectSizeAndColor": "يرجى اختيار المقاس واللون",
       "variantExists": "هذا الخيار موجود بالفعل",
       "somethingWentWrong": "حدث خطأ ما.",

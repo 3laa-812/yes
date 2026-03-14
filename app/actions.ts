@@ -323,6 +323,11 @@ export async function createOrder(data: any) {
       return { success: false, error: `Product not found: ${item.productId}` };
     }
 
+    // Block checkout if product is marked as sold out by admin
+    if (product.isSoldOut) {
+      return { success: false, error: `"${product.name_en}" is currently sold out. Please remove it from your cart.` };
+    }
+
     if (item.size && item.color) {
         const variant = product.variants.find(v => v.size === item.size && v.color === item.color);
 
@@ -748,3 +753,30 @@ export async function updateCategoryOrder(updates: { id: string; displayOrder: n
 }
 
 
+export async function toggleProductSoldOut(productId: string, isSoldOut: boolean) {
+  try {
+    await db.product.update({
+      where: { id: productId },
+      data: { isSoldOut },
+    });
+    // Admin paths
+    revalidatePath("/admin/products");
+    revalidatePath(`/admin/products/${productId}`);
+    // Storefront product list pages
+    revalidatePath("/en/products");
+    revalidatePath("/ar/products");
+    // Individual product detail pages (both locales)
+    revalidatePath(`/en/products/${productId}`);
+    revalidatePath(`/ar/products/${productId}`);
+    // Collection / category pages
+    revalidatePath("/en/collections");
+    revalidatePath("/ar/collections");
+    // Home page (featured products)
+    revalidatePath("/en");
+    revalidatePath("/ar");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Toggle Product SoldOut Error:", error);
+    return { success: false, error: error.message };
+  }
+}

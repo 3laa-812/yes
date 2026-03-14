@@ -303,6 +303,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 colors={JSON.parse(product.colors as string)}
                 variants={product.variants}
                 locale={locale as "en" | "ar"}
+                isSoldOut={product.isSoldOut}
               />
             </div>
           </div>
