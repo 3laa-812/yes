@@ -153,9 +153,9 @@ export function ProductSelector({
   };
 
   return (
-    <div className="mt-10">
+    <div className="mt-6 sm:mt-10">
       {/* Social Proof */}
-      <div className="mb-6 flex items-center gap-2 text-sm font-medium text-amber-600 bg-amber-50 w-fit px-3 py-1.5 rounded-full border border-amber-100">
+      <div className="mb-4 flex items-center gap-2 text-sm font-medium text-amber-600 bg-amber-50 w-full sm:w-fit px-3 py-1.5 rounded-full border border-amber-100 overflow-hidden">
         <Flame className="w-4 h-4 animate-pulse" />
         <span>{t("socialProof", { count: socialProofCount })}</span>
       </div>
@@ -224,7 +224,7 @@ export function ProductSelector({
                 onClick={() => setSelectedSize(size)}
                 disabled={!isAvailable && !!selectedColor}
                 className={cn(
-                  "group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase focus:outline-none sm:flex-1 sm:py-6 transition-all",
+                  "group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase focus:outline-none sm:flex-1 min-h-[44px] sm:py-6 transition-all",
                   selectedSize === size
                     ? "bg-primary text-primary-foreground shadow-sm border-primary hover:bg-primary/90"
                     : "bg-card text-foreground shadow-sm border-border hover:bg-muted font-normal",

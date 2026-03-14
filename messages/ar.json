@@ -56,7 +56,9 @@
     "continueShopping": "متابعة التسوق",
     "remove": "إزالة",
     "closePanel": "إغلاق اللوحة",
-    "or": "أو"
+    "or": "أو",
+    "secureCheckout": "دفع آمن",
+    "paymentDataNote": "100% آمن – لا نحتفظ ببيانات دفعك"
   },
   "Checkout": {
     "title": "إتمام الشراء",

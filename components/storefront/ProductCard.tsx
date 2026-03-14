@@ -81,7 +81,7 @@ export function ProductCard({
             </div>
           ) : null}
           
-          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium px-2 py-1 rounded-sm flex items-center gap-1 group-hover:opacity-0 transition-opacity">
+          <div className="absolute bottom-12 right-2 hidden md:flex bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium px-2 py-1 rounded-sm items-center gap-1 opacity-100 group-hover:opacity-0 transition-opacity duration-300">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
             {t("delivery", { fallback: "Fast Delivery" }).split(":")[0]}
           </div>
@@ -112,7 +112,7 @@ export function ProductCard({
                 
                 router.push("/checkout");
               }}
-              className="w-full bg-black/80 backdrop-blur-sm text-white h-12 min-h-[48px] rounded-full text-sm font-semibold text-center hover:bg-black transition-colors shadow-lg flex items-center justify-center"
+              className="w-full bg-black/80 backdrop-blur-sm text-white h-10 md:h-12 min-h-[44px] rounded-full text-xs md:text-sm font-semibold text-center hover:bg-black transition-colors shadow-lg flex items-center justify-center truncate px-2"
             >
               {t("quickBuy")}
             </button>

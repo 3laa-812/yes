@@ -8,11 +8,11 @@ export function Hero() {
   const t = useTranslations("HomePage");
 
   return (
-    <section className="relative min-h-[85vh] w-full overflow-hidden flex items-center bg-linear-to-br from-background via-background to-secondary/30">
+    <section className="relative min-h-[100svh] sm:min-h-[85vh] w-full overflow-hidden flex items-center bg-linear-to-br from-background via-background to-secondary/30">
       <div className="container mx-auto px-4 md:px-6 relative z-20 h-full flex flex-col justify-center">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center h-full">
           {/* Text Content */}
-          <div className="flex flex-col space-y-6 lg:col-span-6 lg:pr-12 order-2 lg:order-1 pt-20 lg:pt-0">
+          <div className="flex flex-col space-y-6 lg:col-span-6 lg:pr-12 order-2 lg:order-1 pt-6 lg:pt-0">
             <div className="flex items-center gap-2">
               <span className="w-8 h-[2px] bg-accent inline-block rounded-full" />
               <span className="text-sm font-bold tracking-[0.2em] text-accent uppercase">
@@ -20,22 +20,22 @@ export function Hero() {
               </span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95] text-foreground">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95] text-foreground">
               <span className="block">{t("redefine")}</span>
               <span className="block text-transparent bg-clip-text bg-linear-to-r from-accent to-accent/80 pb-2 mt-1">
                 {t("yourStyle")}
               </span>
             </h1>
 
-            <p className="text-lg md:text-xl text-muted-foreground/80 max-w-lg leading-relaxed font-medium">
+            <p className="text-sm sm:text-base md:text-xl text-muted-foreground/80 max-w-lg leading-relaxed font-medium">
               {t("description")}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-6">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6">
               <Button
                 asChild
                 size="lg"
-                className="rounded-full text-lg px-8 py-6 shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-shadow"
+                className="rounded-full text-base sm:text-lg px-6 py-4 sm:px-8 sm:py-6 shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-shadow min-h-[48px] touch-manipulation"
               >
                 <Link href="/products">
                   {t("shopNow")}{" "}
@@ -46,7 +46,7 @@ export function Hero() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="rounded-full text-lg px-8 py-6 border-2 hover:bg-secondary/50"
+                className="rounded-full text-base sm:text-lg px-6 py-4 sm:px-8 sm:py-6 border-2 hover:bg-secondary/50 min-h-[48px] touch-manipulation"
               >
                 <Link href="/collections">{t("exploreLookbook")}</Link>
               </Button>
@@ -54,7 +54,7 @@ export function Hero() {
           </div>
 
           {/* Hero Image */}
-          <div className="lg:col-span-6 relative h-125 lg:h-187.5 w-full order-1 lg:order-2">
+          <div className="lg:col-span-6 relative h-64 sm:h-96 lg:h-187.5 w-full order-1 lg:order-2">
             <div className="absolute inset-0 z-10">
               <div className="relative w-full h-full rounded-4xl overflow-hidden shadow-2xl ring-1 ring-black/5">
                 <div className="w-full h-full bg-secondary relative flex items-center justify-center">

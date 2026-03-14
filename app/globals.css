@@ -202,3 +202,49 @@
     text-shadow: 0 1px 2px rgba(0,0,0,0.1);
   }
 }
+/* ==========================================
+   MOBILE-FIRST GLOBAL IMPROVEMENTS
+   ========================================== */
+
+/* Prevent horizontal overflow on all screens */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Smooth scrolling for all pages */
+html {
+  scroll-behavior: smooth;
+  /* Prevent iOS font size adjustment on orientation change */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Eliminate 300ms tap delay on all interactive elements globally */
+button,
+a,
+input,
+select,
+textarea,
+[role="button"],
+[tabindex] {
+  touch-action: manipulation;
+}
+
+/* Hide scrollbar utility (used for category pills) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* No scrollbar for snap-scroll containers */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

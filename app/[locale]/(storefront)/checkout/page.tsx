@@ -49,7 +49,7 @@ const CheckoutSummary = memo(function CheckoutSummary({
   onSubmit,
 }: CheckoutSummaryProps) {
   return (
-    <Card className="sticky top-20">
+    <Card className="md:sticky md:top-20">
       <CardHeader>
         <CardTitle>{t("orderSummary")}</CardTitle>
         <CardDescription>
@@ -103,7 +103,7 @@ const CheckoutSummary = memo(function CheckoutSummary({
           </div>
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex flex-col gap-4" >
         <Button
           onClick={onSubmit}
           className="w-full text-lg py-6 font-bold shadow-lg"
@@ -118,9 +118,9 @@ const CheckoutSummary = memo(function CheckoutSummary({
             `${t("completeOrder")} - ${formatCurrency(total, locale)}`
           )}
         </Button>
-        <div className="w-full mt-4 flex items-center justify-center gap-2 text-xs sm:text-sm text-green-700 bg-green-50/50 py-3 rounded-lg border border-green-200/50">
-          <ShieldCheck className="w-4 h-4" />
-          <span className="font-medium px-1">{t("securePayment")}</span>
+        <div className="w-full flex items-center justify-center gap-1.5 text-xs text-green-700 bg-green-50 py-2.5 px-3 rounded-lg border border-green-200/70 text-center">
+          <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+          <span className="leading-snug">{t("securePayment")}</span>
         </div>
       </CardFooter>
     </Card>
@@ -289,13 +289,13 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center md:text-left text-foreground">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center md:text-left text-foreground">
         {t("title")}
       </h1>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {/* Left Column: Form */}
-        <div className="space-y-6">
+        {/* Left Column: Form — pushed below summary on mobile */}
+        <div className="space-y-6 order-last md:order-first">
           <Card>
             <CardHeader>
               <CardTitle>{t("shippingDetails")}</CardTitle>
@@ -360,8 +360,9 @@ export default function CheckoutPage() {
                     onChange={handleInputChange}
                     onBlur={handlePhoneBlur}
                     placeholder={t("placeholders.phone")}
-                    className="text-start h-12 text-base md:text-lg"
+                  className="text-start h-12 text-base"
                     autoComplete="tel"
+                    type="tel"
                   />
                   {errors.phone && (
                     <p className="text-sm text-destructive">{errors.phone}</p>
@@ -408,11 +409,11 @@ export default function CheckoutPage() {
               <CardTitle>{t("paymentMethod")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-3">
                 <div
                   onClick={() => setPaymentMethod("COD")}
                   className={cn(
-                    "relative cursor-pointer rounded-xl p-5 flex flex-col items-center justify-center transition-all bg-card border-2 shadow-sm hover:shadow-md",
+                    "relative cursor-pointer rounded-xl p-3 sm:p-5 flex flex-col items-center justify-center transition-all bg-card border-2 shadow-sm hover:shadow-md",
                     paymentMethod === "COD"
                       ? "border-primary bg-primary/5 ring-1 ring-primary ring-offset-0"
                       : "border-border hover:border-primary/40",
@@ -425,23 +426,23 @@ export default function CheckoutPage() {
                   )}
                   <div
                     className={cn(
-                      "p-3 rounded-full mb-3",
+                      "p-2 sm:p-3 rounded-full mb-2 sm:mb-3",
                       paymentMethod === "COD" ? "bg-primary/10" : "bg-muted",
                     )}
                   >
                     <Banknote
                       className={cn(
-                        "w-7 h-7",
+                        "w-5 h-5 sm:w-7 sm:h-7",
                         paymentMethod === "COD"
                           ? "text-primary"
                           : "text-muted-foreground",
                       )}
                     />
                   </div>
-                  <span className="font-semibold text-base text-center text-foreground mb-1">
+                  <span className="font-semibold text-xs sm:text-base text-center text-foreground mb-1">
                     {t("cod")}
                   </span>
-                  <span className="text-xs text-muted-foreground text-center px-2">
+                  <span className="text-[10px] sm:text-xs text-muted-foreground text-center px-1 sm:px-2 hidden sm:block">
                     {t("codDesc")}
                   </span>
                 </div>
@@ -449,7 +450,7 @@ export default function CheckoutPage() {
                 <div
                   onClick={() => setPaymentMethod("VODAFONE_CASH")}
                   className={cn(
-                    "relative cursor-pointer rounded-xl p-5 flex flex-col items-center justify-center transition-all bg-card border-2 shadow-sm hover:shadow-md group",
+                    "relative cursor-pointer rounded-xl p-3 sm:p-5 flex flex-col items-center justify-center transition-all bg-card border-2 shadow-sm hover:shadow-md group",
                     paymentMethod === "VODAFONE_CASH"
                       ? "border-[#e60000] bg-[#e60000]/5 ring-1 ring-[#e60000] ring-offset-0"
                       : "border-border hover:border-[#e60000]/40",
@@ -462,7 +463,7 @@ export default function CheckoutPage() {
                   )}
                   <div
                     className={cn(
-                      "p-3 rounded-full mb-3 transition-colors",
+                      "p-2 sm:p-3 rounded-full mb-2 sm:mb-3 transition-colors",
                       paymentMethod === "VODAFONE_CASH"
                         ? "bg-[#e60000]/10"
                         : "bg-muted group-hover:bg-[#e60000]/5",
@@ -470,17 +471,17 @@ export default function CheckoutPage() {
                   >
                     <Smartphone
                       className={cn(
-                        "w-7 h-7 transition-colors",
+                        "w-5 h-5 sm:w-7 sm:h-7 transition-colors",
                         paymentMethod === "VODAFONE_CASH"
                           ? "text-[#e60000]"
                           : "text-muted-foreground group-hover:text-[#e60000]",
                       )}
                     />
                   </div>
-                  <span className="font-semibold text-base text-center text-foreground mb-1">
+                  <span className="font-semibold text-xs sm:text-base text-center text-foreground mb-1">
                     {t("vodafoneCash")}
                   </span>
-                  <span className="text-xs text-muted-foreground text-center px-2">
+                  <span className="text-[10px] sm:text-xs text-muted-foreground text-center px-1 sm:px-2 hidden sm:block">
                     {t("vodafoneCashDesc")}
                   </span>
                 </div>
@@ -488,7 +489,7 @@ export default function CheckoutPage() {
                 <div
                   onClick={() => setPaymentMethod("INSTAPAY")}
                   className={cn(
-                    "relative cursor-pointer rounded-xl p-5 flex flex-col items-center justify-center transition-all bg-card border-2 shadow-sm hover:shadow-md group",
+                    "relative cursor-pointer rounded-xl p-3 sm:p-5 flex flex-col items-center justify-center transition-all bg-card border-2 shadow-sm hover:shadow-md group",
                     paymentMethod === "INSTAPAY"
                       ? "border-[#6A0DAD] bg-[#6A0DAD]/5 ring-1 ring-[#6A0DAD] ring-offset-0"
                       : "border-border hover:border-[#6A0DAD]/40",
@@ -501,7 +502,7 @@ export default function CheckoutPage() {
                   )}
                   <div
                     className={cn(
-                      "p-3 rounded-full mb-3 transition-colors",
+                      "p-2 sm:p-3 rounded-full mb-2 sm:mb-3 transition-colors",
                       paymentMethod === "INSTAPAY"
                         ? "bg-[#6A0DAD]/10"
                         : "bg-muted group-hover:bg-[#6A0DAD]/5",
@@ -509,17 +510,17 @@ export default function CheckoutPage() {
                   >
                     <Zap
                       className={cn(
-                        "w-7 h-7 transition-colors",
+                        "w-5 h-5 sm:w-7 sm:h-7 transition-colors",
                         paymentMethod === "INSTAPAY"
                           ? "text-[#6A0DAD]"
                           : "text-muted-foreground group-hover:text-[#6A0DAD]",
                       )}
                     />
                   </div>
-                  <span className="font-semibold text-base text-center text-foreground mb-1">
+                  <span className="font-semibold text-xs sm:text-base text-center text-foreground mb-1">
                     {t("instapay")}
                   </span>
-                  <span className="text-xs text-muted-foreground text-center px-2">
+                  <span className="text-[10px] sm:text-xs text-muted-foreground text-center px-1 sm:px-2 hidden sm:block">
                     {t("instapayDesc")}
                   </span>
                 </div>
@@ -594,8 +595,8 @@ export default function CheckoutPage() {
           </Card>
         </div>
 
-        {/* Right Column: Order Summary */}
-        <div>
+        {/* Right Column: Order Summary — shown first on mobile */}
+        <div className="order-first md:order-last">
           <CheckoutSummary
             items={items}
             total={getTotal()}

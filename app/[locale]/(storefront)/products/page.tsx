@@ -64,9 +64,9 @@ export default async function ProductsPage({
 
   return (
     <div className="bg-background">
-      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+      <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             {t("allProducts")}
           </h2>
           <span className="text-muted-foreground">

@@ -234,7 +234,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         }}
       />
       <div className="bg-background">
-        <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+        <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
           <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
             {/* Image Gallery */}
             <ImageGallery
@@ -245,7 +245,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             />
 
             {/* Product Info */}
-            <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
+            <div className="mt-6 px-0 sm:mt-16 sm:px-0 lg:mt-0">
               <h1 className="text-3xl font-bold tracking-tight text-foreground">
                 {locale === "ar" ? product.name_ar : product.name_en}
               </h1>
@@ -272,7 +272,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <div className="mt-6">
                 <h3 className="sr-only">{t("description")}</h3>
                 <div
-                  className="space-y-6 text-base text-muted-foreground prose prose-sm sm:prose lg:prose-lg max-w-none"
+                  className="space-y-6 text-base text-muted-foreground prose prose-sm sm:prose lg:prose-lg max-w-none overflow-hidden"
                   dangerouslySetInnerHTML={{
                     __html:
                       locale === "ar"

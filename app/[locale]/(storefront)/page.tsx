@@ -86,7 +86,7 @@ export default async function Home({
 
       <SectionReveal className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             {t("featuredCollection")}
           </h2>
           <Link
@@ -107,9 +107,9 @@ export default async function Home({
       </SectionReveal>
 
       {/* Brand Story Section */}
-      <SectionReveal delay={0.2} className="bg-secondary py-24 my-16">
+      <SectionReveal delay={0.2} className="bg-secondary py-12 sm:py-24 my-8 sm:my-16">
         <div className="container mx-auto px-4 max-w-4xl text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-6 tracking-tight">
             {t("crafted")}
           </h2>
           <p className="text-lg text-muted-foreground leading-relaxed">

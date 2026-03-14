@@ -139,7 +139,7 @@ export function Navbar({
   return (
     <>
       <nav className="w-full glass sticky top-0 z-50 transition-all duration-300">
-        <div className="flex items-center justify-between mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-20">
+        <div className="flex items-center justify-between mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 h-16 sm:h-20">
           {/* Mobile Menu */}
           <div className="flex lg:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -293,7 +293,7 @@ export function Navbar({
           <div className="flex lg:flex-1 justify-center lg:justify-start">
             <Link
               href="/"
-              className="relative w-32 h-10 lg:w-40 lg:h-12 transition-opacity hover:opacity-80"
+              className="relative w-24 h-8 sm:w-32 sm:h-10 lg:w-40 lg:h-12 transition-opacity hover:opacity-80"
             >
               <Image
                 src="/branding/logo-dark.png"
@@ -337,7 +337,7 @@ export function Navbar({
           </div>
 
           {/* Icons */}
-          <div className="flex flex-1 items-center justify-end gap-x-2 sm:gap-x-4">
+          <div className="flex flex-1 items-center justify-end gap-x-1 sm:gap-x-4">
             <div>
               <LanguageSwitcher />
             </div>

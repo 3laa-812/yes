@@ -61,7 +61,7 @@ export function ShoppingCartModal({
 
         <div className="fixed inset-0 overflow-hidden">
           <div className="absolute inset-0 overflow-hidden">
-            <div className="pointer-events-none fixed inset-y-0 right-0 rtl:left-0 rtl:right-auto flex max-w-full pl-10 rtl:pl-0 rtl:pr-10">
+            <div className="pointer-events-none fixed inset-y-0 right-0 rtl:left-0 rtl:right-auto flex max-w-full sm:pl-10 rtl:sm:pl-0 rtl:sm:pr-10">
               <Transition.Child
                 as={Fragment}
                 enter="transform transition ease-in-out duration-500 sm:duration-700"
@@ -107,7 +107,7 @@ export function ShoppingCartModal({
 
                             {items.map((item) => (
                               <li key={item.id} className="flex py-6">
-                                <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-border">
+                                <div className="h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 overflow-hidden rounded-md border border-border">
                                   <Image
                                     src={item.image}
                                     alt={item.name}
@@ -222,13 +222,14 @@ export function ShoppingCartModal({
                         <div className="mt-6">
                           <Button
                             onClick={onCheckout}
-                            className="w-full rounded-full h-14 text-base font-bold shadow-lg"
+                           className="w-full rounded-full h-14 text-base font-bold shadow-lg touch-manipulation"
                           >
                             {t("checkout")}
                           </Button>
                         </div>
-                        <div className="mt-4 flex items-center justify-center gap-2 text-xs text-green-700 bg-green-50/50 py-2 rounded-lg border border-green-200/50 mb-2">
-                          <span className="font-medium px-1">🔒 Secure Checkout</span>
+                        <div className="mt-4 flex flex-col items-center justify-center gap-0.5 text-green-700 bg-green-50/50 py-3 px-4 rounded-lg border border-green-200/50 mb-2">
+                          <span className="text-xs font-bold flex items-center gap-1.5">🔒 {t("secureCheckout")}</span>
+                          <span className="text-[10px] text-green-600/80">{t("paymentDataNote")}</span>
                         </div>
                         <div className="mt-6 flex justify-center text-center text-sm text-muted-foreground">
                           <p>

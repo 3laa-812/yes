@@ -7,7 +7,7 @@ export function Footer() {
 
   return (
     <footer className="bg-primary text-primary-foreground border-t border-primary/10">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:py-16 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="text-sm font-bold tracking-widest uppercase mb-6">
@@ -96,7 +96,7 @@ export function Footer() {
             </p>
           </div>
         </div>
-        <div className="mt-16 border-t border-primary-foreground/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="mt-8 sm:mt-16 border-t border-primary-foreground/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-primary-foreground/50">
             {t("rights", { year })}
           </p>

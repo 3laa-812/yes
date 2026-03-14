@@ -56,7 +56,9 @@
     "continueShopping": "Continue Shopping",
     "remove": "Remove",
     "closePanel": "Close panel",
-    "or": "or"
+    "or": "or",
+    "secureCheckout": "Secure Checkout",
+    "paymentDataNote": "100% secure – We never store your payment data"
   },
   "Checkout": {
     "title": "Checkout",
