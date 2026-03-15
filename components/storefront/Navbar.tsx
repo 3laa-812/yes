@@ -138,7 +138,7 @@ export function Navbar({
 
   return (
     <>
-      <nav className="w-full glass sticky top-0 z-50 transition-all duration-300">
+      <nav className="w-full glass transition-all duration-300">
         <div className="flex items-center justify-between mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 h-16 sm:h-20">
           {/* Mobile Menu */}
           <div className="flex lg:hidden">

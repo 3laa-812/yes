@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import db from "@/lib/db";
 import { unstable_cache } from "next/cache";
 import { FacebookPixel } from "@/components/FacebookPixel";
+import { AnnouncementBar } from "@/components/storefront/AnnouncementBar";
 
 const getCategories = unstable_cache(
   async () => {
@@ -50,7 +51,10 @@ export async function StorefrontShell({
   return (
     <div className="flex min-h-screen flex-col">
       <FacebookPixel />
-      <Navbar user={session?.user} categories={categories} />
+      <header className="sticky top-0 z-50 flex flex-col w-full">
+        <AnnouncementBar />
+        <Navbar user={session?.user} categories={categories} />
+      </header>
       <main className="flex-1">{children}</main>
       <Footer />
     </div>
