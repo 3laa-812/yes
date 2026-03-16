@@ -8,7 +8,7 @@ export function Hero() {
   const t = useTranslations("HomePage");
 
   return (
-    <section className="relative min-h-[100svh] sm:min-h-[85vh] w-full overflow-hidden flex items-center bg-linear-to-br from-background via-background to-secondary/30">
+    <section className="relative pt-10 w-full overflow-hidden flex items-center bg-linear-to-br from-background via-background to-secondary/30">
       <div className="container mx-auto px-4 md:px-6 relative z-20 h-full flex flex-col justify-center">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center h-full">
           {/* Text Content */}

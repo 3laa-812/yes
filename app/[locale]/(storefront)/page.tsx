@@ -7,6 +7,8 @@ import { FeaturedProductsGrid } from "@/components/storefront/FeaturedProductsGr
 import { FeaturedProductsSkeleton } from "@/components/storefront/FeaturedProductsSkeleton";
 import { languageAlternates, localizedUrl } from "@/lib/seo";
 import { Hero } from "@/components/storefront/Hero";
+import { OfferBundleSection } from "@/components/storefront/OfferBundleSection";
+import { getActiveOffers } from "@/app/actions/offers";
 
 export const revalidate = 60;
 
@@ -63,6 +65,8 @@ export default async function Home({
 }) {
   const { locale } = await params;
   const t = await getTranslations("HomePage");
+  
+  const activeOffers = await getActiveOffers();
 
   return (
     <div className="bg-background min-h-screen">
@@ -83,6 +87,8 @@ export default async function Home({
         }}
       />
       <Hero />
+      
+      <OfferBundleSection offers={activeOffers} locale={locale} />
 
       <SectionReveal className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         <div className="flex items-center justify-between mb-8">

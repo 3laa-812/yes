@@ -216,3 +216,16 @@ model ActivityLog {
   details   String?
   createdAt DateTime @default(now())
 }
+
+model Offer {
+  id          String    @id @default(cuid())
+  title_en    String
+  title_ar    String
+  enabled     Boolean   @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  productIds  String[]  // Array of Product IDs for easy fetching and reordering
+  bundlePrice Decimal?  // Custom bundle price set by admin
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

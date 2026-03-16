@@ -10,6 +10,7 @@
     "exploreLookbook": "Explore Lookbook",
     "featuredCollection": "Featured Collection",
     "viewAll": "View all",
+    "hotDeals": "Hot Deals",
     "crafted": "CRAFTED FOR THE BOLD",
     "craftedDesc": "We believe style is a form of silence. It allows you to say everything without speaking a word. Our collections are designed for those who navigate the world with purpose and elegance."
   },
@@ -188,6 +189,7 @@
       "size": "Size",
       "sizeGuide": "Size Guide",
       "addToCart": "Add to Cart",
+      "viewProduct": "View Product",
       "outOfStock": "Out of Stock",
       "selectOptions": "Please select both size and color",
       "addedToCart": "Added to cart",
@@ -199,6 +201,16 @@
       "soldOutTitle": "This product is currently sold out",
       "soldOutDesc": "We're working hard to restock this item. Follow our social channels for updates.",
       "soldOutLabel": "Sold Out"
+    },
+    "Bundles": {
+      "title": "Exclusive Bundles",
+      "subtitle": "Save more when you buy together",
+      "original": "Original",
+      "bundlePrice": "Bundle Price",
+      "youSave": "You Save {amount}",
+      "percentOff": "{percent}% OFF",
+      "addBundleToCart": "Add Bundle to Cart",
+      "addedToCart": "Bundle added to cart"
     },
     "OrderDetails": {
       "title": "Order Details",
@@ -261,6 +273,29 @@
     "title": "YES ADMIN",
     "logoAlt": "YES Logo",
     "categories": "Categories",
+    "offers": "Offers",
+    "Offers": {
+      "title": "Offers & Deals",
+      "addOffer": "Add Offer",
+      "editOffer": "Edit Offer",
+      "newOffer": "New Offer",
+      "nameLabel": "Offer Title (English)",
+      "nameArLabel": "Offer Title (Arabic)",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "status": "Status",
+      "enabled": "Enabled",
+      "products": "Products",
+      "actions": "Actions",
+      "noOffers": "No offers found",
+      "offerCreated": "Offer created successfully",
+      "offerUpdated": "Offer updated successfully",
+      "offerDeleted": "Offer deleted",
+      "confirmDelete": "Are you sure you want to delete this offer?",
+      "searchProducts": "Search products...",
+      "selectProducts": "Select Products",
+      "dragToReorder": "Drag to reorder products"
+    },
     "Products": {
       "title": "Products",
       "addProduct": "Add Product",

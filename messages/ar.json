@@ -10,6 +10,7 @@
     "exploreLookbook": "استكشف المجموعة",
     "featuredCollection": "مجموعة مختارة",
     "viewAll": "عرض الكل",
+    "hotDeals": "عروض مميزة",
     "crafted": "صُنعت للجرأة",
     "craftedDesc": "نؤمن بأن الأناقة لغة صامتة تتيح لك قول كل شيء دون أن تنطق حرفاً. مجموعاتنا مصممة لمن يواجهون العالم بعزم وأناقة."
   },
@@ -188,6 +189,7 @@
       "size": "المقاس",
       "sizeGuide": "دليل المقاسات",
       "addToCart": "أضف للسلة",
+      "viewProduct": "عرض المنتج",
       "outOfStock": "نفدت الكمية",
       "selectOptions": "يرجى اختيار اللون والمقاس",
       "addedToCart": "تمت الإضافة للسلة",
@@ -199,6 +201,16 @@
       "soldOutTitle": "هذا المنتج غير متوفر حالياً",
       "soldOutDesc": "نعمل على إعادة توفير هذا المنتج قريباً. تابعنا لمعرفة آخر التحديثات.",
       "soldOutLabel": "نفد المخزون"
+    },
+    "Bundles": {
+      "title": "عروض الباكدج",
+      "subtitle": "وفر أكتر لما تشتريهم مع بعض",
+      "original": "السعر الأصلي",
+      "bundlePrice": "سعر الباكدج",
+      "youSave": "وفرت {amount}",
+      "percentOff": "خصم {percent}٪",
+      "addBundleToCart": "أضف الباكدج للسلة",
+      "addedToCart": "تمت إضافة الباكدج للسلة"
     },
     "OrderDetails": {
       "title": "تفاصيل الطلب",
@@ -261,6 +273,29 @@
     "title": "لوحة تحكم YES",
     "logoAlt": "شعار YES",
     "categories": "الفئات",
+    "offers": "العروض",
+    "Offers": {
+      "title": "العروض والخصومات",
+      "addOffer": "إضافة عرض",
+      "editOffer": "تعديل العرض",
+      "newOffer": "عرض جديد",
+      "nameLabel": "اسم العرض (إنجليزي)",
+      "nameArLabel": "اسم العرض (عربي)",
+      "startDate": "تاريخ البدء",
+      "endDate": "تاريخ الانتهاء",
+      "status": "الحالة",
+      "enabled": "مفعل",
+      "products": "المنتجات",
+      "actions": "إجراءات",
+      "noOffers": "لا توجد عروض",
+      "offerCreated": "تم إنشاء العرض بنجاح",
+      "offerUpdated": "تم تحديث العرض بنجاح",
+      "offerDeleted": "تم حذف العرض",
+      "confirmDelete": "هل أنت متأكد من حذف هذا العرض؟",
+      "searchProducts": "البحث عن المنتجات...",
+      "selectProducts": "اختيار المنتجات",
+      "dragToReorder": "اسحب لإعادة ترتيب المنتجات"
+    },
     "Products": {
       "title": "المنتجات",
       "addProduct": "إضافة منتج",

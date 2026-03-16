@@ -18,6 +18,7 @@ import {
   Users,
   Settings,
   ShieldCheck,
+  Tag,
 } from "lucide-react";
 import { Role } from "@prisma/client";
 import { useTranslations } from "next-intl";
@@ -90,6 +91,14 @@ export const MobileSidebar = ({ role }: MobileSidebarProps) => {
               >
                 <Package className="h-4 w-4" />
                 {t("products")}
+              </Link>
+              <Link
+                href="/admin/offers"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted"
+              >
+                <Tag className="h-4 w-4" />
+                {t("offers")}
               </Link>
               <Link
                 href="/admin/customers"
