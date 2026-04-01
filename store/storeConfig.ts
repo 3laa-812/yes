@@ -2,9 +2,9 @@ export const storeConfig = {
   announcementBar: {
     enabled: true,
     message_en:
-      "Notice: Shipping is temporarily paused for Eid and will resume right after the holiday. Thank you for your understanding ❤️",
+      "🔥 Huge Discounts + Winter Clearance — Limited Stock, Shop Before It’s Gone",
     message_ar:
-      "تنويه: الشحن متوقف مؤقتًا بمناسبة العيد وسيعود بعد العيد مباشرة. شكرًا لتفهمكم ❤️",
+      "🔥 خصومات جامدة + تصفية الشتاء — الكميات محدودة، الحق قبل النفاذ",
     backgroundColor: "#000000",
     textColor: "#ffffff",
   },
