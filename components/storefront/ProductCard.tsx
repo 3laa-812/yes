@@ -119,11 +119,15 @@ export function ProductCard({
   }
 
   return (
-    <Link href={`/products/${id}`} className="group block" aria-label={displayName}>
+    <Link
+      href={`/products/${id}`}
+      className="group block"
+      aria-label={displayName}
+    >
       {/* ── Card wrapper ──────────────────────────────────────────── */}
       <div
         className={[
-          "relative overflow-hidden rounded-[var(--radius)]",
+          "relative overflow-hidden rounded-(--radius)",
           "bg-card border border-border",
           "transition-all duration-250 cursor-pointer",
           "hover:-translate-y-0.5",
@@ -132,7 +136,7 @@ export function ProductCard({
         ].join(" ")}
       >
         {/* ── Image area ────────────────────────────────────────── */}
-        <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
+        <div className="relative aspect-3/4 w-full overflow-hidden bg-muted">
           <Image
             src={image}
             alt={displayName}
@@ -188,28 +192,6 @@ export function ProductCard({
                 {t("soldOutLabel")}
               </span>
             </div>
-          )}
-
-          {/* Quick Buy — hover-reveal, hidden when sold out */}
-          {!isSoldOut && (
-            <button
-              onClick={handleQuickBuy}
-              className={[
-                "absolute bottom-2 inset-x-2 z-10",
-                "text-xs font-medium py-2.5 rounded-[10px]",
-                "transition-all duration-200",
-                // reveal animation
-                "opacity-0 translate-y-1.5",
-                "group-hover:opacity-100 group-hover:translate-y-0",
-                // state colors
-                quickBuyState === "added"
-                  ? "bg-accent text-accent-foreground"
-                  : "bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground",
-              ].join(" ")}
-              aria-label={t("quickBuy")}
-            >
-              {quickBuyState === "added" ? `${t("quickBuy")} ✓` : t("quickBuy")}
-            </button>
           )}
         </div>
 

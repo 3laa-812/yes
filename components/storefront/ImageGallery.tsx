@@ -246,9 +246,9 @@ export function ImageGallery({ images, altPrefix }: ImageGalleryProps) {
   if (!images || images.length === 0) return null;
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row gap-4 lg:gap-6">
+    <div className="flex flex-col-reverse lg:flex-row gap-4 lg:gap-4 flex-1">
       {/* Thumbnails */}
-      <div className="flex lg:flex-col gap-3 overflow-x-auto py-2 lg:py-0 scrollbar-hide shrink-0 lg:w-20 items-center justify-center">
+      <div className="flex justify-center lg:flex-col gap-2 overflow-x-auto py-2 lg:py-0 scrollbar-hide shrink-0 lg:w-[60px] items-start lg:items-center bg-background  px-4 lg:px-0 lg:pr-2">
         {images.map((image, idx) => {
           const isActive = currentIndex === idx;
           return (
@@ -256,15 +256,15 @@ export function ImageGallery({ images, altPrefix }: ImageGalleryProps) {
               key={idx}
               onClick={() => scrollTo(idx)}
               className={cn(
-                "relative shrink-0 overflow-hidden rounded-full transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                "relative justify-center items-center overflow-hidden transition-colors w-[52px] h-[52px] rounded-[8px] border-[1.5px] bg-[#f7f3ee] shrink-0",
                 isActive
-                  ? "w-16 h-16 sm:w-20 sm:h-20 ring-2 ring-primary ring-offset-2 shadow-md opacity-100 scale-100"
-                  : "w-12 h-12 sm:w-16 sm:h-16 ring-1 ring-border/50 opacity-60 hover:opacity-100 hover:ring-border hover:scale-105",
+                  ? "border-[#7c3a1e] w-[62px] h-[62px]"
+                  : "border-[#e8dfd4]",
               )}
               aria-label={`Select product image ${idx + 1}`}
               aria-current={isActive ? "true" : "false"}
             >
-              <div className="absolute inset-0 bg-muted/20" />
+              <div className="absolute inset-0 bg-transparent" />
               <Image
                 src={image}
                 alt={
@@ -283,11 +283,11 @@ export function ImageGallery({ images, altPrefix }: ImageGalleryProps) {
       </div>
 
       {/* Main Image Slider */}
-      <div className="relative flex-1 rounded-2xl overflow-hidden bg-muted/20 border border-border/50 group">
+      <div className="relative rounded-xl flex-1 overflow-hidden bg-[#e8e2da] group lg:rounded-2xl lg:border lg:border-[#e8dfd4]">
         <div
           ref={scrollRef}
           onScroll={handleScroll}
-          className="flex overflow-x-auto snap-x snap-mandatory w-full h-full no-scrollbar"
+          className="flex overflow-x-auto snap-x snap-mandatory w-full h-[100vw] lg:h-auto lg:aspect-square no-scrollbar bg-gradient-to-br from-[#ddd5c8] to-[#c8bfb5]"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {images.map((image, idx) => {
@@ -324,21 +324,21 @@ export function ImageGallery({ images, altPrefix }: ImageGalleryProps) {
 
         <button
           onClick={preloadAndZoom}
-          className="absolute top-4 right-4 z-20 w-10 h-10 bg-white/80 dark:bg-black/50 backdrop-blur text-foreground flex items-center justify-center rounded-full opacity-0 lg:group-hover:opacity-100 transition-opacity touch-manipulation shadow-sm"
+          className="absolute top-4 left-4 z-20 w-9 h-9 bg-[#fdfaf7]/90 border border-[#e8dfd4] backdrop-blur text-[#1e1810] flex items-center justify-center rounded-full shadow-sm lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
           aria-label="Zoom image"
         >
-          <Maximize2 className="w-5 h-5" />
+          <Maximize2 className="w-[16px] h-[16px]" />
         </button>
 
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 lg:hidden z-20">
+        <div className="absolute bottom-[14px] left-0 right-0 flex justify-center gap-[5px] z-20">
           {images.map((_, idx) => (
             <div
               key={idx}
               className={cn(
-                "h-1.5 rounded-full transition-all duration-300",
+                "h-[6px] transition-all duration-300",
                 currentIndex === idx
-                  ? "w-4 bg-primary"
-                  : "w-1.5 bg-primary/40 backdrop-blur-sm",
+                  ? "w-[18px] bg-[#7c3a1e] rounded-[3px]"
+                  : "w-[6px] bg-[#1e1810]/25 rounded-full"
               )}
             />
           ))}

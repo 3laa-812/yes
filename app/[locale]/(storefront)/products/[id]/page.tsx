@@ -245,43 +245,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             />
 
             {/* Product Info */}
-            <div className="mt-6 px-0 sm:mt-16 sm:px-0 lg:mt-0">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                {locale === "ar" ? product.name_ar : product.name_en}
-              </h1>
-
-              <div className="mt-3">
-                <h2 className="sr-only">{t("productInfo")}</h2>
-                <div className="flex items-end gap-3">
-                  <p
-                    className={cn(
-                      "text-3xl tracking-tight font-bold",
-                      isDiscounted ? "text-primary" : "text-foreground",
-                    )}
-                  >
-                    {formatCurrency(effectivePrice, locale)}
-                  </p>
-                  {isDiscounted ? (
-                    <p className="text-xl tracking-tight text-muted-foreground line-through decoration-muted-foreground/50 mb-1">
-                      {formatCurrency(originalPrice, locale)}
-                    </p>
-                  ) : null}
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <h3 className="sr-only">{t("description")}</h3>
-                <div
-                  className="space-y-6 text-base text-muted-foreground prose prose-sm sm:prose lg:prose-lg max-w-none overflow-hidden"
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      locale === "ar"
-                        ? product.description_ar
-                        : product.description_en,
-                  }}
-                />
-              </div>
-
+            <div className="mt-6 px-0 lg:mt-0">
               <ProductSelector
                 id={product.id}
                 name={locale === "ar" ? product.name_ar : product.name_en}
@@ -304,6 +268,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 variants={product.variants}
                 locale={locale as "en" | "ar"}
                 isSoldOut={product.isSoldOut}
+                description={
+                  locale === "ar"
+                    ? product.description_ar
+                    : product.description_en
+                }
               />
             </div>
           </div>
