@@ -1,9 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/routing";
 import { formatCurrency } from "@/lib/utils";
-import { ScaleHover } from "@/components/ui/motion";
 import { useLocale, useTranslations } from "next-intl";
 import { useCartStore } from "@/lib/store";
 import { useRouter } from "@/i18n/routing";
@@ -20,6 +20,10 @@ interface ProductCardProps {
   category_ar?: string;
   discountPrice?: number | null;
   isSoldOut?: boolean;
+  /** Hex or oklch color strings shown as swatches */
+  colors?: string[];
+  /** Size labels e.g. ["XS","S","M","L"] */
+  sizes?: string[];
 }
 
 export function ProductCard({
@@ -34,13 +38,20 @@ export function ProductCard({
   category_ar,
   discountPrice,
   isSoldOut = false,
+  colors = [],
+  sizes = [],
 }: ProductCardProps) {
   const locale = useLocale();
   const t = useTranslations("Storefront.Product");
   const router = useRouter();
   const addItem = useCartStore((state) => state.addItem);
   const clearCart = useCartStore((state) => state.clearCart);
-  
+
+  const [wishlisted, setWishlisted] = useState(false);
+  const [activeColor, setActiveColor] = useState(0);
+  const [quickBuyState, setQuickBuyState] = useState<"idle" | "added">("idle");
+
+  // ── Price logic ──────────────────────────────────────────────────
   const basePrice = Number(price);
   const hasSecondaryPrice =
     discountPrice !== null && discountPrice !== undefined;
@@ -56,7 +67,6 @@ export function ProductCard({
     secondaryPrice > 0 &&
     basePrice !== secondaryPrice
   ) {
-    // Treat the higher value as the original price and the lower as the discounted price
     originalPrice = Math.max(basePrice, secondaryPrice);
     currentPrice = Math.min(basePrice, secondaryPrice);
     isDiscounted = currentPrice < originalPrice;
@@ -66,107 +76,216 @@ export function ProductCard({
     ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
     : 0;
 
+  // ── Localized labels ─────────────────────────────────────────────
+  const displayName = locale === "ar" ? name_ar || name : name_en || name;
+  const displayCategory =
+    locale === "ar" ? category_ar || category : category_en || category;
+
+  // ── Handlers ─────────────────────────────────────────────────────
+  function handleWishlist(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setWishlisted((w) => !w);
+  }
+
+  function handleQuickBuy(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    clearCart();
+    addItem({
+      id: `${id}-quickbuy`,
+      productId: id,
+      name,
+      name_en: name_en || name,
+      name_ar: name_ar || name,
+      price: currentPrice,
+      originalPrice: originalPrice > currentPrice ? originalPrice : undefined,
+      image,
+      category,
+      category_en: category_en || category,
+      category_ar: category_ar || category,
+      size: "",
+      color: colors[activeColor] ?? "",
+      quantity: 1,
+      isSoldOut: false,
+    });
+
+    setQuickBuyState("added");
+    setTimeout(() => {
+      setQuickBuyState("idle");
+      router.push("/checkout");
+    }, 1400);
+  }
+
   return (
-    <Link href={`/products/${id}`} className="group block">
-      <ScaleHover className="relative overflow-hidden rounded-xl glass-card">
-        <div className="aspect-[3/4] w-full overflow-hidden bg-gray-100 relative">
+    <Link href={`/products/${id}`} className="group block" aria-label={displayName}>
+      {/* ── Card wrapper ──────────────────────────────────────────── */}
+      <div
+        className={[
+          "relative overflow-hidden rounded-[var(--radius)]",
+          "bg-card border border-border",
+          "transition-all duration-250 cursor-pointer",
+          "hover:-translate-y-0.5",
+          "hover:shadow-[0_8px_24px_oklch(0.45_0.18_30/0.10)]",
+          "hover:border-[oklch(0.78_0.05_85)]",
+        ].join(" ")}
+      >
+        {/* ── Image area ────────────────────────────────────────── */}
+        <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
           <Image
             src={image}
-            alt={name || name_en || "Product Image"}
+            alt={displayName}
             fill
-            className={`h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105 ${isSoldOut ? "opacity-50" : ""}`}
+            className={[
+              "h-full w-full object-cover object-center",
+              "transition-transform duration-400 ease-out",
+              "group-hover:scale-[1.04]",
+              isSoldOut ? "opacity-60" : "",
+            ].join(" ")}
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
           />
 
-          {/* Sold Out Badge — takes priority over discount badge */}
-          {isSoldOut ? (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="bg-gray-900/80 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg border border-white/10">
-                {t("soldOutLabel")}
-              </div>
-            </div>
-          ) : isDiscounted ? (
-            <div className="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wider">
+          {/* Discount badge */}
+          {!isSoldOut && isDiscounted && (
+            <span
+              className="absolute top-2.5 left-2.5 z-10
+                         bg-accent text-accent-foreground
+                         text-[9px] font-semibold
+                         px-2 py-0.5 rounded-full tracking-wide"
+            >
               -{discountPercentage}%
-            </div>
-          ) : null}
-          
-          {/* Fast Delivery badge — hidden when sold out */}
-          {!isSoldOut && (
-            <div className="absolute bottom-12 right-2 hidden md:flex bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium px-2 py-1 rounded-sm items-center gap-1 opacity-100 group-hover:opacity-0 transition-opacity duration-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-              {t("delivery", { fallback: "Fast Delivery" }).split(":")[0]}
+            </span>
+          )}
+
+          {/* Wishlist button */}
+          <button
+            onClick={handleWishlist}
+            aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            className={[
+              "absolute top-2.5 right-2.5 z-10",
+              "w-7 h-7 rounded-full flex items-center justify-center",
+              "transition-all duration-200",
+              "backdrop-blur-sm",
+              wishlisted
+                ? "bg-accent/15 text-accent"
+                : "bg-background/60 text-muted-foreground hover:text-accent hover:bg-accent/10",
+            ].join(" ")}
+          >
+            <span className="text-base leading-none select-none">
+              {wishlisted ? "♥" : "♡"}
+            </span>
+          </button>
+
+          {/* Sold-out overlay */}
+          {isSoldOut && (
+            <div className="absolute inset-0 bg-background/80 flex items-center justify-center pointer-events-none z-10">
+              <span
+                className="border border-border text-muted-foreground
+                            text-[10px] tracking-widest uppercase
+                            px-4 py-1.5 rounded-full bg-card"
+              >
+                {t("soldOutLabel")}
+              </span>
             </div>
           )}
 
-          {/* Quick Buy / Sold Out bottom button */}
-          <div className="absolute inset-x-0 bottom-0 p-2 md:p-4 opacity-100 md:opacity-0 translate-y-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out z-10">
-            {isSoldOut ? (
-              <div className="w-full bg-gray-500/80 backdrop-blur-sm text-white h-10 md:h-12 min-h-[44px] rounded-full text-xs md:text-sm font-semibold text-center flex items-center justify-center px-2 cursor-not-allowed select-none">
-                {t("soldOutLabel")}
-              </div>
-            ) : (
-              <button 
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  
-                  clearCart();
-                  addItem({
-                    id: `${id}-quickbuy`,
-                    productId: id,
-                    name: name,
-                    name_en: name_en || name,
-                    name_ar: name_ar || name,
-                    price: currentPrice,
-                    originalPrice: originalPrice > currentPrice ? originalPrice : undefined,
-                    image: image,
-                    category: category,
-                    category_en: category_en || category,
-                    category_ar: category_ar || category,
-                    size: "",
-                    color: "",
-                    quantity: 1,
-                    isSoldOut: false,
-                  });
-                  
-                  router.push("/checkout");
-                }}
-                className="w-full bg-black/80 backdrop-blur-sm text-white h-10 md:h-12 min-h-[44px] rounded-full text-xs md:text-sm font-semibold text-center hover:bg-black transition-colors shadow-lg flex items-center justify-center truncate px-2"
-              >
-                {t("quickBuy")}
-              </button>
-            )}
-          </div>
+          {/* Quick Buy — hover-reveal, hidden when sold out */}
+          {!isSoldOut && (
+            <button
+              onClick={handleQuickBuy}
+              className={[
+                "absolute bottom-2 inset-x-2 z-10",
+                "text-xs font-medium py-2.5 rounded-[10px]",
+                "transition-all duration-200",
+                // reveal animation
+                "opacity-0 translate-y-1.5",
+                "group-hover:opacity-100 group-hover:translate-y-0",
+                // state colors
+                quickBuyState === "added"
+                  ? "bg-accent text-accent-foreground"
+                  : "bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground",
+              ].join(" ")}
+              aria-label={t("quickBuy")}
+            >
+              {quickBuyState === "added" ? `${t("quickBuy")} ✓` : t("quickBuy")}
+            </button>
+          )}
         </div>
-        <div className="p-3 space-y-1">
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-            {locale === "ar"
-              ? category_ar || category
-              : category_en || category}
+
+        {/* ── Card body ────────────────────────────────────────── */}
+        <div className="px-3 pt-2.5 pb-3 space-y-1.5">
+          {/* Category tag */}
+          <p className="text-[9px] font-medium tracking-widest text-muted-foreground uppercase">
+            {displayCategory}
           </p>
-          <h3 className="text-sm font-medium text-foreground line-clamp-1 group-hover:text-primary/80 transition-colors">
-            {locale === "ar" ? name_ar || name : name_en || name}
+
+          {/* Product name */}
+          <h3 className="text-sm font-semibold text-card-foreground line-clamp-1 leading-snug">
+            {displayName}
           </h3>
-          <div className="flex items-center gap-2">
-            <p
-              className={`text-sm font-bold ${isDiscounted ? "text-primary" : "text-foreground"}`}
+
+          {/* Color swatches */}
+          {colors.length > 0 && (
+            <div className="flex items-center gap-1 pt-0.5">
+              {colors.map((color, i) => (
+                <button
+                  key={i}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setActiveColor(i);
+                  }}
+                  aria-label={`Color option ${i + 1}`}
+                  className="rounded-full transition-all duration-150"
+                  style={{
+                    width: 12,
+                    height: 12,
+                    background: color,
+                    outline:
+                      i === activeColor
+                        ? "2px solid var(--accent)"
+                        : "1px solid var(--border)",
+                    outlineOffset: i === activeColor ? 1.5 : 0,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Price row */}
+          <div className="flex items-baseline gap-1.5 pt-0.5">
+            <span
+              className={[
+                "text-[13px] font-semibold",
+                isSoldOut ? "text-muted-foreground" : "text-accent",
+              ].join(" ")}
             >
               {formatCurrency(currentPrice, locale)}
-            </p>
-            {isDiscounted ? (
-              <p className="text-xs text-muted-foreground line-through decoration-muted-foreground/50">
+            </span>
+            {isDiscounted && !isSoldOut && (
+              <span className="text-[11px] text-muted-foreground line-through">
                 {formatCurrency(originalPrice, locale)}
-              </p>
-            ) : null}
-            {isSoldOut && (
-              <span className="text-[10px] font-bold text-rose-500 ml-1 uppercase tracking-wide">
-                {t("soldOutLabel")}
               </span>
             )}
           </div>
+
+          {/* Size chips */}
+          {sizes.length > 0 && (
+            <div className="flex flex-wrap gap-1 pt-0.5">
+              {sizes.map((size) => (
+                <span
+                  key={size}
+                  className="text-[9px] text-muted-foreground border border-border
+                             px-1.5 py-0.5 rounded-sm tracking-wide leading-none"
+                >
+                  {size}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
-      </ScaleHover>
+      </div>
     </Link>
   );
 }
